@@ -1,0 +1,44 @@
+{
+  "name": "fantasy-survivor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "proxy": "http://0.0.0.0:1332",
+  "scripts": {
+    "start": "webpack serve --mode development --open --hot --host 0.0.0.0",
+    "build": "webpack --mode production"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fvilers/disable-react-devtools": "^1.3.0",
+    "axios": "^1.5.0",
+    "buffer": "^6.0.3",
+    "cors": "^2.8.5",
+    "crypto-browserify": "^3.12.0",
+    "dotenv": "^16.3.1",
+    "luxon": "^3.4.3",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
+    "process": "^0.11.10",
+    "react": "^18.2.0",
+    "react-color": "2.17.3",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.16.0",
+    "react-select": "^5.7.4",
+    "stream-browserify": "^3.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.22.11",
+    "@babel/preset-env": "^7.22.10",
+    "@babel/preset-react": "^7.22.5",
+    "babel-loader": "^9.1.3",
+    "css-loader": "^6.8.1",
+    "html-webpack-plugin": "^5.5.3",
+    "style-loader": "^3.3.3",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
+  }
+}

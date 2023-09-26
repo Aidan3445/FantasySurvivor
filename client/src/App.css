@@ -1,0 +1,565 @@
+/* Nav Bar */
+.navbar {
+  background-color: rgb(185, 185, 185);
+  position: fixed;
+  display: flex;
+  --heightValue: 50px;
+  height: var(--heightValue);
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  gap: 10px;
+  transform: translateY(calc(var(--heightValue) * -1));
+  transition: transform 0.3s ease-in-out;
+  z-index: 2;
+
+  .nav-content {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 10px;
+
+    .navbar-left {
+      margin-right: auto;
+      height: 100%;
+      align-items: baseline;
+    }
+
+    .survivor-header {
+      transform: translateY(-0.15em);
+    }
+  }
+}
+
+.navbar.hidden {
+  transform: translateY(calc(var(--heightValue) * -2));
+}
+
+/* Hamburger Menu */
+.menu {
+  transition: transform 0.3s ease;
+}
+
+.menu .icon {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.bar {
+  width: 25px;
+  height: 3px;
+  background-color: black;
+  margin: 3px 0;
+  transition: transform 0.5s ease-in-out;
+}
+
+.menu.open .bar:nth-child(1) {
+  transform: translateY(9px) rotate(-225deg);
+}
+
+.menu.open .bar:nth-child(2) {
+  transform: translateX(100px);
+}
+
+.menu.open .bar:nth-child(3) {
+  transform: translateY(-9px) rotate(225deg);
+}
+
+.menu-list {
+  position: fixed;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  background-color: rgba(185, 185, 185, 0.85);
+  padding: 3px;
+
+  box-shadow: 0px 20px 20px 0px rgba(0, 0, 0, 0.2);
+  top: 50px;
+  right: -500px;
+  transition: right 0.3s ease-in-out;
+}
+
+.menu.open .menu-list {
+  display: block;
+  right: 0px;
+}
+
+/* Content Under Nav */
+.content {
+  margin-top: 50px;
+}
+
+/* Footer */
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 50px;
+  padding: 10px;
+  background-color: rgb(185, 185, 185);
+  z-index: 2;
+  align-items: center;
+}
+
+/* Survivor Font */
+.survivor-header {
+  font-family: "Survivor";
+  font-size: 5em;
+  padding: 0 15px;
+}
+
+.survivor-body {
+  font-family: "Survivor";
+  font-size: 2em;
+}
+
+.survivor-button {
+  font-family: "Survivor";
+  font-size: 2em;
+  color: black;
+  border: 1px solid black;
+  border-radius: 5px; /* Add rounded corners */
+  padding: 0 10px 0.5rem 10px; /* Add padding to separate content from border */
+  background-color: var(--noHoverColor);
+  white-space: nowrap;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+}
+
+.survivor-button:hover {
+  background-color: rgb(230, 255, 233);
+  transition: background-color 0.4s ease;
+}
+
+/* info button */
+.info-button {
+  font-family: "Survivor";
+  position: relative;
+  font-size: 2em;
+  color: grey;
+  left: -1em;
+  top: -0.4em;
+
+  transition: color 0.2s ease;
+}
+
+.info-button:hover {
+  color: rgb(235, 99, 99);
+  cursor: pointer;
+}
+
+/* Toggle */
+.toggle {
+  width: 60px;
+  height: 30px;
+  background-color: rgb(63, 63, 63);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.slider {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #fff;
+  transition: transform 0.3s ease;
+}
+
+.on {
+  background-color: #4caf50; /* Green background when on */
+}
+
+.on .slider {
+  transform: translateX(30px); /* Move slider to the right when on */
+}
+
+.off .slider {
+  transform: translateX(0); /* Move slider to the left when off */
+}
+
+.eliminated {
+  color: red;
+  font-family: "Survivor";
+  font-size: 2em;
+}
+
+/* Episode Div */
+.episodes {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Survivor Photo */
+.photo-container {
+  width: 250px;
+  height: 250px;
+  overflow: hidden;
+  position: relative;
+  margin: auto;
+}
+
+.survivor-photo {
+  width: 100%; /* Ensure the image covers the container */
+  height: 100%;
+  object-fit: cover; /* Crop the image to cover the container */
+  object-position: top left; /* Crop from the top-left corner */
+  position: absolute; /* Position the image within the container */
+  top: 0;
+  left: 0;
+}
+
+/* tribe label */
+.tribe-label {
+  font-family: "Survivor";
+  font-size: 4em;
+  padding-bottom: 0.25em;
+  width: 100%;
+  margin-bottom: 15px;
+  border-radius: 1000px;
+  border: #000 solid 2px;
+}
+
+/* Notes */
+.notes {
+  width: 50%;
+  height: 10rem;
+  margin: 10px 0;
+}
+
+/* Text Input */
+.text-input {
+  height: 2.85em;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.text-input:hover {
+  border: 1px solid #b3b3b3;
+}
+
+.text-input:focus {
+  outline: none;
+  border: 2px solid rgb(0, 115, 255);
+}
+
+.width-100 {
+  width: 100%;
+}
+
+/* Scoreboard */
+.scoreboard {
+  width: 100%;
+  margin: 0;
+}
+
+.scoreboard th {
+  border: 1px solid black;
+  border-left: none;
+  border-right: none;
+}
+s .scoreboard tbody {
+  display: flexbox;
+  flex-direction: column;
+}
+
+.scoreboard td {
+  border: 1px solid black;
+  border-left: none;
+  border-right: none;
+}
+
+/* Point Breakdown */
+.point-breakdown {
+  display: block;
+  width: 100%;
+  margin: 0;
+
+  tr {
+    height: 2rem;
+  }
+}
+
+/* Graph */
+.graph {
+  position: relative;
+  width: 100%;
+  margin: 0;
+}
+
+/* Gif */
+.gif-container {
+  width: 60%;
+  max-width: 100%; /* Ensure the container doesn't exceed its parent's width */
+  margin: 0 auto; /* Center the container */
+  overflow: hidden; /* Hide any overflow beyond 90% width */
+  position: absolute;
+  left: 20%;
+  top: 10%;
+}
+
+.gif {
+  width: 100%; /* Make the image fill the container width */
+  height: auto; /* Maintain aspect ratio */
+  display: block; /* Remove any extra space below the image */
+}
+
+/* Inline Div */
+.inline-div {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Top Div */
+.top-inline-div {
+  margin-left: 1rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: top;
+  gap: 1rem;
+}
+
+/* Vertical Flex Div */
+.vertical-div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Flex Div */
+.flex-div {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  margin: 0 5%;
+}
+
+/* Fit Content */
+.fit-content {
+  width: fit-content;
+  margin: 0 auto;
+  align-items: center;
+}
+
+/* Min Width by font size */
+.min-width-20rem {
+  min-width: 20rem;
+}
+
+.min-width-15rem {
+  min-width: 15rem;
+}
+
+/* container */
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 90%;
+  margin: 0 auto;
+
+  .box {
+    width: 50%;
+  }
+}
+
+.container-fixed {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+  margin: 0 auto;
+
+  .box {
+    width: 50%;
+  }
+  .box:first-child {
+    border-left: none; /* Remove left border from the first box */
+  }
+
+  .box:last-child {
+    border-right: none; /* Remove right border from the last box */
+  }
+}
+
+.box {
+  justify-content: center;
+  align-items: center;
+  border: 1px solid black;
+  margin-bottom: 20px; /* Add some spacing between the divs */
+  width: 100%;
+}
+
+/* Modal */
+.modal-greyout {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  min-width: 50%;
+  width: fit-content;
+  height: fit-content;
+  position: fixed;
+  justify-content: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  z-index: 2;
+}
+
+.modal-warning {
+  color: red;
+  font-weight: 700;
+  text-align: center;
+  text-wrap: wrap;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+/* Centered */
+.centered {
+  position: relative;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+/* Padded Sides */
+.padded-sides {
+  padding: 0 5%;
+}
+
+/* Bottom Fixed*/
+.bottom-fixed {
+  position: fixed;
+  bottom: 0;
+  padding: 1%;
+  width: 90%;
+}
+
+/* No Wrap */
+.no-wrap {
+  white-space: nowrap;
+}
+
+/* Clean Link */
+a.clean-link {
+  text-decoration: inherit;
+  color: inherit;
+}
+
+/* pointer mouse */
+button,
+.clickable {
+  cursor: pointer;
+}
+
+/* Episode Table */
+table {
+  border-collapse: collapse;
+  margin: 20px;
+}
+
+th {
+  font-weight: 700;
+  background-color: white;
+}
+
+th,
+td {
+  text-align: center;
+  border: 1px solid black;
+}
+
+/* Form */
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+hr {
+  height: 1px; /* Set the minimal height (adjust as needed) */
+  margin: 10px 0;
+  border: none; /* Remove border */
+  background-color: #000; /* Set the line color (adjust as needed) */
+  width: 100%; /* Width as needed */
+}
+
+/* Media query for mobile or narrow screens */
+@media (max-width: 768px) {
+  .survivor-header {
+    font-size: 2em;
+  }
+
+  .survivor-body {
+    font-size: 0.75em;
+  }
+
+  .survivor-button {
+    font-family: "Survivor";
+    font-size: .75em;
+    color: black;
+    border: 1px solid black;
+    border-radius: 5px; /* Add rounded corners */
+    padding: 0 10px 0.5rem 10px; /* Add padding to separate content from border */
+    background-color: var(--noHoverColor);
+    white-space: nowrap;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+  }
+
+  .tribe-label {
+    font-family: "Survivor";
+    font-size: 3em;
+    padding-bottom: 0.25em;
+    width: 100%;
+    margin-bottom: 15px;
+    border-radius: 1000px;
+    border: #000 solid 2px;
+  }
+
+  .container {
+    flex-direction: column; /* Stack the boxes vertically */
+    justify-content: center;
+  }
+
+  .box {
+    width: 100%; /* Take up full width when stacked */
+  }
+}
