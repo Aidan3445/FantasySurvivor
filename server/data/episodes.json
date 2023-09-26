@@ -1,7 +1,10 @@
-var x = {
-  "number": 4,
-  "title": "Tobias where are you?",
-  "airDate": "9/9/2023",
+[{
+  "_id": {
+    "$oid": "650fda9a2836e3ab51906262"
+  },
+  "number": 1,
+  "title": "We Can Do Hard Things",
+  "airDate": "2023-09-27",
   "advsFound": [],
   "advPlaysSelf": [],
   "advPlaysOther": [],
@@ -17,7 +20,6 @@ var x = {
   "fireWins": [],
   "soleSurvivor": [],
   "eliminated": [],
+  "merged": false,
   "notes": []
-}
-
-export default x;
+}]

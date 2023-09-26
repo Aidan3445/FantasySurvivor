@@ -37,6 +37,7 @@ module.exports = {
   plugins: [
     new HTMLWebpackPlugin({
       template: "./src/index.html",
+      favicon: "./src/favicon/icon.ico"
     }),
     new webpack.ProvidePlugin({
       process: "process/browser",
@@ -51,7 +52,6 @@ module.exports = {
   },
   resolve: {
     fallback: {
-      path: false,
       os: false,
       crypto: false,
       stream: false,

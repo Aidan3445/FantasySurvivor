@@ -2,18 +2,16 @@ import axios from "axios";
 import Episode from "./episode";
 
 const apiRoot =
-  process.NODE_ENV === "production"
+  process.env.NODE_ENV === "production"
     ? process.env.REACT_APP_API_ROOT
     : process.env.REACT_APP_API_ROOT_DEV;
-
-console.log(process.NODE_ENV);
 
 class Game {
   //#region READ DATA */
   // get all episodes as an array
   static async getEpisodes() {
     return axios
-      .get(`${apiRoot}api/episodes`)
+      .get(`${apiRoot}episodes`)
       .then((res) => res.data)
       .catch((err) => console.log(err));
   }
@@ -33,7 +31,7 @@ class Game {
 
   static async getSurvivorHelper(request) {
     return axios
-      .get(`${apiRoot}api/${request}`)
+      .get(`${apiRoot}${request}`)
       .then((res) => res.data)
       .then(async (survivors) => {
         const episodes = await this.getEpisodes();
@@ -108,7 +106,7 @@ class Game {
 
   static async getPlayerHelper(request) {
     return axios
-      .get(`${apiRoot}api/${request}`)
+      .get(`${apiRoot}${request}`)
       .then((res) => res.data)
       .then(async (players) => {
         const episodes = await this.getEpisodes();
@@ -219,7 +217,7 @@ class Game {
     }
 
     return axios
-      .get(`${apiRoot}api/player/${playerName}/login/${password}`)
+      .get(`${apiRoot}player/${playerName}/login/${password}`)
       .then((res) => {
         if (res.data && res.data.name === playerName) {
           return { accepted: playerName };
@@ -235,7 +233,7 @@ class Game {
   // get tribe by name
   static async getTribe(tribeName) {
     return axios
-      .get(`${apiRoot}api/tribe/${tribeName}`)
+      .get(`${apiRoot}tribe/${tribeName}`)
       .then((res) => res.data[0])
       .catch((err) => console.log(err));
   }
@@ -250,7 +248,7 @@ class Game {
   // get all tribes as an array
   static async getTribes() {
     return axios
-      .get(`${apiRoot}api/tribes`)
+      .get(`${apiRoot}tribes`)
       .then((res) => res.data)
       .catch((err) => console.log(err));
   }
@@ -370,7 +368,7 @@ class Game {
   static async getSideBets() {
     return this.getEpisodes().then(async (episodes) => {
       var players = await axios
-        .get(`${apiRoot}api/players`)
+        .get(`${apiRoot}players`)
         .then((res) => res.data);
       return this.getSideBetsHelper(episodes, players);
     });
@@ -475,28 +473,28 @@ class Game {
   // add new episode
   static async AddEpisode(newEpisode) {
     return axios
-      .post(`${apiRoot}api/episode/new`, newEpisode)
+      .post(`${apiRoot}episode/new`, newEpisode)
       .catch((err) => console.log(err));
   }
 
   // update episode
   static async UpdateEpisode(updatedEpisode) {
     return axios
-      .post(`${apiRoot}api/episode/update`, updatedEpisode)
+      .post(`${apiRoot}episode/update`, updatedEpisode)
       .catch((err) => console.log(err));
   }
 
   // submit draft picks
   static async submitDraft(playerName, draftPicks) {
     return axios
-      .post(`${apiRoot}api/player/${playerName}/draft`, draftPicks)
+      .post(`${apiRoot}player/${playerName}/draft`, draftPicks)
       .catch((err) => console.log(err));
   }
 
   // update player survivor pick
   static async updateSurvivorPick(playerName, survivorName) {
     return axios
-      .post(`${apiRoot}api/player/${playerName}/changesurvivor/${survivorName}`)
+      .post(`${apiRoot}player/${playerName}/changesurvivor/${survivorName}`)
       .catch((err) => console.log(err));
   }
 
@@ -510,7 +508,7 @@ class Game {
     }
 
     return axios
-      .post(`${apiRoot}api/player/${playerName}/password`, {
+      .post(`${apiRoot}player/${playerName}/password`, {
         newPassword,
       })
       .then(() => "success")
@@ -520,7 +518,7 @@ class Game {
   // update player color
   static async updateColor(playerName, newColor) {
     return axios
-      .post(`${apiRoot}api/player/${playerName}/color`, {
+      .post(`${apiRoot}player/${playerName}/color`, {
         newColor,
       })
       .catch((err) => console.log(err));

@@ -275,7 +275,6 @@ export default class Episode {
         var taggedName = note.split(" ")[0].substring(1);
         var fullName = allNames.find((name) => name.startsWith(taggedName));
         if (!fullName) {
-          console.log(`No player found with name ${taggedName}`);
           return;
         }
         var afterTag = note.split(`@${taggedName} `)[1];
@@ -443,7 +442,6 @@ export default class Episode {
 
   // has the episode aired
   get aired() {
-    // console.log([this.airDate, new Date(), this.airDate < new Date()]);
     return this.airDate < DateTime.now();
   }
 
