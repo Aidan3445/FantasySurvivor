@@ -40,7 +40,7 @@ export default function SurvivorPage(props) {
         <div>
           {survivor.stats ? <SurvivorStats stats={survivor.stats} /> : null}
           <div
-            className="tribe-label centered"
+            className="color-label centered"
             style={{ background: tribeColor }}
           >
             {survivor.tribe}

@@ -83,7 +83,7 @@ function LoginContent(props) {
       </div>
       <br />
       <div className="inline-div">
-        Save Login
+        Remember Me
         <div
           className={`toggle ${saveLogin ? "on" : "off"}`}
           onClick={() => setSaveLogin(!saveLogin)}

@@ -60,7 +60,7 @@ export default function HomePage() {
     return {
       data: [
         player.name,
-        player.survivorList.length > 0
+        player.survivorList[player.survivorList.length - 1]?.name
           ? player.survivorList[player.survivorList.length - 1].name
           : "None",
         player.stats.points,

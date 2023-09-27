@@ -5,7 +5,6 @@ function DraftOrder(props) {
 
   var drafted = [];
   var notDrafted = [];
-  var upNext = null;
   draftOrder.forEach((p) => {
     if (p.player.survivorList.length === 0) {
       notDrafted.push(p);
@@ -13,14 +12,13 @@ function DraftOrder(props) {
       drafted.push(p);
     }
   });
-  upNext = notDrafted.shift();
 
   const getStyle = (p) => {
     return {
       fontWeight:
         p.player.draft.order <=
         draftOrder.findIndex((p2) => p2.player.survivorList.length === 0)
-          ? "bold"
+          ? "700"
           : "normal",
       fontStyle: p.value === player.name ? "italic" : "normal",
       backgroundColor: p.player.color,
@@ -34,27 +32,23 @@ function DraftOrder(props) {
           <div className="survivor-header">Drafted</div>
           {drafted.map((p) => {
             return (
-              <div className="tribe-label" key={p.value} style={getStyle(p)}>
-                {p.player.draft.order}. {p.value}:{" "}
-                {p.player.survivorList[0].name}
+              <div
+                className="color-label inline-div"
+                key={p.value}
+                style={getStyle(p)}
+              >
+                {p.player.draft.order}. {p.value}:
+                <div className="sub-label">{p.player.survivorList[0].name}</div>
               </div>
             );
           })}
         </div>
       )}
-      {upNext && (
-        <div>
-          <div className="survivor-header">Up Next</div>
-          <div className="tribe-label" style={getStyle(upNext)}>
-            {upNext.player.draft.order}. {upNext.value}
-          </div>
-        </div>
-      )}
       {notDrafted.length > 0 && (
         <div>
-          <div className="survivor-header">Not Drafted</div>
+          <div className="survivor-header">Up Next</div>
           {notDrafted.map((p) => (
-            <div className="tribe-label" key={p.value} style={getStyle(p)}>
+            <div className="color-label" key={p.value} style={getStyle(p)}>
               {p.player.draft.order}. {p.value}
             </div>
           ))}

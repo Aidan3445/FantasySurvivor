@@ -119,6 +119,8 @@ app.post("/api/player/:name/draft", (req, res) => {
   Player.findOne({ name: name })
     .then((player) => {
       if (player) {
+        if (player.draft.survivor !== "")
+          console.log(`${player.name} already drafted`);
         player.draft = draft;
         player.survivorList = [draft.survivor];
         player
