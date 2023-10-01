@@ -1,23 +1,40 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
-import { SketchPicker } from "react-color";
+import { HexColorPicker } from "react-colorful";
 import Game from "../fantasy/game";
 import Episode from "../fantasy/episode.js";
 
 function Modal(props) {
   var { isOpen, closeModal, content } = props;
-  if (!isOpen) return null;
+
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (isOpen && e.key === "Escape") {
+        closeModal();
+        document.activeElement.blur();
+      }
+    };
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [isOpen]);
 
   return (
-    <div>
-      <div className="modal-content">
-        <span className="close" onClick={closeModal}>
-          &times;
-        </span>
-        {content}
-      </div>
-      <div className="modal-greyout" />
-    </div>
+    <>
+      {isOpen && (
+        <div>
+          <div className="modal-content">
+            <span className="close" onClick={closeModal}>
+              &times;
+            </span>
+            {content}
+          </div>
+          <div className="modal-greyout" />
+        </div>
+      )}
+    </>
   );
 }
 
@@ -182,19 +199,19 @@ function ColorModalContent(props) {
   };
 
   const handleColorChange = (color) => {
-    setLocalColor(color.hex);
+    setLocalColor(color);
   };
 
   return (
     <div className="centered">
       <div className="survivor-header">Change Color</div>
       <div className="centered">
-        <SketchPicker
+        <HexColorPicker
           styles={{
             default: {
               picker: {
                 position: "relative",
-                width: "!important",
+                width: "100%",
               },
             },
           }}

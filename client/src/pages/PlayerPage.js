@@ -5,12 +5,8 @@ import Game from "../fantasy/game";
 import PlayerStats from "../components/PlayerStatsComp";
 import SideBets from "../components/SideBetsComp";
 import Scoreboard from "../components/ScoreboardComp";
-import Modal, {
-  ColorModalContent,
-  PasswordModalContent,
-  SurvivorSelectContent,
-} from "../components/ModalComp";
 import SurvivorPage from "./SurvivorPage";
+import PlayerEdit from "../components/PlayerEditComp";
 
 export default function PlayerPage(props) {
   var { loggedIn, playerName } = props;
@@ -39,15 +35,6 @@ export default function PlayerPage(props) {
       }
 
       setPlayer(player);
-      if (player.stats.needsSurvivor) {
-        openModal(
-          <SurvivorSelectContent
-            player={player}
-            setNewSurvivor={setNewSurvivor}
-            setModalOpen={setModalOpen}
-          />
-        );
-      }
 
       Game.getSideBets().then((bets) => {
         setBetOutcomes(bets);
@@ -98,112 +85,13 @@ export default function PlayerPage(props) {
     return [clickName];
   };
 
-  var [modalOpen, setModalOpen] = useState(false);
-  var [modalContent, setModalContent] = useState(null);
-
-  const setColor = (color) => {
-    setPlayer({ ...player, color });
-  };
-
-  const setNewSurvivor = (survivor) => {
-    setPlayer({
-      ...player,
-      survivorList: [...player.survivorList.slice(0, -1), survivor],
-    });
-  };
-
-  const openModal = (content) => {
-    setModalContent(content);
-    setModalOpen(true);
-  };
-
-  const closeModal = () => {
-    if (player.stats.needsSurvivor) return;
-    setModalContent(null);
-    setModalOpen(false);
-  };
-
   return (
     <div className="content">
       <div className="flex-div">
-        <div className="centered">
-          <div
-            className="survivor-header"
-            onClick={() => {
-              if (player.isAdmin && loggedIn === playerName)
-                navigate("/DataEntry");
-            }}
-          >
-            {player.name}
-          </div>
-          {loggedIn === playerName ? (
-            <div className="vertical-div">
-              <br />
-              <button
-                className="survivor-button width-100"
-                style={{ "--noHoverColor": player.color }}
-                onClick={() => {
-                  openModal(
-                    <SurvivorSelectContent
-                      player={player}
-                      setNewSurvivor={setNewSurvivor}
-                      setModalOpen={setModalOpen}
-                    />
-                  );
-                }}
-              >
-                Change Survivor
-              </button>
-              <div className="inline-div">
-                <button
-                  className="survivor-button width-100"
-                  style={{ "--noHoverColor": player.color }}
-                  onClick={() => {
-                    openModal(
-                      <ColorModalContent
-                        color={player.color}
-                        setColor={setColor}
-                        playerName={player.name}
-                        setModalOpen={setModalOpen}
-                      />
-                    );
-                  }}
-                >
-                  Change Color
-                </button>
-                <button
-                  className="survivor-button width-100"
-                  style={{ "--noHoverColor": player.color }}
-                  onClick={() =>
-                    openModal(
-                      <PasswordModalContent
-                        playerName={player.name}
-                        setModalOpen={setModalOpen}
-                      />
-                    )
-                  }
-                >
-                  Change Password
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="survivor-body">
-              <br />
-              <div>Log in to choose a new survivor</div>
-              <div>or to edit your color and password.</div>
-            </div>
-          )}
-        </div>
+        <PlayerEdit player={player} setPlayer={setPlayer} loggedIn={loggedIn} />
         {player.stats && <PlayerStats stats={player.stats} />}
-        {player.draft && (
-          <SideBets
-            bets={player.draft}
-            outcomes={betOutcomes}
-            openModal={openModal}
-          />
-        )}
       </div>
+      {player.draft && <SideBets bets={player.draft} outcomes={betOutcomes} />}
       <Scoreboard
         headers={episodeHeaders}
         entries={episodeEntries}
@@ -224,11 +112,6 @@ export default function PlayerPage(props) {
           point info.
         </div>
       )}
-      <Modal
-        isOpen={modalOpen}
-        closeModal={closeModal}
-        content={modalContent}
-      />
     </div>
   );
 }

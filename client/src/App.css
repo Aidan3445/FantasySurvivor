@@ -131,8 +131,9 @@
 }
 
 .survivor-button:hover {
+  color: black !important;
   background-color: rgb(230, 255, 233);
-  transition: background-color 0.4s ease;
+  transition: all 0.4s ease;
 }
 
 /* info button */
@@ -229,7 +230,7 @@
   border: #000 solid 2px;
 
   .sub-label {
-    font-size: .75em;
+    font-size: 0.75em;
     font-weight: 100;
   }
 }
@@ -449,6 +450,10 @@ s .scoreboard tbody {
   text-wrap: wrap;
 }
 
+.modal-content .react-colorful {
+  width: 100%;
+}
+
 .close {
   position: absolute;
   top: 10px;
@@ -539,7 +544,7 @@ hr {
 
   .survivor-button {
     font-family: "Survivor";
-    font-size: .75em;
+    font-size: 0.75em;
     color: black;
     border: 1px solid black;
     border-radius: 5px; /* Add rounded corners */

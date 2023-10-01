@@ -1,5 +1,6 @@
 import axios from "axios";
 import Episode from "./episode";
+import tinyColor from "tinycolor2";
 
 const apiRoot =
   process.env.NODE_ENV === "production"
@@ -533,6 +534,11 @@ class Game {
         resolve({ players: playerId, survivors: survivorId });
       }, 10);
     });
+  }
+
+  // determine if a color is light or dark
+  static isLightColor(color) {
+    return tinyColor(color).isLight();
   }
   //#endregion
 }
