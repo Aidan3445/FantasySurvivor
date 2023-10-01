@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Game from "../fantasy/game";
 
 function Scoreboard(props) {
   var { headers, entries, handleSelect } = props;
@@ -12,6 +13,14 @@ function Scoreboard(props) {
 
   const clearSelected = () => {
     setSelected(handleSelect([""], ""));
+  };
+
+  const getStyle = (entry) => {
+    return {
+      color: Game.isLightColor(entry.color) ? "black" : "white",
+      backgroundColor: entry.color,
+      fontStyle: selected.includes(entry.data[0]) ? "italic" : "normal",
+    };
   };
 
   return (
@@ -32,10 +41,7 @@ function Scoreboard(props) {
             className="clickable"
             onClick={() => handleClick(entry.data[0])}
             key={index}
-            style={{
-              backgroundColor: entry.color,
-              fontStyle: selected.includes(entry.data[0]) ? "italic" : "normal",
-            }}
+            style={getStyle(entry)}
           >
             <td key={index}>{index + 1}</td>
             {entry.data.map((cell, index) => (
