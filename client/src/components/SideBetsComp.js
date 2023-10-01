@@ -1,5 +1,5 @@
 import React from "react";
-import InfoButton from "./InfoButton";
+import InfoButton from "./InfoButtonComp";
 
 function SideBets(props) {
   var { bets, outcomes } = props;
