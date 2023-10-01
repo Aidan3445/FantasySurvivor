@@ -12,7 +12,7 @@ function SurvivorInfo(props) {
       <h3>Job: {survivor.job}</h3>
       <h3>
         <a href={survivor.interview} rel="noreferrer" target="_blank">
-          EW Interview
+          Wiki Page
         </a>
       </h3>
     </div>
