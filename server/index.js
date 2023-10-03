@@ -120,8 +120,6 @@ app.post("/api/player/:name/draft", (req, res) => {
   Player.findOne({ name: name })
     .then((player) => {
       if (player) {
-        if (player.draft.survivor !== "")
-          console.log(`${player.name} already drafted`);
         player.draft = draft;
         player.survivorList = [draft.survivor];
         player
@@ -141,8 +139,10 @@ app.get("/api/player/:name/login/:password", (req, res) => {
       if (player) {
         if (player.validPassword(req.params.password)) {
           res.json(player);
+          return;
         }
       }
+      res.json({ error: "Invalid password" });
     })
     .catch((err) => res.json(err));
 });
