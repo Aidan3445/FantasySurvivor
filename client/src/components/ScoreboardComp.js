@@ -45,7 +45,7 @@ function Scoreboard(props) {
           >
             <td key={index}>{index + 1}</td>
             {entry.data.map((cell, index) => (
-              <td key={index}>{cell}</td>
+              <td key={index}>{Number.isNaN(cell) ? null : cell}</td>
             ))}
           </tr>
         ))}
