@@ -29,12 +29,13 @@ function drawChart(data, canvasId) {
   // height off the bottom of the canvas
   // the distance on the right of the canvas is 1/2 this value
   var chartOffset = 100;
+  // set line dash
+  context.setLineDash([5, 5]);
 
   // X axis
   context.beginPath();
   context.strokeStyle = "darkgray";
   context.lineWidth = 5;
-  context.setLineDash([5, 5]);
   context.moveTo(0, canvasHeight - chartOffset);
   context.lineTo(canvasWidth - chartOffset / 2, canvasHeight - chartOffset);
   context.stroke();
@@ -48,14 +49,10 @@ function drawChart(data, canvasId) {
   context.beginPath();
   context.strokeStyle = "darkgray";
   context.lineWidth = 5;
-  context.setLineDash([5, 5]);
   context.moveTo(canvasWidth - chartOffset / 2, 0);
   context.lineTo(canvasWidth - chartOffset / 2, canvasHeight - chartOffset);
   context.stroke();
   context.closePath();
-
-  // reset dash
-  context.setLineDash([]);
 
   // get graph scale
   const maxValue = Math.max(...data.map((data) => Math.max(...data.data)));
@@ -74,14 +71,18 @@ function drawChart(data, canvasId) {
     context.fillText(i + 1, (i + 1) * scale.x, canvasHeight - chartOffset / 2);
     context.beginPath();
     context.lineWidth = 2;
+    context.setLineDash([5, 5]);
     context.moveTo((i + 1) * scale.x, 0);
     context.lineTo((i + 1) * scale.x, canvasHeight - chartOffset);
     context.stroke();
   }
 
+  // reset dash
+  context.setLineDash([]);
+
   // draw the graph
   data.forEach((data) => {
-    if (data.draw === false) return;
+    if (!data.draw) return;
 
     // convert data to points
     var points = data.data.map((value, episodeIndex) => {
@@ -90,6 +91,11 @@ function drawChart(data, canvasId) {
         y: canvasHeight - chartOffset - value * scale.y,
       };
     });
+
+    // add final point a few pixels to the right of the 
+    // last point to align the edge vertically
+    var lastPoint = points[points.length - 1];
+    points.push({ x: lastPoint.x + 1, y: lastPoint.y });
 
     // draw a full width black line with a thinner colored line on top
     var lines = [
