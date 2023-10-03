@@ -133,10 +133,7 @@ function SurvivorSelectContent(props) {
 
   useEffect(() => {
     Game.getEpisodes().then((episodes) => {
-      if (
-        episodes.length > 0 &&
-        !Episode.fromJSON(episodes[episodes.length - 1]).aired
-      ) {
+      if (episodes.length > 0 && episodes[episodes.length - 1].aired === -1) {
         setCanChange(true);
       }
     });

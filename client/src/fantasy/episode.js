@@ -31,9 +31,7 @@ export default class Episode {
     var episode = new Episode();
     episode.number = json.number;
     episode.title = json.title;
-    episode.airDate = DateTime.fromISO(json.airDate)
-      .set({ hour: 21, minute: 30 })
-      .setZone("America/New_York");
+    episode.airDate = json.airDate;
     episode.advsFound = json.advsFound;
     episode.advPlaysSelf = json.advPlaysSelf;
     episode.advPlaysOther = json.advPlaysOther;
@@ -442,7 +440,15 @@ export default class Episode {
 
   // has the episode aired
   get aired() {
-    return this.airDate < DateTime.now();
+    var episodeStart = DateTime.fromISO(this.airDate)
+      .set({ hour: 21, minute: 30 })
+      .setZone("America/New_York");
+    var episodeEnd = episodeStart.plus({ hours: 1, minutes: 30 });
+    var now = DateTime.now().setZone("America/New_York");
+
+    if (now < episodeStart) return -1;
+    if (now > episodeEnd) return 1;
+    return 0;
   }
 
   // component helpers

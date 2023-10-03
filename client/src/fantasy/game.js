@@ -13,7 +13,7 @@ class Game {
   static async getEpisodes() {
     return axios
       .get(`${apiRoot}episodes`)
-      .then((res) => res.data)
+      .then((res) => res.data.map((ep) => Episode.fromJSON(ep)))
       .catch((err) => console.log(err));
   }
 
@@ -62,29 +62,30 @@ class Game {
 
     var airedCount = 0;
 
-    episodes.forEach((epData) => {
-      var episode = Episode.fromJSON(epData);
-      var points = episode.getPoints(survivor);
+    episodes
+      .filter((episode) => episode.aired >= 0)
+      .forEach((episode) => {
+        var points = episode.getPoints(survivor);
 
-      stats.points += points;
-      stats.episodeTotals.push(points);
+        stats.points += points;
+        stats.episodeTotals.push(points);
 
-      var indivWins = episode.indivWins.filter((val) => val === name);
-      stats.indivWins += indivWins.length;
-      stats.wins += indivWins.length;
+        var indivWins = episode.indivWins.filter((val) => val === name);
+        stats.indivWins += indivWins.length;
+        stats.wins += indivWins.length;
 
-      var tribeWins = episode.tribe1sts.filter(
-        (val) => val === name || val === tribe
-      );
-      stats.tribeWins += tribeWins.length;
-      stats.wins += tribeWins.length;
+        var tribeWins = episode.tribe1sts.filter(
+          (val) => val === name || val === tribe
+        );
+        stats.tribeWins += tribeWins.length;
+        stats.wins += tribeWins.length;
 
-      stats.eliminated = episode.eliminated.includes(name)
-        ? episode.number
-        : stats.eliminated;
+        stats.eliminated = episode.eliminated.includes(name)
+          ? episode.number
+          : stats.eliminated;
 
-      if (episode.aired) airedCount++;
-    });
+        if (episode.aired === 1) airedCount++;
+      });
 
     stats.ppe = stats.points / airedCount;
 
@@ -144,20 +145,24 @@ class Game {
 
     var survivorScores = [];
     var survivalPoints = 0;
-    for (var i = 0; i < Math.min(survivors.length, episodes.length); i++) {
+    for (
+      var i = 0;
+      i < episodes.findLastIndex((episode) => episode.aired >= 0) + 1;
+      i++
+    ) {
       var survivor = survivors[i];
       if (!survivor) {
         stats.needsSurvivor = true;
         continue;
       }
 
-      var episode = Episode.fromJSON(episodes[i]);
+      var episode = episodes[i];
 
       var performancePoints = episode.getPoints(survivor);
       stats.performancePoints += performancePoints;
       stats.performanceByEp.push(performancePoints);
 
-      if (episode.eliminated.includes(survivor.name) || !episode.aired) {
+      if (episode.eliminated.includes(survivor.name) || episode.aired === -1) {
         survivalPoints = 0;
       } else {
         survivalPoints += 1;
@@ -179,7 +184,7 @@ class Game {
         survivorScores.push({ name: survivor.name, points: performancePoints });
       }
 
-      if (episode.aired) stats.airedCount++;
+      if (episode.aired === 1) stats.airedCount++;
     }
 
     if (survivors.length > 0) {
@@ -332,9 +337,13 @@ class Game {
           .map((episode) => ({
             value: episode.number,
             label: `${episode.number}: ${episode.title} (${
-              new Date(episode.airDate) < new Date() ? "Aired" : "Not Aired"
+              episode.aired === 1
+                ? "Aired"
+                : episode.aired === 0
+                ? "Airing"
+                : "Not Aired"
             })`,
-            episode: Episode.fromJSON(episode),
+            episode: episode,
           }))
           .concat({ value: 0, label: "New Episode", episode: null }),
       };
@@ -453,8 +462,6 @@ class Game {
         }
       });
     });
-
-    // console.log(advCounter);
 
     mostAdvantages = Object.keys(advCounter).reduce((most, survivor) => {
       console.log(most[0]);

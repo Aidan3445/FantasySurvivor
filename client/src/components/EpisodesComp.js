@@ -28,26 +28,25 @@ function Episodes(props) {
 
 function EpisodeComp(props) {
   var { episode, survivor, picked } = props;
-  var ep = Episode.fromJSON(episode);
   useEffect(() => {}, [episode]);
 
   return (
     <div style={{ backgroundColor: picked ? "rgb(230, 255, 233)" : "" }}>
       <div className="inline-div">
-        <div className="survivor-header">Episode {ep.number}</div>
+        <div className="survivor-header">Episode {episode.number}</div>
         <div className="survivor-body centered">
-          <div>Points Earned: {ep.getPoints(survivor)}</div>
+          <div>Points Earned: {episode.getPoints(survivor)}</div>
           <hr className="min-height" />
-          <div>"{ep.title}"</div>
+          <div>"{episode.title}"</div>
         </div>
-        {ep.eliminated.includes(survivor.name) && (
+        {episode.eliminated.includes(survivor.name) && (
           <div className="eliminated">Eliminated</div>
         )}
       </div>
       <div>
-        <EpisodeNotes episode={ep} survivor={survivor} />
+        <EpisodeNotes episode={episode} survivor={survivor} />
       </div>
-      <EpisodeTable episode={ep} survivor={survivor} />
+      <EpisodeTable episode={episode} survivor={survivor} />
     </div>
   );
 }

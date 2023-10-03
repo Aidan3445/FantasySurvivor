@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Game from "../fantasy/game";
 import Modal, {
   ColorModalContent,
@@ -22,6 +23,8 @@ function PlayerEdit(props) {
       );
     }
   }, [player]);
+
+  const navigate = useNavigate();
 
   const openModal = (content) => {
     setModalContent(content);
