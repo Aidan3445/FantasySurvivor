@@ -8,7 +8,7 @@ function SideBets(props) {
     if (outcome.length === 0) {
       return {};
     }
-    if (outcome.includes(bet)) {
+    if (outcome.some((o) => o.names.includes(bet))) {
       return { color: "green" };
     }
     return { color: "red" };
@@ -23,28 +23,40 @@ function SideBets(props) {
       <div className="inline-div">
         <h4
           className={outcomes.firstBoot.length > 0 ? "tooltip" : ""}
-          data-tooltip={outcomes.firstBoot}
+          data-tooltip={outcomes.firstBoot.reduce(
+            (acc, curr) => acc.concat(curr.names),
+            []
+          )}
           style={getColor(outcomes.firstBoot, bets.firstBoot)}
         >
           First Boot: {bets.firstBoot}
         </h4>
         <h4
           className={outcomes.firstJurror.length > 0 ? "tooltip" : ""}
-          data-tooltip={outcomes.firstJurror}
+          data-tooltip={outcomes.firstJurror.reduce(
+            (acc, curr) => acc.concat(curr.names),
+            []
+          )}
           style={getColor(outcomes.firstJurror, bets.firstJurror)}
         >
           First Jurror: {bets.firstJurror}
         </h4>
         <h4
           className={outcomes.mostAdvantages.length > 0 ? "tooltip" : ""}
-          data-tooltip={outcomes.mostAdvantages}
+          data-tooltip={outcomes.mostAdvantages.reduce(
+            (acc, curr) => acc.concat(curr.names),
+            []
+          )}
           style={getColor(outcomes.mostAdvantages, bets.mostAdvantages)}
         >
           Most Advantages: {bets.mostAdvantages}
         </h4>
         <h4
           className={outcomes.winner.length > 0 ? "tooltip" : ""}
-          data-tooltip={outcomes.winner}
+          data-tooltip={outcomes.winner.reduce(
+            (acc, curr) => acc.concat(curr.names),
+            []
+          )}
           style={getColor(outcomes.winner, bets.winner)}
         >
           Winner: {bets.winner}
@@ -53,17 +65,24 @@ function SideBets(props) {
           className={
             outcomes.mostIndividualImmunities.length > 0 ? "tooltip" : ""
           }
-          data-tooltip={outcomes.mostIndividualImmunities}
+          data-tooltip={outcomes.mostIndividualImmunities.reduce(
+            (acc, curr) => acc.concat(curr.names),
+            []
+          )}
           style={getColor(
             outcomes.mostIndividualImmunities,
             bets.mostIndividualImmunities
           )}
         >
-          Most Individual Imms: {bets.mostIndividualImmunities}
+          Most Individual Imms:{" "}
+          {bets.mostIndividualImmunities}
         </h4>
         <h4
           className={outcomes.firstLoser.length > 0 ? "tooltip" : ""}
-          data-tooltip={outcomes.firstLoser}
+          data-tooltip={outcomes.firstLoser.reduce(
+            (acc, curr) => acc.concat(curr.names),
+            []
+          )}
           style={getColor(outcomes.firstLoser, bets.firstLoser)}
         >
           First Loser: {bets.firstLoser}

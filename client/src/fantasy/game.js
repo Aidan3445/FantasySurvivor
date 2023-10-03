@@ -118,23 +118,15 @@ class Game {
             return survivors.find((survivor) => survivor.name === survivorName);
           });
           player.survivorList = survivorList;
-          player.stats = this.playerStats(episodes, survivorList);
-          player.stats.betHits = Object.keys(bets).reduce((acc, bet) => {
-            if (bets[bet].includes(player.draft[bet])) {
-              player.stats.points += 10;
-              acc++;
-            }
-            return acc;
-          }, 0);
-          player.stats.episodeTotals[player.stats.episodeTotals.length - 1] +=
-            10 * player.stats.betHits;
+          player.stats = this.playerStats(player, episodes, bets);
           return player;
         });
       })
       .catch((err) => console.log(err));
   }
 
-  static playerStats(episodes, survivors) {
+  static playerStats(player, episodes, bets) {
+    var survivors = player.survivorList;
     var stats = {
       points: 0,
       survivalPoints: 0,
@@ -208,6 +200,21 @@ class Game {
       stats.episodeTotals = this.getRunningPoints(stats.episodeTotals);
     }
 
+    Object.keys(bets).forEach((bet) => {
+      if (bets[bet].length === 0) return;
+
+      bets[bet].forEach((hits) => {
+        if (hits.names.includes(player.draft[bet])) {
+          stats.points += 10;
+          stats.episodeTotals.forEach((_, i) => {
+            if (i >= hits.episodeIndex) {
+              stats.episodeTotals[i] += 10;
+            }
+          });
+          stats.betHits++;
+        }
+      });
+    });
     return stats;
   }
 
@@ -388,57 +395,103 @@ class Game {
 
     episodes.forEach((episode) => {
       if (episode.eliminated.length > 0) {
-        if (episode.number === 1) firstBoot.push(episode.eliminated[0]);
-        if (episode.merged) firstJurror.push(episode.eliminated[0]);
+        if (episode.number === 1) {
+          firstBoot = [{ episodeIndex: 0, names: episode.eliminated }];
+        }
+        if (episode.merged) {
+          firstJurror = [
+            { episodeIndex: episode.number - 1, names: episode.eliminated },
+          ];
+        }
       }
-      if (episode.soleSurvivor.length > 0) winner.push(episode.soleSurvivor[0]);
+
+      if (episode.soleSurvivor.length > 0) {
+        winner = [
+          { episodeIndex: episode.number - 1, names: episode.soleSurvivor },
+        ];
+      }
 
       episode.advsFound.forEach((foundBy) => {
         if (advCounter[foundBy]) {
-          advCounter[foundBy]++;
+          advCounter[foundBy].episodeIndex = episode.number - 1;
+          advCounter[foundBy].count++;
         } else {
-          advCounter[foundBy] = 1;
+          advCounter[foundBy] = {
+            episodeIndex: episode.number - 1,
+            count: 1,
+          };
         }
       });
 
       episode.indivWins.forEach((wonBy) => {
         if (indivImmCounter[wonBy]) {
-          indivImmCounter[wonBy]++;
+          indivImmCounter[wonBy].episodeIndex = episode.number - 1;
+          indivImmCounter[wonBy].count++;
         } else {
-          indivImmCounter[wonBy] = 1;
+          indivImmCounter[wonBy] = {
+            episodeIndex: episode.number - 1,
+            count: 1,
+          };
         }
       });
 
       if (firstLoser.length > 0) return;
       episode.eliminated.forEach((eliminated) => {
-        var loser = players.find((player) =>
+        var losers = players.filter((player) =>
           player.survivorList[episode.number - 1]
             ? player.survivorList[episode.number - 1].name === eliminated
             : false
         );
-        if (loser) firstLoser.push(loser.name);
+        if (losers.length > 0) {
+          firstLoser = [
+            {
+              episodeIndex: episode.number - 1,
+              names: losers.map((loser) => loser.name),
+            },
+          ];
+          return;
+        }
       });
     });
 
+    // console.log(advCounter);
+
     mostAdvantages = Object.keys(advCounter).reduce((most, survivor) => {
-      var mostCount = most[0] ? advCounter[most[0]] : 1;
-      if (advCounter[survivor] > mostCount) {
-        return [survivor];
+      console.log(most[0]);
+      var mostCount = most[0] ? advCounter[most[0].names[0]].count : 1;
+      if (advCounter[survivor].count > mostCount) {
+        return [
+          {
+            episodeIndex: advCounter[survivor].episodeIndex,
+            names: [survivor],
+          },
+        ];
       }
-      if (advCounter[survivor] === mostCount) {
-        return most.concat(survivor);
+      if (advCounter[survivor].count === mostCount) {
+        return most.concat({
+          episodeIndex: advCounter[survivor].episodeIndex,
+          names: [survivor],
+        });
       }
       return most;
     }, []);
 
     mostIndividualImmunities = Object.keys(indivImmCounter).reduce(
       (most, survivor) => {
-        var mostCount = most[0] ? indivImmCounter[most[0]] : 1;
-        if (indivImmCounter[survivor] > mostCount) {
-          return [survivor];
+        var mostCount = most[0] ? indivImmCounter[most[0]].count : 1;
+        if (indivImmCounter[survivor].count > mostCount) {
+          return [
+            {
+              episodeIndex: indivImmCounter[survivor].episodeIndex,
+              names: [survivor],
+            },
+          ];
         }
-        if (indivImmCounter[survivor] === mostCount) {
-          return most.concat(survivor);
+        if (indivImmCounter[survivor].count === mostCount) {
+          return most.concat({
+            episodeIndex: indivImmCounter[survivor].episodeIndex,
+            names: [survivor],
+          });
         }
         return most;
       },
@@ -449,8 +502,8 @@ class Game {
       firstBoot,
       firstJurror,
       winner,
-      mostAdvantages,
-      mostIndividualImmunities,
+      mostAdvantages: mostAdvantages,
+      mostIndividualImmunities: mostIndividualImmunities,
       firstLoser,
     };
   }
