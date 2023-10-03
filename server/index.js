@@ -1,8 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-require("dotenv").config();
+const env = require("dotenv");
 
+env.config();
 const app = express();
 
 const Episode = require("./models/EpisodeModel");
@@ -135,8 +136,14 @@ app.post("/api/player/:name/draft", (req, res) => {
     .catch((err) => res.json(err));
 });
 app.get("/api/player/:name/login/:password", (req, res) => {
-  Player.findOne({ name: req.params.name, password: req.params.password })
-    .then((players) => res.json(players))
+  Player.findOne({ name: req.params.name })
+    .then((player) => {
+      if (player) {
+        if (player.validPassword(req.params.password)) {
+          res.json(player);
+        }
+      }
+    })
     .catch((err) => res.json(err));
 });
 app.post("/api/player/:playerName/changesurvivor/:survivorName", (req, res) => {
@@ -162,7 +169,7 @@ app.post("/api/player/:name/password", (req, res) => {
   Player.findOne({ name: name })
     .then((player) => {
       if (player) {
-        player.password = newPassword;
+        player.password = player.generateHash(newPassword);
         player
           .save()
           .then((player) => res.json(player))

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const draftSchema = new mongoose.Schema({
   order: {
@@ -65,6 +66,14 @@ const playerSchema = new mongoose.Schema(
   },
   { versionKey: false }
 );
+
+playerSchema.methods.generateHash = function (password) {
+  return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+};
+
+playerSchema.methods.validPassword = function (password) {
+  return bcrypt.compareSync(password, this.password);
+};
 
 const PlayerModel = mongoose.model("players", playerSchema);
 module.exports = PlayerModel;
