@@ -584,6 +584,28 @@ class Game {
       })
       .catch((err) => console.log(err));
   }
+
+  // save login safely
+  static saveLogin(playerName, password) {
+    localStorage.setItem("playerName", playerName);
+    localStorage.setItem("password", password);
+  }
+
+  // remove login safely
+  static removeLogin() {
+    localStorage.removeItem("playerName");
+    localStorage.removeItem("password");
+  }
+
+  // attempt to login with saved credentials
+  static async autoLogin() {
+    var playerName = localStorage.getItem("playerName");
+    var password = localStorage.getItem("password");
+    if (playerName && password) {
+      return this.login(playerName, password);
+    }
+    return { rejected: "No saved credentials" };
+  }
   //#endregion
 
   //#region UTILS

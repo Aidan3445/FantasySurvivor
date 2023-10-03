@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {
-  createBrowserRouter,
-  RouterProvider,
-  useNavigate,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Game from "./fantasy/game";
 import "./App.css";
 
 import HomePage from "./pages/HomePage";
@@ -14,13 +11,21 @@ import DraftPage from "./pages/DraftPage";
 import Navbar from "./components/NavBarComp";
 
 function App() {
-  var [loggedIn, setLoggedIn] = useState(localStorage.getItem("playerName"));
+  var [loggedIn, setLoggedIn] = useState("");
 
   const handleLogin = (playerName) => {
     setLoggedIn(playerName);
-    if (!playerName) localStorage.removeItem("playerName");
+    if (!playerName) Game.removeLogin();
   };
 
+  useEffect(() => {
+    if (loggedIn) return;
+    Game.autoLogin().then((res) => {
+      if (res.accepted) {
+        setLoggedIn(res.accepted);
+      }
+    });
+  }, []);
   const router = createBrowserRouter([
     {
       path: "/",

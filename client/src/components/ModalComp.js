@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { HexColorPicker } from "react-colorful";
 import Game from "../fantasy/game";
-import Episode from "../fantasy/episode.js";
 
 function Modal(props) {
   var { isOpen, closeModal, content } = props;
@@ -54,7 +53,7 @@ function LoginContent(props) {
       if (res.accepted) {
         setLoggedIn(playerName);
         if (saveLogin) {
-          localStorage.setItem("playerName", playerName);
+          Game.saveLogin(playerName, password);
         }
         setModalOpen(false);
         return;
@@ -261,7 +260,6 @@ function PasswordModalContent(props) {
             <input
               className="text-input"
               type="text"
-              name="newPassword"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
             />
@@ -271,7 +269,6 @@ function PasswordModalContent(props) {
             <input
               className="text-input"
               type="text"
-              name="confirmNewPassword"
               value={confirmNewPassword}
               onChange={(e) => setConfirmNewPassword(e.target.value)}
             />

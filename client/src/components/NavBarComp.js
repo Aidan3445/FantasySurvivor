@@ -8,7 +8,7 @@ import Modal, { LoginContent } from "../components/ModalComp";
 function Navbar(props) {
   var { loggedIn, setLoggedIn } = props;
   var [isNavbarVisible, setNavbarVisible] = useState(true);
-  var [modalOpen, setModalOpen] = useState(!loggedIn);
+  var [modalOpen, setModalOpen] = useState(false);
   var [menuOpen, setMenuOpen] = useState(false);
 
   var [menuOptions, setMenuOptions] = useState({});
@@ -44,6 +44,10 @@ function Navbar(props) {
     setMenuOpen(false);
   }, [useLocation()]);
 
+  useEffect(() => {
+    setModalOpen(!loggedIn);
+  }, [loggedIn]);
+
   const logInOut = () => {
     if (loggedIn) {
       setLoggedIn("");
@@ -53,7 +57,7 @@ function Navbar(props) {
     setModalOpen(true);
   };
 
-  var navButtonStyle = { "--noHoverColor": "#7a7a7a"};
+  var navButtonStyle = { "--noHoverColor": "#7a7a7a" };
 
   return (
     <div>
