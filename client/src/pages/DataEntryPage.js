@@ -34,7 +34,6 @@ export default function DataEntryPage() {
 
   useEffect(() => {
     var airingNow = values.Episodes.find((ep) => ep.episode.aired === 0);
-    console.log(airingNow);
     if (selectedEpisode) {
       selectEpisode(
         values.Episodes.find((ep) => ep.value === selectedEpisode.value)

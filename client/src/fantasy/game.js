@@ -464,7 +464,6 @@ class Game {
     });
 
     mostAdvantages = Object.keys(advCounter).reduce((most, survivor) => {
-      console.log(most[0]);
       var mostCount = most[0] ? advCounter[most[0].names[0]].count : 1;
       if (advCounter[survivor].count > mostCount) {
         return [

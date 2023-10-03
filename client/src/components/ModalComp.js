@@ -58,6 +58,7 @@ function LoginContent(props) {
         setModalOpen(false);
         return;
       }
+
       setWarningText(res.rejected);
       setTimeout(() => {
         setWarningText("");
