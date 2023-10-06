@@ -16,6 +16,7 @@ export default function DataEntryPage() {
   React.useEffect(() => {
     Game.getDataEntryValues().then((values) => {
       setValues(values);
+      console.log(values);
     });
   }, []);
 
@@ -33,7 +34,7 @@ export default function DataEntryPage() {
   };
 
   useEffect(() => {
-    var airingNow = values.Episodes.find((ep) => ep.episode.aired === 0);
+    var airingNow = values.Episodes.find((ep) => ep.episode !== null && ep.episode.aired === 0);
     if (selectedEpisode) {
       selectEpisode(
         values.Episodes.find((ep) => ep.value === selectedEpisode.value)
