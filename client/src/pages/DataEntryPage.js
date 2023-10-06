@@ -16,7 +16,6 @@ export default function DataEntryPage() {
   React.useEffect(() => {
     Game.getDataEntryValues().then((values) => {
       setValues(values);
-      console.log(values);
     });
   }, []);
 
