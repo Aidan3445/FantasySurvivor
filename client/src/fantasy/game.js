@@ -188,8 +188,6 @@ class Game {
     }
 
     if (survivors.length > 0) {
-      stats.ppe = stats.points / stats.airedCount;
-
       stats.survivorCount = survivorScores.length;
 
       stats.highestScorer = survivorScores.reduce(
@@ -220,6 +218,8 @@ class Game {
         }
       });
     });
+
+    stats.ppe = stats.points / stats.airedCount || 0;
     return stats;
   }
 
