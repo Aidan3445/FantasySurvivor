@@ -34,8 +34,8 @@ To run this project locally, follow these steps:
 2. Navigate to the project folder: `cd [project_folder]`.
 3. Install dependencies for the frontend and backend: `npm install` (repeat this step in both the `client` and `server` folders).
 4. Set up a MongoDB database and configure the connection in the server's `.env` file.
-6. Configure environment variables for the frontend backend (in the `client` folder) (in the `server` folder).
-7. Start the development servers for the frontend and backend: `npm start` (repeat this step in both the `client` and `server` folders).
+6. Configure environment variables for the frontend (in the `client` folder) and backend (in the `server` folder).
+7. Start the development servers for the frontend and backend: `npm start`.
 
 ## Contributing
 
