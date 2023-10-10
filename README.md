@@ -6,19 +6,12 @@ Since season 43 of CBS's Survivor, I have organized a fantasy league in a [Googl
 
 My goal was to create a web application that would automate and enhance the Fantasy Survivor experience for myself and my friends (but mostly myself).
 
-## Features
-
 ### Scoring System
 
 - The application has a Data Entry Page that allows me or any other admin to enter certain events or notes 
 - Users can view their team's current score and ranking within the league.
 
-### League Management
-
-- Users can create their own leagues or join existing leagues created by others.
-- League creators have the ability to set custom rules, such as the number of teams, draft order, and scoring criteria.
-
-## Tech Stack
+## Tech Stack (MERN)
 
 - **Frontend**: Built using React for a responsive user interface.
 - **Backend**: Node.js and Express.js handle server-side logic.
