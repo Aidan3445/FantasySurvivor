@@ -65,6 +65,8 @@ class Game {
     episodes
       .filter((episode) => episode.aired >= 0)
       .forEach((episode) => {
+        if (stats.eliminated) return;
+
         var points = episode.getPoints(survivor);
 
         stats.points += points;
