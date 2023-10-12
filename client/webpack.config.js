@@ -37,7 +37,7 @@ module.exports = {
   plugins: [
     new HTMLWebpackPlugin({
       template: "./src/index.html",
-      favicon: "./src/favicon/icon.ico"
+      favicon: "./src/favicon/icon.ico",
     }),
     new webpack.ProvidePlugin({
       process: "process/browser",
@@ -45,6 +45,7 @@ module.exports = {
     new webpack.DefinePlugin({
       "process.env": JSON.stringify(process.env),
     }),
+    new webpack.optimize.ModuleConcatenationPlugin(),
   ],
   devServer: {
     port: 1234,
