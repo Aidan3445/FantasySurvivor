@@ -145,16 +145,17 @@ class Game {
       needsSurvivor: false,
     };
 
+    var lastAired = episodes.findLastIndex((episode) => episode.aired >= 0);
     var survivorScores = [];
     var survivalPoints = 0;
-    for (
-      var i = 0;
-      i < episodes.findLastIndex((episode) => episode.aired >= 0) + 1;
-      i++
-    ) {
+    for (var i = 0; i <= lastAired + 1; i++) {
+      if (player.name === "Molly") console.log(i);
       var survivor = survivors[i];
-      if (!survivor) {
-        stats.needsSurvivor = true;
+      if (i === lastAired + 1) {
+        if (!survivor) {
+          console.log(player, "needs survivor");
+          stats.needsSurvivor = true;
+        }
         continue;
       }
 

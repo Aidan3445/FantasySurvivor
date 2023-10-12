@@ -57,7 +57,8 @@ export default function PlayerPage(props) {
   const updateEntries = () => {
     return player.survivorList && player.stats && !player.stats.needsSurvivor
       ? player.survivorList.map((survivor, index) => {
-          if (!survivor) return {};
+          if (!survivor)
+            return { data: ["None", 0, 0, 0, 0], color: "grey" };
 
           var performancePoints = player.stats.performanceByEp[index];
           var survivalPoints = player.stats.survivalByEp[index];

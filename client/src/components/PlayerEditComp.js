@@ -13,6 +13,7 @@ function PlayerEdit(props) {
   var [modalContent, setModalContent] = useState(null);
 
   useEffect(() => {
+    console.log("player", player.stats);
     if (player.stats && player.stats.needsSurvivor) {
       openModal(
         <SurvivorSelectContent
