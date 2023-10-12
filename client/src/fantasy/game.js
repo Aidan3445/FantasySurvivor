@@ -204,21 +204,23 @@ class Game {
       stats.episodeTotals = this.getRunningPoints(stats.episodeTotals);
     }
 
-    Object.keys(bets).forEach((bet) => {
-      if (bets[bet].length === 0) return;
+    if (lastAired === episodes.length - 1) {
+      Object.keys(bets).forEach((bet) => {
+        if (bets[bet].length === 0) return;
 
-      bets[bet].forEach((hits) => {
-        if (hits.names.includes(player.draft[bet])) {
-          stats.points += 10;
-          stats.episodeTotals.forEach((_, i) => {
-            if (i >= hits.episodeIndex) {
-              stats.episodeTotals[i] += 10;
-            }
-          });
-          stats.betHits++;
-        }
+        bets[bet].forEach((hits) => {
+          if (hits.names.includes(player.draft[bet])) {
+            stats.points += 10;
+            stats.episodeTotals.forEach((_, i) => {
+              if (i >= hits.episodeIndex) {
+                stats.episodeTotals[i] += 10;
+              }
+            });
+            stats.betHits++;
+          }
+        });
       });
-    });
+    }
 
     stats.ppe = stats.points / stats.airedCount || 0;
     return stats;
