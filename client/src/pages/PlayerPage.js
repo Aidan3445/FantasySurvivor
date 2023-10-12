@@ -92,7 +92,7 @@ export default function PlayerPage(props) {
         <PlayerEdit player={player} setPlayer={setPlayer} loggedIn={loggedIn} />
         {player.stats && <PlayerStats stats={player.stats} />}
       </div>
-      {player.draft && <SideBets bets={player.draft} outcomes={betOutcomes} />}
+      {player.draft && loggedIn === playerName && <SideBets bets={player.draft} outcomes={betOutcomes} />}
       <Scoreboard
         headers={episodeHeaders}
         entries={episodeEntries}
