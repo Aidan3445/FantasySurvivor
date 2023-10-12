@@ -441,7 +441,7 @@ export default class Episode {
   // has the episode aired
   get aired() {
     var episodeStart = DateTime.fromISO(this.airDate)
-      .set({ hour: 21, minute: 30 })
+      .set({ hour: 20 })
       .setZone("America/New_York");
     var episodeEnd = episodeStart.plus({ hours: 1, minutes: 30 });
     var now = DateTime.now().setZone("America/New_York");
