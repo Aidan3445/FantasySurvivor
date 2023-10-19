@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import Game from "../fantasy/game";
 
 import Scoreboard from "../components/ScoreboardComp";
-import Chart from "../components/ChartComp";
-import { useNavigate } from "react-router-dom";
+import Chart from "../components/RechartChartComp";
 
 export default function HomePage() {
   var [survivors, setSurvivors] = useState([]);
@@ -17,8 +16,6 @@ export default function HomePage() {
     players: "noPlayers",
     survivors: "noSurvivors",
   });
-
-  const navigate = useNavigate();
 
   React.useEffect(() => {
     // can optimize this by making one call to a better helper method
@@ -94,6 +91,7 @@ export default function HomePage() {
             selectedNames.length === 0 || selectedNames.includes(member.name),
           data: member.stats.episodeTotals,
           color: member.color,
+          name: member.name,
         };
       })
       .reverse();
@@ -158,7 +156,6 @@ export default function HomePage() {
         <Scoreboard
           headers={eliminationHeaders}
           entries={eliminationEntries}
-          handleSelect={() => []}
         />
       </div>
     </div>

@@ -81,7 +81,9 @@ export default function PlayerPage(props) {
               performancePoints + survivalPoints,
               total,
             ],
-            color: survivor.color,
+            color: survivor.stats.tribeList.findLast(
+              (update) => update.episode <= index
+            ).color,
           };
         })
       : [];

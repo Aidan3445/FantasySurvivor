@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import tinyColor from "tinycolor2";
+import { smallScreen } from "../smallScreen";
 import Game from "../fantasy/game";
 
 function Scoreboard(props) {
@@ -13,20 +14,28 @@ function Scoreboard(props) {
   }, [entries]);
 
   const handleClick = (clickName) => {
+    if (!handleSelect) return;
     setSelected(handleSelect(selected, clickName));
   };
 
   const clearSelected = () => {
+    if (!handleSelect) return;
     setSelected(handleSelect([""], ""));
   };
 
   const getStyle = (entry, index) => {
-    var color = entry.color;
-    if (window.innerWidth < 800 && index % 2 === 1) color = tinyColor(color).darken(5).toString();
+    var fillColor = entry.color;
+    if (smallScreen && index % 2 === 1) {
+      fillColor = tinyColor(fillColor).darken(5).toString();
+    }
+    var notSelected = !selected.includes(entry.data[0]);
+    if (selected.length > 0 && notSelected) {
+      fillColor = tinyColor(fillColor).desaturate(40).toString();
+    }
     return {
       "--text": Game.isLightColor(entry.color) ? "black" : "white",
-      "--fill": color,
-      "--selected": selected.includes(entry.data[0]) ? "italic" : "normal",
+      "--fill": fillColor,
+      "--selected": notSelected ? "normal" : "italic",
     };
   };
 
@@ -59,7 +68,7 @@ function Scoreboard(props) {
         <tbody>
           {getPage().map((entry, index) => (
             <tr
-              className="clickable"
+              className={handleSelect ? "clickable" : ""}
               onClick={() => handleClick(entry.data[0])}
               key={index}
             >
@@ -77,11 +86,13 @@ function Scoreboard(props) {
       </table>
       {multiPage && (
         <button
-          className="survivor-button"
-          style={{ "--noHoverColor": "var(--defaultButton)" }}
+          className="min-width"
+          style={{
+            "--min-width": "5rem",
+          }}
           onClick={() => changePage()}
         >
-          {page === 0 ? "Next" : "Prev"} Page
+          {page === 0 ? "Next ⮕" : "⬅ Prev"}
         </button>
       )}
     </div>

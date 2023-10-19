@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { smallScreen } from "../smallScreen";
 
 export default function Chart(props) {
   var { data, canvasId } = props;
@@ -7,8 +8,11 @@ export default function Chart(props) {
     drawChart(data, canvasId);
   }, [data, canvasId]);
 
+  var height = 500;
+  if (smallScreen) height = 1200;
+
   return (
-    <canvas className="graph" id={canvasId} width={1200} height={500}></canvas>
+    <canvas className="graph" id={canvasId} width={1200} height={height}></canvas>
   );
 }
 
@@ -26,6 +30,7 @@ function drawChart(data, canvasId) {
 
   // line width for the graph
   var lineWidth = 10;
+  if (smallScreen) lineWidth = 20;
   // height off the bottom of the canvas
   // the distance on the right of the canvas is 1/2 this value
   var chartOffset = 100;
@@ -92,7 +97,7 @@ function drawChart(data, canvasId) {
       };
     });
 
-    // add final point a few pixels to the right of the 
+    // add final point a few pixels to the right of the
     // last point to align the edge vertically
     var lastPoint = points[points.length - 1];
     points.push({ x: lastPoint.x + 1, y: lastPoint.y });
@@ -116,8 +121,20 @@ function drawChart(data, canvasId) {
         prevPoint = { x, y };
       });
 
-      // draw the line to the right side of the canvas
-      context.lineTo(scale.x * episodeCount, prevPoint.y);
+      if (width === lineWidth) {
+        // extend black line 1 px past the last point
+        context.lineTo(prevPoint.x + 1, prevPoint.y);
+
+        // label the point total
+        context.font = "30px Survivor";
+        context.fillStyle = "black";
+        context.textAlign = "center";
+        context.fillText(
+          data.data[data.data.length - 1],
+          prevPoint.x + 20,
+          prevPoint.y
+        );
+      }
 
       // finish line drawing
       context.strokeStyle = color;
@@ -125,18 +142,5 @@ function drawChart(data, canvasId) {
       context.stroke();
       context.closePath();
     });
-
-    // label the point total
-    context.font = "30px Survivor";
-    context.fillStyle = "black";
-    context.textAlign = "center";
-    context.fillText(
-      data.data[data.data.length - 1],
-      canvasWidth - chartOffset / 4,
-      canvasHeight -
-        chartOffset +
-        10 -
-        data.data[data.data.length - 1] * scale.y
-    );
   });
 }

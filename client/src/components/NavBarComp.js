@@ -2,9 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Select from "react-select";
 import Game from "../fantasy/game";
-import { smallScreen } from "../smallScreen";
-
-console.log(smallScreen);
 
 import Modal, { LoginContent } from "../components/ModalComp";
 

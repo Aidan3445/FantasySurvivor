@@ -327,6 +327,12 @@ th:last-child {
   margin: 0;
 }
 
+/* Rechart Container */
+.rechart-container {
+  width: 100%;
+  height: 300px;
+}
+
 /* Gif */
 .gif-container {
   width: 60%;
@@ -387,6 +393,11 @@ th:last-child {
   align-items: center;
 }
 
+/* Push Right */
+.push-right {
+  left: 100%;
+}
+
 /* Min Width by font size */
 .min-width-20rem {
   min-width: 20rem;
@@ -394,6 +405,10 @@ th:last-child {
 
 .min-width-15rem {
   min-width: 15rem;
+}
+
+.min-width {
+  min-width: var(--min-width);
 }
 
 /* container */
