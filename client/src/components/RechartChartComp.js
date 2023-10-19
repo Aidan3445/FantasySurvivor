@@ -13,8 +13,10 @@ import { smallScreen } from "../smallScreen";
 export default function Chart(props) {
   var { data } = props;
 
+  if (data.length === 0) return;
+
   return (
-    <div className="rechart-container">
+    <div className="rechart-container box" style={{"--fillColor": "white"}}>
       <ResponsiveContainer>
         <LineChart
           className="survivor-body"
@@ -22,6 +24,8 @@ export default function Chart(props) {
           margin={{
             top: 10,
             right: 30,
+            left: -20,
+            bottom: 10,
           }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="darkgrey" />
@@ -39,6 +43,7 @@ export default function Chart(props) {
               dataKey={data.name}
               stroke={data.color}
               strokeWidth={smallScreen ? 6 : 8}
+              hide={!data.draw}
               key={data.name}
             />
           ))}
@@ -51,8 +56,6 @@ export default function Chart(props) {
 function FormatData(data) {
   var formattedData = [{ name: "Start" }];
   data.forEach((data) => {
-    if (!data.draw) return;
-
     formattedData[0][data.name] = 0;
 
     data.data.forEach((value, episodeIndex) => {

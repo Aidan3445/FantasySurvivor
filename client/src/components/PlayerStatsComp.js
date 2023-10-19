@@ -5,7 +5,7 @@ function PlayerStats(props) {
   var stats;
 
   return (
-    <div>
+    <div className="box" style={{ "--fillColor": "white", padding: "5px" }}>
       <div className="survivor-header centered">Stats</div>
       <div className="top-inline-div">
         <ul>

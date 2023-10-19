@@ -5,10 +5,11 @@ import Modal, {
   ColorModalContent,
   PasswordModalContent,
   SurvivorSelectContent,
+  LoginContent,
 } from "../components/ModalComp";
 
 function PlayerEdit(props) {
-  var { player, setPlayer, loggedIn } = props;
+  var { player, setPlayer, loggedIn, setLoggedIn } = props;
   var [modalOpen, setModalOpen] = useState(false);
   var [modalContent, setModalContent] = useState(null);
 
@@ -37,6 +38,12 @@ function PlayerEdit(props) {
     setModalOpen(false);
   };
 
+  const logIn = () => {
+    openModal(
+      <LoginContent setLoggedIn={setLoggedIn} setModalOpen={setModalOpen} />
+    );
+  };
+
   const setColor = (color) => {
     setPlayer({ ...player, color });
   };
@@ -50,13 +57,16 @@ function PlayerEdit(props) {
 
   const getStyleColors = () => {
     return {
-      "--noHoverColor": player.color,
+      "--noHoverColor": "lightgrey",
       color: Game.isLightColor(player.color) ? "black" : "white",
     };
   };
 
   return (
-    <div>
+    <div
+      className="box"
+      style={{ "--fillColor": player.color, padding: "5px" }}
+    >
       <div className="centered">
         <div
           className="survivor-header"
@@ -70,6 +80,7 @@ function PlayerEdit(props) {
         {loggedIn === player.name ? (
           <div className="vertical-div">
             <br />
+            <div className="survivor-body">Change:</div>
             <button
               className="survivor-button width-100"
               style={getStyleColors()}
@@ -83,47 +94,49 @@ function PlayerEdit(props) {
                 );
               }}
             >
-              Change Survivor
+              Survivor
             </button>
-            <div className="inline-div">
-              <button
-                className="survivor-button width-100"
-                style={getStyleColors()}
-                onClick={() => {
-                  openModal(
-                    <ColorModalContent
-                      color={player.color}
-                      setColor={setColor}
-                      playerName={player.name}
-                      setModalOpen={setModalOpen}
-                    />
-                  );
-                }}
-              >
-                Change Color
-              </button>
-              <button
-                className="survivor-button width-100"
-                style={getStyleColors()}
-                onClick={() =>
-                  openModal(
-                    <PasswordModalContent
-                      playerName={player.name}
-                      setModalOpen={setModalOpen}
-                    />
-                  )
-                }
-              >
-                Change Password
-              </button>
-            </div>
+            <button
+              className="survivor-button width-100"
+              style={getStyleColors()}
+              onClick={() => {
+                openModal(
+                  <ColorModalContent
+                    color={player.color}
+                    setColor={setColor}
+                    playerName={player.name}
+                    setModalOpen={setModalOpen}
+                  />
+                );
+              }}
+            >
+              Color
+            </button>
+            <button
+              className="survivor-button width-100"
+              style={getStyleColors()}
+              onClick={() =>
+                openModal(
+                  <PasswordModalContent
+                    playerName={player.name}
+                    setModalOpen={setModalOpen}
+                  />
+                )
+              }
+            >
+              Password
+            </button>
           </div>
         ) : (
-          <div className="survivor-body">
-            <br />
-            <div>Log in to choose a new survivor</div>
-            <div>or to edit your color and password.</div>
-          </div>
+          !loggedIn && (
+            <button
+              className="survivor-button"
+              style={{ "--noHoverColor": "lightgrey" }}
+              onClick={() => logIn()}
+            >
+              Log In
+            </button>
+          )
         )}
       </div>
       <Modal

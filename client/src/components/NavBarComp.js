@@ -44,10 +44,6 @@ function Navbar(props) {
     setMenuOpen(false);
   }, [useLocation()]);
 
-  useEffect(() => {
-    setModalOpen(!loggedIn);
-  }, [loggedIn]);
-
   const logInOut = () => {
     if (loggedIn) {
       setLoggedIn("");

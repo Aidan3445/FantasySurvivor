@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 
-import Episode from "../fantasy/episode.js";
 import * as points from "../fantasy/performancePoints.js";
 
 function Episodes(props) {
@@ -31,7 +30,7 @@ function EpisodeComp(props) {
   useEffect(() => {}, [episode]);
 
   return (
-    <div style={{ backgroundColor: picked ? "rgb(230, 255, 233)" : "" }}>
+    <div className="box" style={{ "--fillColor": picked ? "rgb(230, 255, 233)" : "darkgrey" }}>
       <div className="inline-div">
         <div className="survivor-header">Episode {episode.number}</div>
         <div className="survivor-body centered">

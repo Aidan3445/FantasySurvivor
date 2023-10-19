@@ -9,7 +9,7 @@ import SurvivorPage from "./SurvivorPage";
 import PlayerEdit from "../components/PlayerEditComp";
 
 export default function PlayerPage(props) {
-  var { loggedIn, playerName } = props;
+  var { loggedIn, setLoggedIn, playerName } = props;
   var loadedPlayer = useLoaderData();
   playerName = playerName || loadedPlayer;
 
@@ -101,7 +101,7 @@ export default function PlayerPage(props) {
   return (
     <div className="content">
       <div className="flex-div">
-        <PlayerEdit player={player} setPlayer={setPlayer} loggedIn={loggedIn} />
+        <PlayerEdit player={player} setPlayer={setPlayer} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
         {player.stats && <PlayerStats stats={player.stats} />}
       </div>
       {player.draft && loggedIn === playerName && (
