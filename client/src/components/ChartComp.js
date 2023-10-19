@@ -92,7 +92,7 @@ function drawChart(data, canvasId) {
       };
     });
 
-    // add final point a few pixels to the right of the 
+    // add final point a few pixels to the right of the
     // last point to align the edge vertically
     var lastPoint = points[points.length - 1];
     points.push({ x: lastPoint.x + 1, y: lastPoint.y });
@@ -116,8 +116,20 @@ function drawChart(data, canvasId) {
         prevPoint = { x, y };
       });
 
-      // draw the line to the right side of the canvas
-      context.lineTo(scale.x * episodeCount, prevPoint.y);
+      if (width === lineWidth) {
+        // extend black line 1 px past the last point
+        context.lineTo(prevPoint.x + 1, prevPoint.y);
+
+        // label the point total
+        context.font = "30px Survivor";
+        context.fillStyle = "black";
+        context.textAlign = "center";
+        context.fillText(
+          data.data[data.data.length - 1],
+          prevPoint.x + 20,
+          prevPoint.y
+        );
+      }
 
       // finish line drawing
       context.strokeStyle = color;
@@ -125,18 +137,5 @@ function drawChart(data, canvasId) {
       context.stroke();
       context.closePath();
     });
-
-    // label the point total
-    context.font = "30px Survivor";
-    context.fillStyle = "black";
-    context.textAlign = "center";
-    context.fillText(
-      data.data[data.data.length - 1],
-      canvasWidth - chartOffset / 4,
-      canvasHeight -
-        chartOffset +
-        10 -
-        data.data[data.data.length - 1] * scale.y
-    );
   });
 }

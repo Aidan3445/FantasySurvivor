@@ -38,7 +38,7 @@ class Game {
         const episodes = await this.getEpisodes();
         const tribes = await this.getTribes();
         return survivors.map((survivor) => {
-          survivor.stats = this.survivorStats(survivor, episodes);
+          survivor.stats = this.survivorStats(survivor, episodes, tribes);
           survivor.color = tribes.find(
             (tribe) => tribe.name === survivor.tribe
           ).color;
@@ -47,7 +47,7 @@ class Game {
       });
   }
 
-  static survivorStats(survivor, episodes) {
+  static survivorStats(survivor, episodes, tribes) {
     var { name, tribe } = survivor;
 
     var stats = {
@@ -58,6 +58,13 @@ class Game {
       tribeWins: 0,
       eliminated: 0,
       episodeTotals: [],
+      tribeList: [
+        {
+          episode: 0,
+          tribe: tribe,
+          color: tribes.find((tribe) => tribe.name === survivor.tribe).color,
+        },
+      ],
     };
 
     var airedCount = 0;
@@ -66,6 +73,20 @@ class Game {
       .filter((episode) => episode.aired >= 0)
       .forEach((episode) => {
         if (stats.eliminated) return;
+
+        var tribeUpdate = episode.tribeUpdates.find((update) =>
+          update.survivors.includes(name)
+        );
+        if (tribeUpdate) {
+          stats.tribeList.push({
+            episode: episode.number - 1,
+            tribe: tribeUpdate.tribe,
+            color: tribes.find((tribe) => tribe.name === tribeUpdate.tribe)
+              .color,
+          });
+          survivor.tribe = tribeUpdate.tribe;
+          tribe = tribeUpdate.tribe;
+        }
 
         var points = episode.getPoints(survivor);
 
@@ -149,15 +170,14 @@ class Game {
     var survivorScores = [];
     var survivalPoints = 0;
     for (var i = 0; i <= lastAired + 1; i++) {
+      var episode = episodes[i];
       var survivor = survivors[i];
       if (i === lastAired + 1) {
-        if (!survivor) {
+        if (!survivor && episode && episode.aired === 1) {
           stats.needsSurvivor = true;
         }
         continue;
       }
-
-      var episode = episodes[i];
 
       var performancePoints = episode.getPoints(survivor);
       stats.performancePoints += performancePoints;

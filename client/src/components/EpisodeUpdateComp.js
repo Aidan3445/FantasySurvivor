@@ -13,7 +13,7 @@ function EpisodeUpdateEntryComp(props) {
   var [notes, setNotes] = useState("");
 
   var [advantageName, setAdvantageName] = useState("");
-  var [playedOn, setPlayedOn] = useState([]);
+  var [affected, setAffected] = useState([]);
 
   var [displayEpisode, setDisplayEpisode] = useState(episode);
 
@@ -33,11 +33,11 @@ function EpisodeUpdateEntryComp(props) {
       notes,
       values.Survivors.concat(values.Tribes).map((opt) => opt.value),
       advantageName,
-      playedOn.map((opt) => opt.value)
+      affected.map((opt) => opt.value)
     );
 
     setDisplayEpisode(updatedEpisode);
-  }, [selectedFor, selectedEvent, notes, advantageName, playedOn, episode]);
+  }, [selectedFor, selectedEvent, notes, advantageName, affected, episode]);
 
   const updateEpisode = () => {
     if (selectedFor.length === 0 && selectedEvent.value !== "merged") return;
@@ -46,7 +46,7 @@ function EpisodeUpdateEntryComp(props) {
     setSelectedFor([]);
     setNotes("");
     setAdvantageName("");
-    setPlayedOn([]);
+    setAffected([]);
 
     dataEntry({
       updatedEpisode: displayEpisode,
@@ -57,7 +57,10 @@ function EpisodeUpdateEntryComp(props) {
 
   const affectedSurvivors = () => {
     if (!selectedFor) return [];
-    var affectedList = selectedFor.concat(playedOn);
+    var affectedList = selectedFor;
+    if (values.Survivors.includes(affected[0])) {
+      affectedList = affectedList.concat(affected);
+    }
     var tribeSurvivors = [];
     affectedList = affectedList
       .map((opt) => {
@@ -118,14 +121,15 @@ function EpisodeUpdateEntryComp(props) {
             additionalFields={selectedEvent.additionalFields}
             advantageName={advantageName}
             setAdvantageName={setAdvantageName}
-            playedOn={playedOn}
-            setPlayedOn={setPlayedOn}
+            affected={affected}
+            setAffected={setAffected}
             Survivors={values.Survivors.filter(
               (opt) =>
                 (opt.survivor.stats.eliminated === 0 ||
                   opt.survivor.stats.eliminated > episode.number) &&
                 !displayEpisode.eliminated.includes(opt.value)
             )}
+            Tribes={values.Tribes}
           />
         )}
         <textarea
@@ -161,36 +165,54 @@ function AdditionalFields(props) {
     additionalFields,
     advantageName,
     setAdvantageName,
-    playedOn,
-    setPlayedOn,
+    affected,
+    setAffected,
     Survivors,
+    Tribes,
   } = props;
+
+  const getField = (field, index) => {
+    if (field.survivorSelect) {
+      return (
+        <Select
+          className="min-width-15rem"
+          id={`survivorSelect2${index}`}
+          options={Survivors}
+          value={affected}
+          onChange={(value) => setAffected(value)}
+          isMulti
+          key={index}
+        />
+      );
+    }
+    if (field.tribeSelect) {
+      return (
+        <Select
+          className="min-width-15rem"
+          id={`tribeSelect2${index}`}
+          options={Tribes}
+          value={affected}
+          onChange={(value) => setAffected([value])}
+          key={index}
+        />
+      );
+    }
+    return (
+      <input
+        className="min-width-15rem text-input"
+        id={`advNameInput${index}`}
+        type="text"
+        placeholder={field.label}
+        value={advantageName}
+        onChange={(e) => setAdvantageName(e.target.value)}
+        key={index}
+      />
+    );
+  };
 
   return (
     <div className="inline-div">
-      {additionalFields.map((field, index) =>
-        field.survivorSelect ? (
-          <Select
-            className="min-width-15rem"
-            id={`survivorSelect2${index}`}
-            options={Survivors}
-            value={playedOn}
-            onChange={(value) => setPlayedOn(value)}
-            isMulti
-            key={index}
-          />
-        ) : (
-          <input
-            className="min-width-15rem text-input"
-            id={`advNameInput${index}`}
-            type="text"
-            placeholder={field.label}
-            value={advantageName}
-            onChange={(e) => setAdvantageName(e.target.value)}
-            key={index}
-          />
-        )
-      )}
+      {additionalFields.map((field, index) => getField(field, index))}
     </div>
   );
 }
@@ -256,6 +278,11 @@ const eventOptions = [
     ],
   },
   {
+    value: "tribeSwap",
+    label: "Tribe Swap",
+    additionalFields: [{ value: "tribe", label: "Tribe", tribeSelect: true }],
+  },
+  {
     value: "merged",
     label: "Merge",
   },
@@ -289,6 +316,7 @@ const getOptions = (values, episodeNumber, showEliminated) => {
     badAdvPlays: Survivors,
     advsEliminated: Survivors,
     eliminated: Survivors,
+    tribeSwap: Survivors,
     merged: null,
   };
 };

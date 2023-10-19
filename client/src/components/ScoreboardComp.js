@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Game from "../fantasy/game";
+import tinycolor from "tinycolor2";
 
 function Scoreboard(props) {
   var { headers, entries, handleSelect } = props;
@@ -16,10 +17,15 @@ function Scoreboard(props) {
   };
 
   const getStyle = (entry) => {
+    var fillColor = entry.color;
+    var notSelected = !selected.includes(entry.data[0]);
+    if (selected.length > 0 && notSelected) {
+      fillColor = tinycolor(fillColor).desaturate(50).toString();
+    }
     return {
       color: Game.isLightColor(entry.color) ? "black" : "white",
-      backgroundColor: entry.color,
-      fontStyle: selected.includes(entry.data[0]) ? "italic" : "normal",
+      backgroundColor: fillColor,
+      fontStyle: notSelected ? "normal" : "italic",
     };
   };
 

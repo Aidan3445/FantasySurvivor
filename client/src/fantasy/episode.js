@@ -23,6 +23,7 @@ export default class Episode {
     this.soleSurvivor = [];
     this.eliminated = [];
     this.quits = [];
+    this.tribeUpdates = [];
     this.merged = false;
     this.notes = [];
   }
@@ -49,6 +50,7 @@ export default class Episode {
     episode.eliminated = json.eliminated;
     episode.quits = json.quits;
     episode.notes = json.notes;
+    episode.tribeUpdates = json.tribeUpdates;
     episode.merged = json.merged;
     episode.consolidateNotes();
     return episode;
@@ -191,15 +193,22 @@ export default class Episode {
     return this;
   }
 
+  // add tribe update
+  addTribeUpdate(survivorName, tribe) {
+    this.addNote(survivorName, `Moved to ${tribe}!`);
+    var updateIndex = this.tribeUpdates.findIndex(
+      (swap) => swap.tribe === tribe
+    );
+    if (updateIndex !== -1) {
+      this.tribeUpdates[updateIndex].survivors.push(survivorName);
+    } else {
+      this.tribeUpdates.push({ tribe: tribe, survivors: [survivorName] });
+    }
+    return this;
+  }
+
   // add event from data entry
-  addEvent(
-    event,
-    eventNames,
-    notes,
-    allNames,
-    additionalString,
-    additionalSurvivors
-  ) {
+  addEvent(event, eventNames, notes, allNames, additionalString, affected) {
     eventNames.forEach((name) => {
       switch (event) {
         case "advsFound":
@@ -209,7 +218,7 @@ export default class Episode {
           this.addAdvPlaySelf(name, additionalString);
           break;
         case "advPlaysOther":
-          this.addAdvPlayOther(name, additionalString, additionalSurvivors);
+          this.addAdvPlayOther(name, additionalString, affected);
           break;
         case "badAdvPlays":
           this.addBadAdvPlay(name, additionalString);
@@ -244,8 +253,11 @@ export default class Episode {
         case "soleSurvivor":
           this.addSoleSurvivor(name);
           break;
+        case "tribeSwap":
+          this.addTribeUpdate(name, affected[0]);
+          break;
         case "eliminated":
-          this.addEliminated(name, additionalSurvivors);
+          this.addEliminated(name, affected);
           break;
         default:
           break;
