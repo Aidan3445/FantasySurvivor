@@ -38,7 +38,7 @@ class Game {
         const episodes = await this.getEpisodes();
         const tribes = await this.getTribes();
         return survivors.map((survivor) => {
-          survivor.stats = this.survivorStats(survivor, episodes, tribes);
+          survivor = this.survivorStats(survivor, episodes, tribes);
           survivor.color = tribes.find(
             (tribe) => tribe.name === survivor.tribe
           ).color;
@@ -50,7 +50,7 @@ class Game {
   static survivorStats(survivor, episodes, tribes) {
     var { name, tribe } = survivor;
 
-    var stats = {
+    survivor.stats = {
       points: 0,
       ppe: 0,
       wins: 0,
@@ -72,13 +72,13 @@ class Game {
     episodes
       .filter((episode) => episode.aired >= 0)
       .forEach((episode) => {
-        if (stats.eliminated) return;
+        if (survivor.stats.eliminated) return;
 
         var tribeUpdate = episode.tribeUpdates.find((update) =>
           update.survivors.includes(name)
         );
         if (tribeUpdate) {
-          stats.tribeList.push({
+          survivor.stats.tribeList.push({
             episode: episode.number - 1,
             tribe: tribeUpdate.tribe,
             color: tribes.find((tribe) => tribe.name === tribeUpdate.tribe)
@@ -90,31 +90,33 @@ class Game {
 
         var points = episode.getPoints(survivor);
 
-        stats.points += points;
-        stats.episodeTotals.push(points);
+        survivor.stats.points += points;
+        survivor.stats.episodeTotals.push(points);
 
         var indivWins = episode.indivWins.filter((val) => val === name);
-        stats.indivWins += indivWins.length;
-        stats.wins += indivWins.length;
+        survivor.stats.indivWins += indivWins.length;
+        survivor.stats.wins += indivWins.length;
 
         var tribeWins = episode.tribe1sts.filter(
           (val) => val === name || val === tribe
         );
-        stats.tribeWins += tribeWins.length;
-        stats.wins += tribeWins.length;
+        survivor.stats.tribeWins += tribeWins.length;
+        survivor.stats.wins += tribeWins.length;
 
-        stats.eliminated = episode.eliminated.includes(name)
+        survivor.stats.eliminated = episode.eliminated.includes(name)
           ? episode.number
-          : stats.eliminated;
+          : survivor.stats.eliminated;
 
         if (episode.aired === 1) airedCount++;
       });
 
-    stats.ppe = stats.points / airedCount;
+    survivor.stats.ppe = survivor.stats.points / airedCount;
 
-    stats.episodeTotals = this.getRunningPoints(stats.episodeTotals);
+    survivor.stats.episodeTotals = this.getRunningPoints(
+      survivor.stats.episodeTotals
+    );
 
-    return stats;
+    return survivor;
   }
 
   // get player by name

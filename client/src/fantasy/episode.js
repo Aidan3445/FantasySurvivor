@@ -438,7 +438,10 @@ export default class Episode {
 
   // get points for a single name
   getPoints(survivor) {
-    var { name, tribe } = survivor;
+    var { name, stats } = survivor;
+
+    var tribe = this.getTribeHelper(stats);
+
     var pointTotals = this.points;
 
     var nameIndex = pointTotals.findIndex((point) => point.name === name);
@@ -465,8 +468,9 @@ export default class Episode {
 
   // component helpers
   getTableValues(survivor) {
-    var { name, tribe } = survivor;
-
+    var { name, stats } = survivor;
+    var tribe = this.getTribeHelper(stats);
+    console.log(this.number, name, tribe, stats);
     return [
       this.advsFound.filter((val) => val === name).length,
       this.advPlaysSelf.filter((val) => val === name).length,
@@ -486,7 +490,8 @@ export default class Episode {
   }
 
   getNotes(survivor) {
-    var { name, tribe } = survivor;
+    var { name, stats } = survivor;
+    var tribe = this.getTribeHelper(stats);
     var notes = [];
     this.notes.forEach((note) => {
       if (note.name === name || note.name === tribe) {
@@ -495,5 +500,11 @@ export default class Episode {
     });
 
     return notes;
+  }
+
+  getTribeHelper(stats) {
+    if (!stats) return "";
+    return stats.tribeList.findLast((update) => update.episode < this.number)
+      .tribe;
   }
 }
