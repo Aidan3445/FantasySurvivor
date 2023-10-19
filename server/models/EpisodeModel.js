@@ -11,6 +11,17 @@ const notesSchema = new mongoose.Schema({
   },
 });
 
+const tribeUpdateSchema = new mongoose.Schema({
+  tribe: {
+    type: String,
+    required: true,
+  },
+  survivors: {
+    type: Array,
+    required: true,
+  },
+});
+
 const episodeSchema = new mongoose.Schema(
   {
     number: {
@@ -88,6 +99,10 @@ const episodeSchema = new mongoose.Schema(
     merged: {
       type: Boolean,
       default: false,
+    },
+    tribeUpdates: {
+      type: [tribeUpdateSchema],
+      default: [],
     },
     notes: {
       type: [notesSchema],
