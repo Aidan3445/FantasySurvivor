@@ -46,19 +46,29 @@ export default function PlayerPage(props) {
     setEpisodeEntries(updateEntries());
   }, [player]);
 
-  var episodeHeaders = [
-    "Episode",
-    "Survivor",
-    "Performance Points",
-    "Survival Points",
-    "Episode Total",
-    "Season Total",
-  ];
+  var episodeHeaders =
+    window.innerWidth > 800
+      ? [
+          "Episode",
+          "Survivor",
+          "Performance Points",
+          "Survival Points",
+          "Episode Total",
+          "Season Total",
+        ]
+      : [
+          "Ep",
+          "Survivor",
+          "Perf",
+          "Surv",
+          "Ep Total",
+          "Szn Total",
+        ];
+
   const updateEntries = () => {
     return player.survivorList && player.stats && !player.stats.needsSurvivor
       ? player.survivorList.map((survivor, index) => {
-          if (!survivor)
-            return { data: ["None", 0, 0, 0, 0], color: "grey" };
+          if (!survivor) return { data: ["None", 0, 0, 0, 0], color: "grey" };
 
           var performancePoints = player.stats.performanceByEp[index];
           var survivalPoints = player.stats.survivalByEp[index];
@@ -92,7 +102,9 @@ export default function PlayerPage(props) {
         <PlayerEdit player={player} setPlayer={setPlayer} loggedIn={loggedIn} />
         {player.stats && <PlayerStats stats={player.stats} />}
       </div>
-      {player.draft && loggedIn === playerName && <SideBets bets={player.draft} outcomes={betOutcomes} />}
+      {player.draft && loggedIn === playerName && (
+        <SideBets bets={player.draft} outcomes={betOutcomes} />
+      )}
       <Scoreboard
         headers={episodeHeaders}
         entries={episodeEntries}

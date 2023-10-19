@@ -3,6 +3,7 @@ import Game from "../fantasy/game";
 
 import Scoreboard from "../components/ScoreboardComp";
 import Chart from "../components/ChartComp";
+import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
   var [survivors, setSurvivors] = useState([]);
@@ -16,6 +17,8 @@ export default function HomePage() {
     players: "noPlayers",
     survivors: "noSurvivors",
   });
+
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     // can optimize this by making one call to a better helper method

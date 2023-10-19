@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Select from "react-select";
 import Game from "../fantasy/game";
+import { smallScreen } from "../smallScreen";
+
+console.log(smallScreen);
 
 import Modal, { LoginContent } from "../components/ModalComp";
 
@@ -57,7 +60,7 @@ function Navbar(props) {
     setModalOpen(true);
   };
 
-  var navButtonStyle = { "--noHoverColor": "#7a7a7a" };
+  var navButtonStyle = { "--noHoverColor": "var(--defaultButton)" };
 
   return (
     <div>

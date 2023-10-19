@@ -1,3 +1,7 @@
+:root {
+  --defaultButton: #7a7a7a
+}
+
 /* Nav Bar */
 .navbar {
   background-color: rgb(185, 185, 185);
@@ -50,15 +54,17 @@
 }
 
 .bar {
-  width: 25px;
-  height: 3px;
+  width: 30px;
+  height: 4px;
   background-color: black;
   margin: 3px 0;
   transition: transform 0.5s ease-in-out;
+
+  border-radius: 5px;
 }
 
 .menu.open .bar:nth-child(1) {
-  transform: translateY(9px) rotate(-225deg);
+  transform: translateY(10px) rotate(-225deg);
 }
 
 .menu.open .bar:nth-child(2) {
@@ -66,7 +72,7 @@
 }
 
 .menu.open .bar:nth-child(3) {
-  transform: translateY(-9px) rotate(225deg);
+  transform: translateY(-10px) rotate(225deg);
 }
 
 .menu-list {
@@ -265,24 +271,42 @@
 
 /* Scoreboard */
 .scoreboard {
-  width: 100%;
-  margin: 0;
+  width: 95%;
+  margin: auto;
+  border-spacing: 0 3px;
 }
 
-.scoreboard th {
-  border: 1px solid black;
-  border-left: none;
-  border-right: none;
-}
-s .scoreboard tbody {
+.scoreboard tbody {
   display: flexbox;
   flex-direction: column;
 }
 
-.scoreboard td {
+.scoreboard td,
+th {
+  color: var(--text);
+  background-color: var(--fill);
+  font-style: var(--selected);
   border: 1px solid black;
-  border-left: none;
-  border-right: none;
+  border-left: 0;
+  border-right: 0;
+}
+
+.scoreboard tr {
+  box-shadow: 0 10px 10px -8px rgb(0, 0, 0, 0.5);
+}
+
+/* round corners of first and last td  in each row */
+.scoreboard tr td:first-child,
+th:first-child {
+  border-left: 1px solid black;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+.scoreboard tr td:last-child,
+th:last-child {
+  border-right: 1px solid black;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 
 /* Point Breakdown */
@@ -392,25 +416,12 @@ s .scoreboard tbody {
   justify-content: space-between;
   width: 100%;
   margin: 0 auto;
-
-  .box {
-    width: 50%;
-  }
-  .box:first-child {
-    border-left: none; /* Remove left border from the first box */
-  }
-
-  .box:last-child {
-    border-right: none; /* Remove right border from the last box */
-  }
 }
 
 .box {
   justify-content: center;
   align-items: center;
-  border: 1px solid black;
-  margin-bottom: 20px; /* Add some spacing between the divs */
-  width: 100%;
+  margin-bottom: 20px;
 }
 
 /* Modal */
@@ -500,20 +511,35 @@ button,
 }
 
 /* Episode Table */
-table {
+.episodes table {
   border-collapse: collapse;
+  margin: 20px;
+}
+
+.episodes th {
+  font-weight: 700;
+  background-color: white;
+}
+
+.episodes th,
+.episodes td {
+  text-align: center;
+  border: 1px solid black;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0;
   margin: 20px;
 }
 
 th {
   font-weight: 700;
-  background-color: white;
 }
 
 th,
 td {
   text-align: center;
-  border: 1px solid black;
 }
 
 /* Form */
@@ -532,14 +558,26 @@ hr {
   width: 100%; /* Width as needed */
 }
 
-/* Media query for mobile or narrow screens */
-@media (max-width: 768px) {
+/* Media query for mobile or narrow screens
+-------------------------------------------
+Please note this value should match 
+the small screen value in smallScreen.js
+As far as I can tell there is no way 
+to automatically pass variables to media queries
+*/
+@media (max-width: 800px) {
   .survivor-header {
-    font-size: 2em;
+    font-size: 3em;
+    line-height: 0.5em;
+    padding: 0.1em 0;
   }
 
   .survivor-body {
-    font-size: 0.75em;
+    font-size: 1.2em;
+
+    li {
+      font-size: 0.5em;
+    }
   }
 
   .survivor-button {

@@ -41,7 +41,7 @@ function App() {
       element: (
         <div>
           <Navbar loggedIn={loggedIn} setLoggedIn={handleLogin} />
-          <PlayerPage loggedIn={loggedIn} setLoggedIn={handleLogin} />
+          <PlayerPage loggedIn={loggedIn} />
         </div>
       ),
       loader: nameLoader,
