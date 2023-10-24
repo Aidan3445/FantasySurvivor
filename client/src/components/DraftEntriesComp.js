@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Select from "../components/SelectComp";
-import Game from "../fantasy/game";
+import Game from "../utils/game";
 
 function DraftEntries(props) {
   var { player, values } = props;

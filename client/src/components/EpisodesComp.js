@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-import * as points from "../fantasy/performancePoints.js";
+import * as points from "../utils/performancePoints.js";
 
 function Episodes(props) {
   var { episodes, survivor, pickedEpisodes } = props;

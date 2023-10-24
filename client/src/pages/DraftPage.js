@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Game from "../fantasy/game";
+import Game from "../utils/game";
 
 import DraftOrder from "../components/DraftOrderComp";
 import DraftEntries from "../components/DraftEntriesComp";

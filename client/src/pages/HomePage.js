@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Game from "../fantasy/game";
+import Game from "../utils/game";
 
 import Scoreboard from "../components/ScoreboardComp";
 import Chart from "../components/RechartChartComp";

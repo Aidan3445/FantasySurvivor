@@ -1,7 +1,3 @@
-:root {
-  --defaultButton: #7a7a7a
-}
-
 /* Nav Bar */
 .navbar {
   background-color: rgb(185, 185, 185);
@@ -23,21 +19,22 @@
     width: 100%;
     align-items: center;
     gap: 10px;
-
-    .navbar-left {
-      margin-right: auto;
-      height: 100%;
-      align-items: baseline;
-    }
-
-    .survivor-header {
-      transform: translateY(-0.15em);
-    }
   }
 }
 
+.nav-title {
+  font-family: "Survivor";
+  font-size: 5em;
+  padding: 0 15px;
+  margin-right: auto;
+  height: 100%;
+  align-items: baseline;
+  transform: translateY(-0.15em);
+  text-shadow: 1px 5px 5px rgba(0, 0, 0, 0.2);
+}
+
 .navbar.hidden {
-  transform: translateY(calc(var(--heightValue) * -2));
+  transform: translateY(calc(var(--heightValue) * -2.5));
 }
 
 /* Hamburger Menu */
@@ -117,11 +114,14 @@
   font-family: "Survivor";
   font-size: 5em;
   padding: 0 15px;
+  white-space: nowrap;
 }
 
 .survivor-body {
   font-family: "Survivor";
   font-size: 2em;
+  padding-bottom: 0.2em;
+  -webkit-text-stroke: 0.25px black;
 }
 
 .survivor-button {
@@ -131,7 +131,7 @@
   border: 1px solid black;
   border-radius: 5px; /* Add rounded corners */
   padding: 0 10px 0.5rem 10px; /* Add padding to separate content from border */
-  background-color: var(--noHoverColor);
+  background-color: var(--noHoverColor, #7a7a7a);
   white-space: nowrap;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
 }
@@ -145,12 +145,11 @@
 /* info button */
 .info-button {
   font-family: "Survivor";
-  position: relative;
-  font-size: 2em;
-  color: grey;
-  left: -1em;
-  top: -0.4em;
-
+  position: absolute;
+  top: .5rem;
+  left: 0;
+  right: -17rem;
+  color: gray;
   transition: color 0.2s ease;
 }
 
@@ -283,9 +282,9 @@
 
 .scoreboard td,
 th {
-  color: var(--text);
-  background-color: var(--fill);
-  font-style: var(--selected);
+  color: black;
+  background-color: var(--fill, white);
+  font-style: var(--selected, normal);
   border: 1px solid black;
   border-left: 0;
   border-right: 0;
@@ -435,9 +434,17 @@ th:last-child {
   align-items: center;
   border: 1px solid black;
   border-radius: 5px;
-  background-color: var(--fillColor);
+  background-color: var(--fillColor, white);
   margin-top: 5px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+.pad-5 {
+  padding: 5px;
+}
+
+.marg-5 {
+  margin: 5px;
 }
 
 .footer {
@@ -581,37 +588,19 @@ hr {
 /* Media query for mobile or narrow screens
 -------------------------------------------
 Please note this value should match 
-the small screen value in smallScreen.js
-As far as I can tell there is no way 
-to automatically pass variables to media queries
+the small screen value in utils/screenSize.js
+As far as I can tell there is no reliable way 
+to pass variables to media queries
 */
-@media (max-width: 800px) {
-  .survivor-header {
+@media (max-width: 960px) {
+  .nav-title {
     font-size: 3em;
     line-height: 0.5em;
     padding: 0.1em 0;
   }
+}
 
-  .survivor-body {
-    font-size: 1.2em;
-
-    li {
-      font-size: 0.5em;
-    }
-  }
-
-  .survivor-button {
-    font-family: "Survivor";
-    font-size: 0.75em;
-    color: black;
-    border: 1px solid black;
-    border-radius: 5px; /* Add rounded corners */
-    padding: 0 10px 0.5rem 10px; /* Add padding to separate content from border */
-    background-color: var(--noHoverColor);
-    white-space: nowrap;
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
-  }
-
+@media (max-width: 775px) {
   .color-label {
     font-family: "Survivor";
     font-size: 3em;
@@ -625,5 +614,38 @@ to automatically pass variables to media queries
   .container {
     flex-direction: column; /* Stack the boxes vertically */
     justify-content: center;
+  }
+
+  .info-button {
+    top: -0.3rem;
+    left: 0;
+    right: -10rem;
+  }
+
+  .flex-div {
+    display: block;
+  }
+}
+
+@media (max-width: 535px) {
+  .survivor-header {
+    font-size: 3em;
+    line-height: 0.5em;
+    padding: 0.1em 0;
+  }
+
+  .survivor-body {
+    font-size: 1.2em;
+  }
+
+  .survivor-button {
+    font-family: "Survivor";
+    font-size: 0.75em;
+    color: black;
+    border: 1px solid black;
+    border-radius: 5px; /* Add rounded corners */
+    padding: 0 10px 0.5rem 10px; /* Add padding to separate content from border */
+    white-space: nowrap;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
   }
 }

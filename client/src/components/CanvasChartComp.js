@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { smallScreen } from "../smallScreen";
+import { smallScreen } from "../utils/screenSize";
 
 export default function Chart(props) {
   var { data, canvasId } = props;

@@ -32,24 +32,24 @@ code {
 /* Add any desired tooltip styles */
 .tooltip {
   position: relative;
-
   /* display: flex; */
 }
 
 .tooltip::before {
   content: attr(data-tooltip);
   position: absolute;
-  bottom: 40px; /* Adjust the distance from the content */
+  bottom: var(--offset, 1.1rem); /* Adjust the distance from the content */
   left: 50%;
   transform: translateX(-50%);
   white-space: nowrap;
   padding: 5px 10px;
   background-color: #000;
-  color: #fff;
+  color: white;
   border-radius: 4px;
   font-size: 12px;
   opacity: 0; /* Hide by default */
   pointer-events: none; /* Ensure it doesn't affect hover events */
+  z-index: 100;
 }
 
 .tooltip:hover::before {

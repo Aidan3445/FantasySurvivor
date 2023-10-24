@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLoaderData } from "react-router-dom";
-import Game from "../fantasy/game";
+import Game from "../utils/game";
 
 import SurvivorInfo from "../components/SurvivorInfoComp";
 import SurvivorPhoto from "../components/SurvivorPhotoComp";

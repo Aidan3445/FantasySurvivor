@@ -8,7 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { smallScreen } from "../smallScreen";
+import { smallScreen } from "../utils/screenSize";
 
 export default function Chart(props) {
   var { data } = props;
@@ -16,7 +16,7 @@ export default function Chart(props) {
   if (data.length === 0) return;
 
   return (
-    <div className="rechart-container box" style={{"--fillColor": "white"}}>
+    <div className="rechart-container box" style={{ "--fillColor": "white" }}>
       <ResponsiveContainer>
         <LineChart
           className="survivor-body"
@@ -31,12 +31,7 @@ export default function Chart(props) {
           <CartesianGrid strokeDasharray="3 3" stroke="darkgrey" />
           <XAxis dataKey="episode" />
           <YAxis />
-          <Tooltip
-            position={{ y: -100 }}
-            itemSorter={(item) => {
-              return -item.value;
-            }}
-          />
+          <Tooltip content={<CustomTooltip />} />
           {data.map((data) => (
             <Line
               type="monotone"
@@ -70,4 +65,45 @@ function FormatData(data) {
   });
 
   return formattedData;
+}
+
+function CustomTooltip(props) {
+  const { payload, label } = props;
+  if (!label) return;
+
+  payload.sort((a, b) => b.value - a.value);
+
+  if (payload.length > 9) {
+    var firstSet = payload.slice(0, payload.length / 2 + 1);
+    var secondSet = payload.slice(payload.length / 2);
+  } else {
+    var firstSet = payload;
+    var secondSet = [];
+  }
+
+  return (
+    <div className="box" style={{ "--fillColor": "rgb(255, 255, 255, 0.85)" }}>
+      <div>{label}:</div>
+      <hr />
+      <div className="inline-div pad-5">
+        <div>
+          {firstSet.map((p) => (
+            <div key={p.dataKey} style={{ color: p.stroke, stroke: "black" }}>
+              {p.dataKey}: {p.value}
+            </div>
+          ))}
+        </div>
+        {secondSet.length > 0 && (
+          <div>
+            {secondSet.map((p) => (
+              <div key={p.dataKey} style={{ color: p.stroke, stroke: "black" }}>
+                {p.dataKey}: {p.value}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      <br />
+    </div>
+  );
 }

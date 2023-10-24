@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLoaderData, useNavigate } from "react-router-dom";
-import Game from "../fantasy/game";
+import Game from "../utils/game";
 
 import PlayerStats from "../components/PlayerStatsComp";
 import SideBets from "../components/SideBetsComp";
@@ -56,14 +56,7 @@ export default function PlayerPage(props) {
           "Episode Total",
           "Season Total",
         ]
-      : [
-          "Ep",
-          "Survivor",
-          "Perf",
-          "Surv",
-          "Ep Total",
-          "Szn Total",
-        ];
+      : ["Ep", "Survivor", "Perf", "Surv", "Ep Total", "Szn Total"];
 
   const updateEntries = () => {
     return player.survivorList && player.stats && !player.stats.needsSurvivor
@@ -100,13 +93,23 @@ export default function PlayerPage(props) {
 
   return (
     <div className="content">
+      <br/>
       <div className="flex-div">
-        <PlayerEdit player={player} setPlayer={setPlayer} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
-        {player.stats && <PlayerStats stats={player.stats} />}
+        {player.name && (
+          <PlayerEdit
+            player={player}
+            setPlayer={setPlayer}
+            loggedIn={loggedIn}
+            setLoggedIn={setLoggedIn}
+          />
+        )}
+        {player.stats && (
+          <PlayerStats stats={player.stats} color={player.color} />
+        )}
+        {player.draft && loggedIn === playerName && (
+          <SideBets bets={player.draft} outcomes={betOutcomes} />
+        )}
       </div>
-      {player.draft && loggedIn === playerName && (
-        <SideBets bets={player.draft} outcomes={betOutcomes} />
-      )}
       <Scoreboard
         headers={episodeHeaders}
         entries={episodeEntries}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import tinyColor from "tinycolor2";
-import { smallScreen } from "../smallScreen";
-import Game from "../fantasy/game";
+import { smallScreen } from "../utils/screenSize";
+import Game from "../utils/game";
 
 function Scoreboard(props) {
   var { headers, entries, handleSelect } = props;
@@ -33,7 +33,7 @@ function Scoreboard(props) {
       fillColor = tinyColor(fillColor).desaturate(40).toString();
     }
     return {
-      "--text": Game.isLightColor(entry.color) ? "black" : "white",
+      color: Game.isLightColor(entry.color) ? "black" : "white",
       "--fill": fillColor,
       "--selected": notSelected ? "normal" : "italic",
     };
@@ -92,7 +92,7 @@ function Scoreboard(props) {
           }}
           onClick={() => changePage()}
         >
-          {page === 0 ? "Next ⮕" : "⬅ Prev"}
+          {page === 0 ? "Next ⇨" : "⇦ Prev"}
         </button>
       )}
     </div>

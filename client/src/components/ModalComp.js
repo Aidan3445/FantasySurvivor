@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { HexColorPicker } from "react-colorful";
-import Game from "../fantasy/game";
+import Game from "../utils/game";
 
 function Modal(props) {
   var { isOpen, closeModal, content } = props;

@@ -470,7 +470,6 @@ export default class Episode {
   getTableValues(survivor) {
     var { name, stats } = survivor;
     var tribe = this.getTribeHelper(stats);
-    console.log(this.number, name, tribe, stats);
     return [
       this.advsFound.filter((val) => val === name).length,
       this.advPlaysSelf.filter((val) => val === name).length,

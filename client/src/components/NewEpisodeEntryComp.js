@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Episode from "../fantasy/episode";
+import Episode from "../utils/episode";
 
 function NewEpisodeEntryComp(props) {
   var { dataEntry, nextEpisodeNumber, resetEpisode } = props;

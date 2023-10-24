@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Game from "../fantasy/game";
+import Game from "../utils/game";
 import Modal, {
   ColorModalContent,
   PasswordModalContent,
@@ -79,7 +79,6 @@ function PlayerEdit(props) {
         </div>
         {loggedIn === player.name ? (
           <div className="vertical-div">
-            <br />
             <div className="survivor-body">Change:</div>
             <button
               className="survivor-button width-100"

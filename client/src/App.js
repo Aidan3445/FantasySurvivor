@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Game from "./fantasy/game";
+import Game from "./utils/game";
 import "./App.css";
 
 import HomePage from "./pages/HomePage";
