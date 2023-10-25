@@ -30,7 +30,7 @@ function EpisodeComp(props) {
   useEffect(() => {}, [episode]);
 
   return (
-    <div className="box" style={{ "--fillColor": picked ? "rgb(230, 255, 233)" : "darkgrey" }}>
+    <div className="box marg-5" style={{ "--fillColor": picked ? "rgb(230, 255, 233)" : "darkgrey" }}>
       <div className="inline-div">
         <div className="survivor-header">Episode {episode.number}</div>
         <div className="survivor-body centered">

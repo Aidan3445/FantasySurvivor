@@ -71,6 +71,7 @@ function LoginContent(props) {
   return (
     <div className="centered">
       <div className="survivor-header">Log In</div>
+      <br/>
       <div>
         <div className="modal-warning">{warningText}</div>
         <form className="survivor-body">
@@ -157,6 +158,7 @@ function SurvivorSelectContent(props) {
   return (
     <div className="centered">
       <div className="survivor-header">Change Survivor</div>
+      <br/>
       {canChange ? (
         <div className="centered">
           <Select
@@ -202,6 +204,7 @@ function ColorModalContent(props) {
   return (
     <div className="centered">
       <div className="survivor-header">Change Color</div>
+      <br/>
       <div className="centered">
         <HexColorPicker
           styles={{
@@ -253,6 +256,7 @@ function PasswordModalContent(props) {
   return (
     <div className="centered">
       <div className="survivor-header">Change Password</div>
+      <br/>
       <div>
         <div className="modal-warning">{warningText}</div>
         <form className="survivor-body">

@@ -134,7 +134,9 @@ export default function HomePage() {
 
   return (
     <div className="content centered">
-      <div>
+      <br />
+
+      <div className="box pad-5 marg-5">
         <div className="survivor-header">Players</div>
         <Scoreboard
           headers={playerHeaders}
@@ -143,7 +145,7 @@ export default function HomePage() {
         />
         <Chart canvasId={canvasIds.players} data={playerData} />
       </div>
-      <div>
+      <div className="box pad-5 marg-5">
         <div className="survivor-header">Survivors</div>
         <Scoreboard
           headers={survivorHeaders}
@@ -152,7 +154,7 @@ export default function HomePage() {
         />
         <Chart canvasId={canvasIds.survivors} data={survivorData} />
       </div>
-      <div>
+      <div className="box pad-5 marg-5">
         <div className="survivor-header">Eliminations</div>
         <Scoreboard headers={eliminationHeaders} entries={eliminationEntries} />
       </div>

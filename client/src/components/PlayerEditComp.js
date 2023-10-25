@@ -64,8 +64,8 @@ function PlayerEdit(props) {
 
   return (
     <div
-      className="box"
-      style={{ "--fillColor": player.color, padding: "5px" }}
+      className="box pad-5 marg-5"
+      style={{ "--fillColor": player.color }}
     >
       <div className="centered">
         <div

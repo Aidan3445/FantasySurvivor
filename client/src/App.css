@@ -146,7 +146,7 @@
 .info-button {
   font-family: "Survivor";
   position: absolute;
-  top: .5rem;
+  top: 0.5rem;
   left: 0;
   right: -17rem;
   color: gray;
@@ -624,6 +624,10 @@ to pass variables to media queries
 
   .flex-div {
     display: block;
+    width: 100%;
+    margin: 0 auto;
+    padding-bottom: 1rem;
+    overflow-x: hidden;
   }
 }
 

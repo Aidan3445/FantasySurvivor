@@ -16,7 +16,7 @@ export default function Chart(props) {
   if (data.length === 0) return;
 
   return (
-    <div className="rechart-container box" style={{ "--fillColor": "white" }}>
+    <div className="rechart-container" style={{ "--fillColor": "white" }}>
       <ResponsiveContainer>
         <LineChart
           className="survivor-body"
