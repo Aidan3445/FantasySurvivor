@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import Game from "../fantasy/game";
+import Game from "../utils/game";
 
 import Scoreboard from "../components/ScoreboardComp";
-import Chart from "../components/ChartComp";
+import Chart from "../components/RechartChartComp";
 
 export default function HomePage() {
   var [survivors, setSurvivors] = useState([]);
@@ -19,12 +19,8 @@ export default function HomePage() {
 
   React.useEffect(() => {
     // can optimize this by making one call to a better helper method
-    Game.getSurvivors().then((survivors) => {
-      var sortedSurvivors = survivors.sort(
-        (a, b) => b.stats.points - a.stats.points
-      );
-      setSurvivors(sortedSurvivors);
-      setSurvivorData(getData([], sortedSurvivors));
+    Game.getEpisodes().then((episodes) => {
+      setEpisodes(episodes);
     });
 
     Game.getPlayers().then((players) => {
@@ -35,13 +31,18 @@ export default function HomePage() {
       setPlayerData(getData([], sortedPlayers));
     });
 
-    Game.getEpisodes().then((episodes) => {
-      setEpisodes(episodes);
+    Game.getSurvivors().then((survivors) => {
+      var sortedSurvivors = survivors.sort(
+        (a, b) => b.stats.points - a.stats.points
+      );
+      setSurvivors(sortedSurvivors);
+      setSurvivorData(getData([], sortedSurvivors));
     });
 
-    Game.DelayedChart("playerCanvas", "survivorCanvas").then((ids) => {
-      setCanvasIds(ids);
-    });
+    // used for old CanvasChart
+    // Game.DelayedChart("playerCanvas", "survivorCanvas").then((ids) => {
+    //   setCanvasIds(ids);
+    // });
   }, []);
 
   // Scoreboard
@@ -91,6 +92,7 @@ export default function HomePage() {
             selectedNames.length === 0 || selectedNames.includes(member.name),
           data: member.stats.episodeTotals,
           color: member.color,
+          name: member.name,
         };
       })
       .reverse();
@@ -132,7 +134,9 @@ export default function HomePage() {
 
   return (
     <div className="content centered">
-      <div className="box">
+      <br />
+
+      <div className="box pad-5 marg-5">
         <div className="survivor-header">Players</div>
         <Scoreboard
           headers={playerHeaders}
@@ -141,7 +145,7 @@ export default function HomePage() {
         />
         <Chart canvasId={canvasIds.players} data={playerData} />
       </div>
-      <div className="box">
+      <div className="box pad-5 marg-5">
         <div className="survivor-header">Survivors</div>
         <Scoreboard
           headers={survivorHeaders}
@@ -150,13 +154,9 @@ export default function HomePage() {
         />
         <Chart canvasId={canvasIds.survivors} data={survivorData} />
       </div>
-      <div className="box">
+      <div className="box pad-5 marg-5">
         <div className="survivor-header">Eliminations</div>
-        <Scoreboard
-          headers={eliminationHeaders}
-          entries={eliminationEntries}
-          handleSelect={() => []}
-        />
+        <Scoreboard headers={eliminationHeaders} entries={eliminationEntries} />
       </div>
     </div>
   );

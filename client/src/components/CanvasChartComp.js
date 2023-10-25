@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { smallScreen } from "../utils/screenSize";
 
 export default function Chart(props) {
   var { data, canvasId } = props;
@@ -7,8 +8,11 @@ export default function Chart(props) {
     drawChart(data, canvasId);
   }, [data, canvasId]);
 
+  var height = 500;
+  if (smallScreen) height = 1200;
+
   return (
-    <canvas className="graph" id={canvasId} width={1200} height={500}></canvas>
+    <canvas className="graph" id={canvasId} width={1200} height={height}></canvas>
   );
 }
 
@@ -26,6 +30,7 @@ function drawChart(data, canvasId) {
 
   // line width for the graph
   var lineWidth = 10;
+  if (smallScreen) lineWidth = 20;
   // height off the bottom of the canvas
   // the distance on the right of the canvas is 1/2 this value
   var chartOffset = 100;

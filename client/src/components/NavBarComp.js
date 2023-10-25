@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Select from "react-select";
-import Game from "../fantasy/game";
+import { tinyScreen } from "../utils/screenSize";
+import Game from "../utils/game";
 
 import Modal, { LoginContent } from "../components/ModalComp";
 
@@ -44,10 +45,6 @@ function Navbar(props) {
     setMenuOpen(false);
   }, [useLocation()]);
 
-  useEffect(() => {
-    setModalOpen(!loggedIn);
-  }, [loggedIn]);
-
   const logInOut = () => {
     if (loggedIn) {
       setLoggedIn("");
@@ -57,17 +54,14 @@ function Navbar(props) {
     setModalOpen(true);
   };
 
-  var navButtonStyle = { "--noHoverColor": "#7a7a7a" };
-
   return (
     <div>
       <nav className={`navbar ${isNavbarVisible ? "visible" : "hidden"}`}>
         <div className="nav-content">
-          <div className="survivor-header navbar-left">Fantasy Survivor</div>
-          {loggedIn && (
+          <div className="nav-title">Fantasy Survivor</div>
+          {loggedIn && !tinyScreen && (
             <Link
               className="clean-link survivor-button"
-              style={navButtonStyle}
               to={`/Player/${loggedIn}`}
             >
               {loggedIn}
@@ -75,14 +69,12 @@ function Navbar(props) {
           )}
           <Link
             className="clean-link survivor-button"
-            style={navButtonStyle}
             to="/"
           >
             Home
           </Link>
           <button
             className="survivor-button"
-            style={navButtonStyle}
             onClick={() => logInOut()}
           >
             {loggedIn ? "Log Out" : "Log In"}

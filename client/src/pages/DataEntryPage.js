@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import Game from "../fantasy/game";
+import Game from "../utils/game";
 
 import NewEpisodeEntry from "../components/NewEpisodeEntryComp";
 import EpisodeUpdateEntry from "../components/EpisodeUpdateComp";

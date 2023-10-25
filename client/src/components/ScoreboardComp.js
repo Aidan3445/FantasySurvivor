@@ -1,62 +1,101 @@
 import React, { useState, useEffect } from "react";
-import Game from "../fantasy/game";
-import tinycolor from "tinycolor2";
+import tinyColor from "tinycolor2";
+import { smallScreen } from "../utils/screenSize";
+import Game from "../utils/game";
 
 function Scoreboard(props) {
   var { headers, entries, handleSelect } = props;
   const [selected, setSelected] = useState([]);
+  const [multiPage, setMultiPage] = useState(entries.length > 9);
+  const [page, setPage] = useState(0);
 
-  useEffect(() => {}, [entries]);
+  useEffect(() => {
+    setMultiPage(entries.length > 9);
+  }, [entries]);
 
   const handleClick = (clickName) => {
+    if (!handleSelect) return;
     setSelected(handleSelect(selected, clickName));
   };
 
   const clearSelected = () => {
+    if (!handleSelect) return;
     setSelected(handleSelect([""], ""));
   };
 
-  const getStyle = (entry) => {
+  const getStyle = (entry, index) => {
     var fillColor = entry.color;
+    if (smallScreen && index % 2 === 1) {
+      fillColor = tinyColor(fillColor).darken(5).toString();
+    }
     var notSelected = !selected.includes(entry.data[0]);
     if (selected.length > 0 && notSelected) {
-      fillColor = tinycolor(fillColor).desaturate(50).toString();
+      fillColor = tinyColor(fillColor).desaturate(40).toString();
     }
     return {
       color: Game.isLightColor(entry.color) ? "black" : "white",
-      backgroundColor: fillColor,
-      fontStyle: notSelected ? "normal" : "italic",
+      "--fill": fillColor,
+      "--selected": notSelected ? "normal" : "italic",
     };
   };
 
+  const getPage = () => {
+    if (multiPage) {
+      return entries.slice(page * 9, (page + 1) * 9);
+    }
+    return entries;
+  };
+
+  const changePage = () => {
+    setPage(page + (page === 0 ? 1 : -1));
+  };
+
   return (
-    <table className="scoreboard">
-      <thead>
-        <tr
-          className={selected.length > 0 ? "clickable" : ""}
-          onClick={clearSelected}
-        >
-          {headers.map((header) => (
-            <th key={header}>{header}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {entries.map((entry, index) => (
+    <div>
+      <table className="scoreboard">
+        <thead>
           <tr
-            className="clickable"
-            onClick={() => handleClick(entry.data[0])}
-            key={index}
-            style={getStyle(entry)}
+            className={selected.length > 0 ? "clickable" : ""}
+            onClick={clearSelected}
           >
-            <td key={index}>{index + 1}</td>
-            {entry.data.map((cell, index) => (
-              <td key={index}>{Number.isNaN(cell) ? null : cell}</td>
+            {headers.map((header) => (
+              <th key={header} style={{ "--fill": "white" }}>
+                {header}
+              </th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {getPage().map((entry, index) => (
+            <tr
+              className={handleSelect ? "clickable" : ""}
+              onClick={() => handleClick(entry.data[0])}
+              key={index}
+            >
+              <td key={index} style={getStyle(entry, 1)}>
+                {index + 1 + page * 9}
+              </td>
+              {entry.data.map((cell, index) => (
+                <td key={index} style={getStyle(entry, index)}>
+                  {Number.isNaN(cell) ? null : cell}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {multiPage && (
+        <button
+          className="min-width"
+          style={{
+            "--min-width": "5rem",
+          }}
+          onClick={() => changePage()}
+        >
+          {page === 0 ? "Next ⇨" : "⇦ Prev"}
+        </button>
+      )}
+    </div>
   );
 }
 

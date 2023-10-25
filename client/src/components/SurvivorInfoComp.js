@@ -5,7 +5,14 @@ function SurvivorInfo(props) {
 
   return (
     <div className="survivor-info">
-      <div className="survivor-header">{survivor.name}</div>
+      {survivor.name && (
+        <div className="centered">
+          <div className="survivor-header">{survivor.name.split(" ")[0]}</div>
+          <div className="survivor-body">
+            {survivor.name.split(" ").splice(1).join(" ")}
+          </div>
+        </div>
+      )}
       <h3>Age: {survivor.age}</h3>
       <h3>From: {survivor.hometown}</h3>
       <h3>Lives in: {survivor.residence}</h3>

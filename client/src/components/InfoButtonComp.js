@@ -8,7 +8,7 @@ const InfoButton = (props) => {
 
   return (
     <div>
-      <div className="info-button" onClick={() => setModalOpen(true)}>
+      <div className="info-button survivor-body" onClick={() => setModalOpen(true)}>
         ?
       </div>
       <Modal

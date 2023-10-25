@@ -57,6 +57,7 @@ module.exports = {
       crypto: false,
       stream: false,
       buffer: false,
+      path: false,
     },
     alias: {
       process: "process/browser",

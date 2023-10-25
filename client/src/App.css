@@ -19,21 +19,22 @@
     width: 100%;
     align-items: center;
     gap: 10px;
-
-    .navbar-left {
-      margin-right: auto;
-      height: 100%;
-      align-items: baseline;
-    }
-
-    .survivor-header {
-      transform: translateY(-0.15em);
-    }
   }
 }
 
+.nav-title {
+  font-family: "Survivor";
+  font-size: 5em;
+  padding: 0 15px;
+  margin-right: auto;
+  height: 100%;
+  align-items: baseline;
+  transform: translateY(-0.15em);
+  text-shadow: 1px 5px 5px rgba(0, 0, 0, 0.2);
+}
+
 .navbar.hidden {
-  transform: translateY(calc(var(--heightValue) * -2));
+  transform: translateY(calc(var(--heightValue) * -2.5));
 }
 
 /* Hamburger Menu */
@@ -50,15 +51,17 @@
 }
 
 .bar {
-  width: 25px;
-  height: 3px;
+  width: 30px;
+  height: 4px;
   background-color: black;
   margin: 3px 0;
   transition: transform 0.5s ease-in-out;
+
+  border-radius: 5px;
 }
 
 .menu.open .bar:nth-child(1) {
-  transform: translateY(9px) rotate(-225deg);
+  transform: translateY(10px) rotate(-225deg);
 }
 
 .menu.open .bar:nth-child(2) {
@@ -66,7 +69,7 @@
 }
 
 .menu.open .bar:nth-child(3) {
-  transform: translateY(-9px) rotate(225deg);
+  transform: translateY(-10px) rotate(225deg);
 }
 
 .menu-list {
@@ -111,11 +114,14 @@
   font-family: "Survivor";
   font-size: 5em;
   padding: 0 15px;
+  white-space: nowrap;
 }
 
 .survivor-body {
   font-family: "Survivor";
   font-size: 2em;
+  padding-bottom: 0.2em;
+  -webkit-text-stroke: 0.25px black;
 }
 
 .survivor-button {
@@ -125,7 +131,7 @@
   border: 1px solid black;
   border-radius: 5px; /* Add rounded corners */
   padding: 0 10px 0.5rem 10px; /* Add padding to separate content from border */
-  background-color: var(--noHoverColor);
+  background-color: var(--noHoverColor, #7a7a7a);
   white-space: nowrap;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
 }
@@ -139,12 +145,11 @@
 /* info button */
 .info-button {
   font-family: "Survivor";
-  position: relative;
-  font-size: 2em;
-  color: grey;
-  left: -1em;
-  top: -0.4em;
-
+  position: absolute;
+  top: 0.5rem;
+  left: 0;
+  right: -17rem;
+  color: gray;
   transition: color 0.2s ease;
 }
 
@@ -265,24 +270,42 @@
 
 /* Scoreboard */
 .scoreboard {
-  width: 100%;
-  margin: 0;
+  width: 95%;
+  margin: auto;
+  border-spacing: 0 3px;
 }
 
-.scoreboard th {
-  border: 1px solid black;
-  border-left: none;
-  border-right: none;
-}
-s .scoreboard tbody {
+.scoreboard tbody {
   display: flexbox;
   flex-direction: column;
 }
 
-.scoreboard td {
+.scoreboard td,
+th {
+  color: black;
+  background-color: var(--fill, white);
+  font-style: var(--selected, normal);
   border: 1px solid black;
-  border-left: none;
-  border-right: none;
+  border-left: 0;
+  border-right: 0;
+}
+
+.scoreboard tr {
+  box-shadow: 0 10px 10px -8px rgb(0, 0, 0, 0.5);
+}
+
+/* round corners of first and last td  in each row */
+.scoreboard tr td:first-child,
+th:first-child {
+  border-left: 1px solid black;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+.scoreboard tr td:last-child,
+th:last-child {
+  border-right: 1px solid black;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 
 /* Point Breakdown */
@@ -301,6 +324,13 @@ s .scoreboard tbody {
   position: relative;
   width: 100%;
   margin: 0;
+}
+
+/* Rechart Container */
+.rechart-container {
+  width: 95%;
+  height: 300px;
+  margin: auto;
 }
 
 /* Gif */
@@ -363,6 +393,11 @@ s .scoreboard tbody {
   align-items: center;
 }
 
+/* Push Right */
+.push-right {
+  left: 100%;
+}
+
 /* Min Width by font size */
 .min-width-20rem {
   min-width: 20rem;
@@ -372,6 +407,10 @@ s .scoreboard tbody {
   min-width: 15rem;
 }
 
+.min-width {
+  min-width: var(--min-width);
+}
+
 /* container */
 .container {
   display: flex;
@@ -379,10 +418,6 @@ s .scoreboard tbody {
   justify-content: space-between;
   width: 90%;
   margin: 0 auto;
-
-  .box {
-    width: 50%;
-  }
 }
 
 .container-fixed {
@@ -392,25 +427,28 @@ s .scoreboard tbody {
   justify-content: space-between;
   width: 100%;
   margin: 0 auto;
-
-  .box {
-    width: 50%;
-  }
-  .box:first-child {
-    border-left: none; /* Remove left border from the first box */
-  }
-
-  .box:last-child {
-    border-right: none; /* Remove right border from the last box */
-  }
 }
 
 .box {
   justify-content: center;
   align-items: center;
   border: 1px solid black;
-  margin-bottom: 20px; /* Add some spacing between the divs */
-  width: 100%;
+  border-radius: 5px;
+  background-color: var(--fillColor, white);
+  margin-top: 5px;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+.pad-5 {
+  padding: 5px;
+}
+
+.marg-5 {
+  margin: 5px;
+}
+
+.footer {
+  height: 100px;
 }
 
 /* Modal */
@@ -500,20 +538,35 @@ button,
 }
 
 /* Episode Table */
-table {
+.episodes table {
   border-collapse: collapse;
+  margin: 20px;
+}
+
+.episodes th {
+  font-weight: 700;
+  background-color: white;
+}
+
+.episodes th,
+.episodes td {
+  text-align: center;
+  border: 1px solid black;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0;
   margin: 20px;
 }
 
 th {
   font-weight: 700;
-  background-color: white;
 }
 
 th,
 td {
   text-align: center;
-  border: 1px solid black;
 }
 
 /* Form */
@@ -532,28 +585,22 @@ hr {
   width: 100%; /* Width as needed */
 }
 
-/* Media query for mobile or narrow screens */
-@media (max-width: 768px) {
-  .survivor-header {
-    font-size: 2em;
+/* Media query for mobile or narrow screens
+-------------------------------------------
+Please note this value should match 
+the small screen value in utils/screenSize.js
+As far as I can tell there is no reliable way 
+to pass variables to media queries
+*/
+@media (max-width: 960px) {
+  .nav-title {
+    font-size: 3em;
+    line-height: 0.5em;
+    padding: 0.1em 0;
   }
+}
 
-  .survivor-body {
-    font-size: 0.75em;
-  }
-
-  .survivor-button {
-    font-family: "Survivor";
-    font-size: 0.75em;
-    color: black;
-    border: 1px solid black;
-    border-radius: 5px; /* Add rounded corners */
-    padding: 0 10px 0.5rem 10px; /* Add padding to separate content from border */
-    background-color: var(--noHoverColor);
-    white-space: nowrap;
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
-  }
-
+@media (max-width: 775px) {
   .color-label {
     font-family: "Survivor";
     font-size: 3em;
@@ -569,7 +616,40 @@ hr {
     justify-content: center;
   }
 
-  .box {
-    width: 100%; /* Take up full width when stacked */
+  .info-button {
+    top: -0.3rem;
+    left: 0;
+    right: -10rem;
+  }
+
+  .flex-div {
+    display: block;
+    width: 100%;
+    margin: 0 auto;
+    padding-bottom: 1rem;
+    overflow-x: hidden;
+  }
+}
+
+@media (max-width: 535px) {
+  .survivor-header {
+    font-size: 3em;
+    line-height: 0.5em;
+    padding: 0.1em 0;
+  }
+
+  .survivor-body {
+    font-size: 1.2em;
+  }
+
+  .survivor-button {
+    font-family: "Survivor";
+    font-size: 0.75em;
+    color: black;
+    border: 1px solid black;
+    border-radius: 5px; /* Add rounded corners */
+    padding: 0 10px 0.5rem 10px; /* Add padding to separate content from border */
+    white-space: nowrap;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
   }
 }
