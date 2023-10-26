@@ -226,7 +226,10 @@ class Game {
       stats.episodeTotals = this.getRunningPoints(stats.episodeTotals);
     }
 
-    if (lastAired === episodes.length - 1) {
+    if (
+      lastAired === episodes.length - 1 &&
+      episodes[lastAired].soleSurvivor.length > 0
+    ) {
       Object.keys(bets).forEach((bet) => {
         if (bets[bet].length === 0) return;
 
