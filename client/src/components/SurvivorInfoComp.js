@@ -4,9 +4,9 @@ function SurvivorInfo(props) {
   var { survivor } = props;
 
   return (
-    <div className="survivor-info">
+    <div className="box centered pad-5 marg-5">
       {survivor.name && (
-        <div className="centered">
+        <div>
           <div className="survivor-header">{survivor.name.split(" ")[0]}</div>
           <div className="survivor-body">
             {survivor.name.split(" ").splice(1).join(" ")}

@@ -1,15 +1,14 @@
 import React, { useEffect } from "react";
-
+import tinycolor from "tinycolor2";
 import * as points from "../utils/performancePoints.js";
 
 function Episodes(props) {
-  var { episodes, survivor, pickedEpisodes } = props;
+  var { episodes, survivor } = props;
 
   return (
-    <div className="episodes">
-      <div className="survivor-header">Episode Breakdown</div>
+    <div>
       {episodes.map(
-        (episode, index) =>
+        (episode) =>
           survivor.stats &&
           (survivor.stats.eliminated === 0 ||
             survivor.stats.eliminated >= episode.number) && (
@@ -17,7 +16,6 @@ function Episodes(props) {
               episode={episode}
               survivor={survivor}
               key={episode.number}
-              picked={pickedEpisodes ? pickedEpisodes[index] : false}
             />
           )
       )}
@@ -26,130 +24,87 @@ function Episodes(props) {
 }
 
 function EpisodeComp(props) {
-  var { episode, survivor, picked } = props;
+  var { episode, survivor } = props;
   useEffect(() => {}, [episode]);
 
   return (
-    <div className="box marg-5" style={{ "--fillColor": picked ? "rgb(230, 255, 233)" : "darkgrey" }}>
-      <div className="inline-div">
-        <div className="survivor-header">Episode {episode.number}</div>
-        <div className="survivor-body centered">
-          <div>Points Earned: {episode.getPoints(survivor)}</div>
-          <hr className="min-height" />
+    <div
+      className="box marg-5"
+      style={{
+        "--fillColor": survivor.stats.tribeList.findLast(
+          (update) => update.episode < episode.number
+        ).color,
+      }}
+    >
+      <div className="episode-header">
+        <div className="survivor-body bottom-between">
+          <div>Episode {episode.number}</div>
           <div>"{episode.title}"</div>
+        </div>
+        <div className="survivor-body just-right bottom-between">
+          <div>{survivor.name}</div>
+          <div className="no-wrap">
+            Points Earned: {episode.getPoints(survivor)}
+          </div>
         </div>
         {episode.eliminated.includes(survivor.name) && (
           <div className="eliminated">Eliminated</div>
         )}
       </div>
-      <div>
+      <div className="episode-notes-table">
         <EpisodeNotes episode={episode} survivor={survivor} />
+        <EpisodeTable episode={episode} survivor={survivor} />
       </div>
-      <EpisodeTable episode={episode} survivor={survivor} />
     </div>
   );
 }
 
 function EpisodeTable(props) {
   var { episode, survivor } = props;
+
+  if (
+    episode.getTableValues(survivor).filter((value) => value && value != "No")
+      .length === 0
+  ) {
+    return null;
+  }
+
   return (
-    <table>
-      <thead>
-        <tr>
-          <th
-            className="tooltip"
-            data-tooltip={`${points.advFoundMultiplier} Points`}
-          >
-            Advs. Found
-          </th>
-          <th
-            className="tooltip"
-            data-tooltip={`${points.advPlaySelfMultiplier} Points`}
-          >
-            Adv. Plays Self
-          </th>
-          <th
-            className="tooltip"
-            data-tooltip={`${points.advPlayOtherMultiplier} Points`}
-          >
-            Adv. Plays Other
-          </th>
-          <th
-            className="tooltip"
-            data-tooltip={`${points.badAdvPlayMultiplier} Points`}
-          >
-            Bad Adv. Plays
-          </th>
-          <th
-            className="tooltip"
-            data-tooltip={`${points.advEliminatedMultiplier} Points`}
-          >
-            Advs. Eliminated
-          </th>
-          <th
-            className="tooltip"
-            data-tooltip={`${points.tribe1stMultiplier} Points`}
-          >
-            Tribe 1sts
-          </th>
-          <th
-            className="tooltip"
-            data-tooltip={`${points.tribe2ndMultiplier} Points`}
-          >
-            Tribe 2nds
-          </th>
-          <th
-            className="tooltip"
-            data-tooltip={`${points.indivWinMultiplier} Points`}
-          >
-            Indiv. Wins
-          </th>
-          <th
-            className="tooltip"
-            data-tooltip={`${points.indivRewardMultiplier} Points`}
-          >
-            Indiv. Rewards
-          </th>
-          <th
-            className="tooltip"
-            data-tooltip={`${points.episodeTitleValue} Points`}
-          >
-            Spoke Ep. Title
-          </th>
-          <th
-            className="tooltip"
-            data-tooltip={`${points.blindsideMultiplier} Points`}
-          >
-            Blindside
-          </th>
-          <th
-            className="tooltip"
-            data-tooltip={`${points.finalThreeValue} Points`}
-          >
-            Final Three
-          </th>
-          <th
-            className="tooltip"
-            data-tooltip={`${points.wonFireValue} Points`}
-          >
-            Won Fire
-          </th>
-          <th
-            className="tooltip"
-            data-tooltip={`${points.soleSurvivorValue} Points`}
-          >
-            Sole Survivor
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          {episode.getTableValues(survivor).map((value, index) => (
-            <td key={index}>{value}</td>
-          ))}
-        </tr>
-      </tbody>
-    </table>
+    <div className="episode-table">
+      <div className="survivor-body centered">Events</div>
+      <table>
+        <tbody>
+          {episode.getTableValues(survivor).map((value, index) => {
+            if (value && value != "No")
+              return (
+                <tr key={index}>
+                  <th
+                    className="tooltip"
+                    data-tooltip={`${
+                      pointsObj[Object.keys(pointsObj)[index]]
+                    } Points`}
+                  >
+                    {Object.keys(pointsObj)[index]}
+                  </th>
+                  <td
+                    style={{
+                      backgroundColor: tinycolor(
+                        survivor.stats.tribeList.findLast(
+                          (update) => update.episode < episode.number
+                        ).color
+                      )
+                        .darken(10)
+                        .toString(),
+                    }}
+                  >
+                    {value}
+                  </td>
+                </tr>
+              );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
@@ -164,6 +119,23 @@ function EpisodeNotes(props) {
     </ul>
   );
 }
+
+const pointsObj = {
+  "Advantage Found": points.advFoundMultiplier,
+  "Advantage Plays Self": points.advPlaySelfMultiplier,
+  "Advantage Plays Other": points.advPlayOtherMultiplier,
+  "Bad Advantage Plays": points.badAdvPlayMultiplier,
+  "Advantage Eliminated": points.advEliminatedMultiplier,
+  "Tribe 1st Place": points.tribe1stMultiplier,
+  "Tribe 2nd Place": points.tribe2ndMultiplier,
+  "Individual Win": points.indivWinMultiplier,
+  "Individual Reward": points.indivRewardMultiplier,
+  "Spoke Episode Title": points.episodeTitleValue,
+  Blindside: points.blindsideMultiplier,
+  "Final Three": points.finalThreeValue,
+  "Won Fire": points.wonFireValue,
+  "Sole Survivor": points.soleSurvivorValue,
+};
 
 export default Episodes;
 

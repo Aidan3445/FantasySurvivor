@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import tinyColor from "tinycolor2";
-import { smallScreen } from "../utils/screenSize";
 import Game from "../utils/game";
 
 function Scoreboard(props) {
@@ -25,7 +24,7 @@ function Scoreboard(props) {
 
   const getStyle = (entry, index) => {
     var fillColor = entry.color;
-    if (smallScreen && index % 2 === 1) {
+    if (index % 2 === 1) {
       fillColor = tinyColor(fillColor).darken(5).toString();
     }
     var notSelected = !selected.includes(entry.data[0]);
@@ -34,7 +33,7 @@ function Scoreboard(props) {
     }
     return {
       color: Game.isLightColor(entry.color) ? "black" : "white",
-      "--fill": fillColor,
+      "--fillColor": fillColor,
       "--selected": notSelected ? "normal" : "italic",
     };
   };
@@ -59,7 +58,7 @@ function Scoreboard(props) {
             onClick={clearSelected}
           >
             {headers.map((header) => (
-              <th key={header} style={{ "--fill": "white" }}>
+              <th key={header} style={{ "--fillColor": "white" }}>
                 {header}
               </th>
             ))}

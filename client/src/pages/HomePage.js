@@ -135,7 +135,6 @@ export default function HomePage() {
   return (
     <div className="content centered">
       <br />
-
       <div className="box pad-5 marg-5">
         <div className="survivor-header">Players</div>
         <Scoreboard

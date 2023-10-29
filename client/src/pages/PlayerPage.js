@@ -5,8 +5,8 @@ import Game from "../utils/game";
 import PlayerStats from "../components/PlayerStatsComp";
 import SideBets from "../components/SideBetsComp";
 import Scoreboard from "../components/ScoreboardComp";
-import SurvivorPage from "./SurvivorPage";
 import PlayerEdit from "../components/PlayerEditComp";
+import { EpisodeComp as Episode } from "../components/EpisodesComp";
 
 export default function PlayerPage(props) {
   var { loggedIn, setLoggedIn, playerName } = props;
@@ -14,7 +14,6 @@ export default function PlayerPage(props) {
   playerName = playerName || loadedPlayer;
 
   var [player, setPlayer] = useState({});
-  var [selectedSurvivor, setSelectedSurvivor] = useState("");
   var [episodeEntries, setEpisodeEntries] = useState([]);
   var [betOutcomes, setBetOutcomes] = useState({
     firstBoot: [],
@@ -24,6 +23,7 @@ export default function PlayerPage(props) {
     mostIndividualImmunities: [],
     firstLoser: [],
   });
+  var [episodes, setEpisodes] = useState([]);
 
   const navigate = useNavigate();
 
@@ -35,10 +35,14 @@ export default function PlayerPage(props) {
       }
 
       setPlayer(player);
+    });
 
-      Game.getSideBets().then((bets) => {
-        setBetOutcomes(bets);
-      });
+    Game.getSideBets().then((bets) => {
+      setBetOutcomes(bets);
+    });
+
+    Game.getEpisodes().then((episodes) => {
+      setEpisodes(episodes.reverse());
     });
   }, [playerName, loggedIn]);
 
@@ -82,57 +86,40 @@ export default function PlayerPage(props) {
       : [];
   };
 
-  const displaySurvivor = (selected, clickName) => {
-    if (selected.includes(clickName)) {
-      setSelectedSurvivor("");
-      return [];
-    }
-    setSelectedSurvivor(clickName);
-    return [clickName];
-  };
-
   return (
     <div className="content">
       <br />
-      <div className="flex-div">
-        {player.name && (
-          <PlayerEdit
-            player={player}
-            setPlayer={setPlayer}
-            loggedIn={loggedIn}
-            setLoggedIn={setLoggedIn}
-          />
-        )}
-        {player.stats && (
-          <PlayerStats stats={player.stats} color={player.color} />
-        )}
-        {player.draft && loggedIn === playerName && (
-          <SideBets bets={player.draft} outcomes={betOutcomes} />
-        )}
-      </div>
-      <div className="box pad-5 marg-5">
-        <div className="survivor-header">Episodes</div>
-        <Scoreboard
-          headers={episodeHeaders}
-          entries={episodeEntries}
-          handleSelect={displaySurvivor}
+      {player.name && (
+        <PlayerEdit
+          player={player}
+          setPlayer={setPlayer}
+          loggedIn={loggedIn}
+          setLoggedIn={setLoggedIn}
         />
-      </div>
-      {selectedSurvivor ? (
-        <SurvivorPage
-          survivorName={selectedSurvivor}
-          pickedEpisodes={player.survivorList
-            .map((survivor) => {
-              return survivor.name === selectedSurvivor;
-            })
-            .reverse()}
-        />
-      ) : (
-        <div className="survivor-body centered">
-          Click on a survivor&rsquo;s name on the scoreboard to display their point
-          info.
-        </div>
       )}
+      <section className="player-info">
+        <div className="flex-div gap-0">
+          {player.stats && (
+            <PlayerStats stats={player.stats} color={player.color} />
+          )}
+          {player.draft && loggedIn === playerName && (
+            <SideBets bets={player.draft} outcomes={betOutcomes} />
+          )}
+        </div>
+        <div className="box centered pad-5 marg-5">
+          <div className="survivor-header">Episodes</div>
+          <Scoreboard headers={episodeHeaders} entries={episodeEntries} />
+        </div>
+      </section>
+      {episodes &&
+        player.survivorList &&
+        episodes.map((ep, index) => (
+          <Episode
+            key={index}
+            episode={ep}
+            survivor={player.survivorList[index]}
+          />
+        ))}
     </div>
   );
 }

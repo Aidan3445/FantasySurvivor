@@ -7,6 +7,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Dot,
 } from "recharts";
 import { smallScreen } from "../utils/screenSize";
 
@@ -32,14 +33,14 @@ export default function Chart(props) {
           <XAxis dataKey="episode" />
           <YAxis />
           <Tooltip content={<CustomTooltip />} />
-          {data.map((data) => (
+          {data.map((data, index) => (
             <Line
               type="monotone"
               dataKey={data.name}
               stroke={data.color}
               strokeWidth={smallScreen ? 6 : 8}
               hide={!data.draw}
-              key={data.name}
+              key={index}
             />
           ))}
         </LineChart>
