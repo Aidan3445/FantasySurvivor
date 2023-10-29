@@ -8,9 +8,8 @@ import SurvivorStats from "../components/SurvivorStatsComp";
 import Episodes from "../components/EpisodesComp";
 
 export default function SurvivorPage(props) {
-  var { survivorName, pickedEpisodes } = props;
+  var { survivorName } = props;
   var [survivor, setSurvivor] = useState({});
-  var [tribeColor, setTribeColor] = useState("");
   var [episodes, setEpisodes] = useState([]);
 
   var loadedPlayer = useLoaderData();
@@ -20,10 +19,6 @@ export default function SurvivorPage(props) {
     // can optimize this by making one call to a better helper method
     Game.getSurvivor(survivorName).then((surv) => {
       setSurvivor(surv);
-
-      Game.getTribeColor(surv.tribe).then((color) => {
-        setTribeColor(color);
-      });
     });
 
     Game.getEpisodes().then((episodes) => {
@@ -32,27 +27,15 @@ export default function SurvivorPage(props) {
     });
   }, [survivorName]);
 
+
   return (
     <div className="content">
-      <div className="flex-div">
-        <SurvivorInfo survivor={survivor} />
+      <section className="survivor-info">
         <SurvivorPhoto survivor={survivor} />
-        <div>
-          {survivor.stats ? <SurvivorStats stats={survivor.stats} /> : null}
-          <div
-            className="color-label centered"
-            style={{ background: tribeColor }}
-          >
-            {survivor.tribe}
-          </div>
-        </div>
-      </div>
-      <hr />
-      <Episodes
-        episodes={episodes}
-        survivor={survivor}
-        pickedEpisodes={pickedEpisodes}
-      />
+        <SurvivorInfo survivor={survivor} />
+        {survivor.stats ? <SurvivorStats stats={survivor.stats} /> : null}
+      </section>
+      <Episodes episodes={episodes} survivor={survivor} />
     </div>
   );
 }

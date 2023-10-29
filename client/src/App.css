@@ -196,22 +196,10 @@
   font-size: 2em;
 }
 
-/* Episode Div */
-.episodes {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-}
-
 /* Survivor Photo */
 .photo-container {
-  width: 250px;
-  height: 250px;
-  overflow: hidden;
   position: relative;
-  margin: auto;
+  overflow: hidden;
 }
 
 .survivor-photo {
@@ -245,6 +233,20 @@
   width: 50%;
   height: 10rem;
   margin: 10px 0;
+}
+
+/* Player Info */
+.player-info {
+  display: grid;
+  grid:
+    "sidebar body" 1fr
+    / auto 1fr;
+}
+
+.survivor-info {
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: repeat(3, 1fr);
 }
 
 /* Text Input */
@@ -283,11 +285,15 @@
 .scoreboard td,
 th {
   color: black;
-  background-color: var(--fill, white);
-  font-style: var(--selected, normal);
+  background-color: white;
   border: 1px solid black;
   border-left: 0;
   border-right: 0;
+}
+
+.scoreboard td {
+  background-color: var(--fillColor);
+  font-style: var(--selected, normal);
 }
 
 .scoreboard tr {
@@ -306,6 +312,43 @@ th:last-child {
   border-right: 1px solid black;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
+}
+
+/* Episode Header */
+.episode-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: self-start;
+  gap: 1rem;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Episode Notes and Table Container */
+.episode-notes-table {
+  display: flex;
+}
+
+/* Episode Table */
+.episode-table {
+  border-spacing: 0 3px;
+  margin-left: auto;
+  height: min-content;
+}
+
+.episode-table th {
+  text-align: left;
+  white-space: nowrap;
+}
+
+.episode-table td {
+  border: #000 solid 1px;
+  border-left: none;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  padding-left: 20px;
 }
 
 /* Point Breakdown */
@@ -447,6 +490,10 @@ th:last-child {
   margin: 5px;
 }
 
+.gap-0 {
+  gap: 0;
+}
+
 .footer {
   height: 100px;
 }
@@ -499,12 +546,22 @@ th:last-child {
   cursor: pointer;
 }
 
+.bottom-between > *:first-child {
+  margin-bottom: -8px;
+  border-bottom: 1px solid black;
+}
+
 /* Centered */
 .centered {
   position: relative;
   align-items: center;
   text-align: center;
   gap: 1rem;
+}
+
+/* Right Justified Text */
+.just-right {
+  text-align: right;
 }
 
 /* Padded Sides */
@@ -537,23 +594,6 @@ button,
   cursor: pointer;
 }
 
-/* Episode Table */
-.episodes table {
-  border-collapse: collapse;
-  margin: 20px;
-}
-
-.episodes th {
-  font-weight: 700;
-  background-color: white;
-}
-
-.episodes th,
-.episodes td {
-  text-align: center;
-  border: 1px solid black;
-}
-
 table {
   border-collapse: separate;
   border-spacing: 0;
@@ -562,11 +602,6 @@ table {
 
 th {
   font-weight: 700;
-}
-
-th,
-td {
-  text-align: center;
 }
 
 /* Form */
@@ -597,6 +632,18 @@ to pass variables to media queries
     font-size: 3em;
     line-height: 0.5em;
     padding: 0.1em 0;
+  }
+
+  .player-info {
+    display: block;
+  }
+
+  .survivor-info {
+    grid-template-columns: 1fr
+  }
+
+  .photo-container {
+    min-height: 250px;
   }
 }
 
@@ -651,5 +698,19 @@ to pass variables to media queries
     padding: 0 10px 0.5rem 10px; /* Add padding to separate content from border */
     white-space: nowrap;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+  }
+
+  th,
+  td {
+    font-size: 0.75em;
+  }
+
+  .episode-table td {
+    padding-left: 5px;
+  }
+
+  .bottom-between > *:first-child {
+    margin-bottom: -4px;
+    border-bottom: 1px solid black;
   }
 }

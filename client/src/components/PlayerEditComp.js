@@ -64,80 +64,78 @@ function PlayerEdit(props) {
 
   return (
     <div
-      className="box pad-5 marg-5"
+      className="box centered pad-5 marg-5"
       style={{ "--fillColor": player.color }}
     >
-      <div className="centered">
-        <div
-          className="survivor-header"
-          onClick={() => {
-            if (player.isAdmin && loggedIn === player.name)
-              navigate("/DataEntry");
-          }}
-        >
-          {player.name}
-        </div>
-        {loggedIn === player.name ? (
-          <div className="vertical-div">
-            <div className="survivor-body">Change:</div>
-            <button
-              className="survivor-button width-100"
-              style={getStyleColors()}
-              onClick={() => {
-                openModal(
-                  <SurvivorSelectContent
-                    player={player}
-                    setNewSurvivor={setNewSurvivor}
-                    setModalOpen={setModalOpen}
-                  />
-                );
-              }}
-            >
-              Survivor
-            </button>
-            <button
-              className="survivor-button width-100"
-              style={getStyleColors()}
-              onClick={() => {
-                openModal(
-                  <ColorModalContent
-                    color={player.color}
-                    setColor={setColor}
-                    playerName={player.name}
-                    setModalOpen={setModalOpen}
-                  />
-                );
-              }}
-            >
-              Color
-            </button>
-            <button
-              className="survivor-button width-100"
-              style={getStyleColors()}
-              onClick={() =>
-                openModal(
-                  <PasswordModalContent
-                    playerName={player.name}
-                    setModalOpen={setModalOpen}
-                  />
-                )
-              }
-            >
-              Password
-            </button>
-          </div>
-        ) : (
-          !loggedIn && (
-            <button
-              className="survivor-button"
-              style={{ "--noHoverColor": "lightgrey" }}
-              onClick={() => logIn()}
-            >
-              Log In
-            </button>
-          )
-        )}
+      <div
+        className="survivor-header"
+        onClick={() => {
+          if (player.isAdmin && loggedIn === player.name)
+            navigate("/DataEntry");
+        }}
+        style={{ ...getStyleColors(), marginBottom: "15px" }}
+      >
+        {player.name}
       </div>
+      {loggedIn === player.name ? (
+        <div className="inline-div">
+          <button
+            className="survivor-button width-100"
+            style={getStyleColors()}
+            onClick={() => {
+              openModal(
+                <SurvivorSelectContent
+                  player={player}
+                  setNewSurvivor={setNewSurvivor}
+                  setModalOpen={setModalOpen}
+                />
+              );
+            }}
+          >
+            Survivor
+          </button>
+          <button
+            className="survivor-button width-100"
+            style={getStyleColors()}
+            onClick={() => {
+              openModal(
+                <ColorModalContent
+                  color={player.color}
+                  setColor={setColor}
+                  playerName={player.name}
+                  setModalOpen={setModalOpen}
+                />
+              );
+            }}
+          >
+            Color
+          </button>
+          <button
+            className="survivor-button width-100"
+            style={getStyleColors()}
+            onClick={() =>
+              openModal(
+                <PasswordModalContent
+                  playerName={player.name}
+                  setModalOpen={setModalOpen}
+                />
+              )
+            }
+          >
+            Password
+          </button>
+        </div>
+      ) : (
+        !loggedIn && (
+          <button
+            className="survivor-button"
+            style={{ "--noHoverColor": "lightgrey" }}
+            onClick={() => logIn()}
+          >
+            Log In
+          </button>
+        )
+      )}
       <Modal
         isOpen={modalOpen}
         closeModal={closeModal}

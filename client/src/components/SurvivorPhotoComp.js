@@ -4,7 +4,7 @@ function SurvivorPhoto(props) {
   var { survivor } = props;
 
   return (
-    <div className="photo-container">
+    <div className="box pad-5 marg-5 photo-container">
       <img
         className="survivor-photo"
         src={survivor.photo}

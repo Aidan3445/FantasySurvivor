@@ -53,9 +53,10 @@ class Game {
     survivor.stats = {
       points: 0,
       ppe: 0,
-      wins: 0,
       indivWins: 0,
       tribeWins: 0,
+      advsFound: 0,
+      advsPlayed: 0,
       eliminated: 0,
       episodeTotals: [],
       tribeList: [
@@ -77,6 +78,7 @@ class Game {
         var tribeUpdate = episode.tribeUpdates.find((update) =>
           update.survivors.includes(name)
         );
+
         if (tribeUpdate) {
           survivor.stats.tribeList.push({
             episode: episode.number - 1,
@@ -95,13 +97,22 @@ class Game {
 
         var indivWins = episode.indivWins.filter((val) => val === name);
         survivor.stats.indivWins += indivWins.length;
-        survivor.stats.wins += indivWins.length;
 
         var tribeWins = episode.tribe1sts.filter(
           (val) => val === name || val === tribe
         );
         survivor.stats.tribeWins += tribeWins.length;
-        survivor.stats.wins += tribeWins.length;
+
+        var advsFound = episode.advsFound.filter(
+          (val) => val === name || val === tribe
+        );
+        survivor.stats.advsFound += advsFound.length;
+
+        var advsPlayed = episode.advPlaysSelf
+          .concat(episode.advPlaysOther)
+          .concat(episode.badAdvPlays)
+          .filter((val) => val === name || val === tribe);
+        survivor.stats.advsPlayed += advsPlayed.length;
 
         survivor.stats.eliminated = episode.eliminated.includes(name)
           ? episode.number
