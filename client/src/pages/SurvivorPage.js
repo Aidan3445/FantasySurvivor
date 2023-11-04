@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLoaderData } from "react-router-dom";
-import Game from "../utils/game";
+import API from "../utils/api";
+import GameData from "../utils/gameData";
 
 import SurvivorInfo from "../components/SurvivorInfoComp";
 import SurvivorPhoto from "../components/SurvivorPhotoComp";
@@ -16,23 +17,21 @@ export default function SurvivorPage(props) {
   survivorName = survivorName || loadedPlayer;
 
   useEffect(() => {
-    // can optimize this by making one call to a better helper method
-    Game.getSurvivor(survivorName).then((surv) => {
-      setSurvivor(surv);
-    });
-
-    Game.getEpisodes().then((episodes) => {
-      episodes.reverse();
-      setEpisodes(episodes);
-    });
+    new API()
+      .all()
+      .newRequest()
+      .then((res) => {
+        var gameData = new GameData(res);
+        setEpisodes(gameData.episodes);
+        setSurvivor(gameData.survivorByName(survivorName));
+      });
   }, [survivorName]);
-
 
   return (
     <div className="content">
       <section className="survivor-info">
-        <SurvivorPhoto survivor={survivor} />
         <SurvivorInfo survivor={survivor} />
+        <SurvivorPhoto survivor={survivor} />
         {survivor.stats ? <SurvivorStats stats={survivor.stats} /> : null}
       </section>
       <Episodes episodes={episodes} survivor={survivor} />

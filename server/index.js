@@ -134,15 +134,44 @@ app.post("/api/player/:name/draft", (req, res) => {
     .catch((err) => res.json(err));
 });
 app.get("/api/player/:name/login/:password", (req, res) => {
-  Player.findOne({ name: req.params.name })
+  var { name, password } = req.params;
+  Player.findOne({ name: name })
+    .then((player) => {
+      if (player && player.validation(password, player.password)) {
+        res.json(player);
+        return;
+      }
+      res.json({ error: "Player Name and Password combination not found." });
+    })
+    .catch((err) => res.json(err));
+});
+app.get("/api/player/:name/rememberMe/:token", (req, res) => {
+  var { name, token } = req.params;
+  Player.findOne({ name: name })
+    .then((player) => {
+      if (player && player.validation(token, player.rememberMeToken)) {
+        res.json(player);
+        return;
+      }
+      res.json({ error: "Player Name and Password combination not found." });
+    })
+    .catch((err) => res.json(err));
+});
+app.post("/api/player/:name/rememberMe", (req, res) => {
+  const { name } = req.params;
+  const { token } = req.body;
+  Player.findOne({ name: name })
     .then((player) => {
       if (player) {
-        if (player.validPassword(req.params.password)) {
-          res.json(player);
-          return;
-        }
+        player.rememberMeToken = player.generateHash(token);
+        player
+          .save()
+          .then((player) => res.json(player))
+          .catch((err) => res.json(err));
+      } else {
+        res.json({ error: `Player ${name} not found` });
+        return;
       }
-      res.json({ error: "Invalid password" });
     })
     .catch((err) => res.json(err));
 });
@@ -164,18 +193,20 @@ app.post("/api/player/:playerName/changesurvivor/:survivorName", (req, res) => {
     .catch((err) => res.json(err));
 });
 app.post("/api/player/:name/password", (req, res) => {
-  const { newPassword } = req.body;
+  const { newPassword, oldPassword } = req.body;
   const { name } = req.params;
   Player.findOne({ name: name })
     .then((player) => {
-      if (player) {
+      if (player.validateLogin(oldPassword)) {
         player.password = player.generateHash(newPassword);
         player
           .save()
           .then((player) => res.json(player))
           .catch((err) => res.json(err));
       } else {
-        res.json({ error: `Player ${name} not found` });
+        res.json({
+          error: `Previous password incorrect. Contact Aidan if you need help.`,
+        });
         return;
       }
     })

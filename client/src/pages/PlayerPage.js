@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLoaderData, useNavigate } from "react-router-dom";
-import Game from "../utils/game";
+import GameData from "../utils/gameData";
+import API from "../utils/api";
 
 import PlayerStats from "../components/PlayerStatsComp";
 import SideBets from "../components/SideBetsComp";
@@ -13,6 +14,7 @@ export default function PlayerPage(props) {
   var loadedPlayer = useLoaderData();
   playerName = playerName || loadedPlayer;
 
+  var [episodes, setEpisodes] = useState([]);
   var [player, setPlayer] = useState({});
   var [episodeEntries, setEpisodeEntries] = useState([]);
   var [betOutcomes, setBetOutcomes] = useState({
@@ -23,27 +25,24 @@ export default function PlayerPage(props) {
     mostIndividualImmunities: [],
     firstLoser: [],
   });
-  var [episodes, setEpisodes] = useState([]);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    // optimize this by making one call to a better helper method
-    Game.getPlayer(playerName).then((player) => {
-      if (loggedIn === playerName && player.survivorList.length === 0) {
-        navigate(`/Draft`);
-      }
+    new API()
+      .all()
+      .newRequest()
+      .then((res) => {
+        var gameData = new GameData(res);
+        setEpisodes(gameData.episodes);
+        setBetOutcomes(gameData.sideBets);
 
-      setPlayer(player);
-    });
-
-    Game.getSideBets().then((bets) => {
-      setBetOutcomes(bets);
-    });
-
-    Game.getEpisodes().then((episodes) => {
-      setEpisodes(episodes.reverse());
-    });
+        var player = gameData.playerByName(playerName);
+        if (loggedIn === playerName && player.survivorList.length === 0) {
+          navigate(`/Draft`);
+        }
+        setPlayer(player);
+      });
   }, [playerName, loggedIn]);
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import tinyColor from "tinycolor2";
-import Game from "../utils/game";
+import { isLightColor } from "../utils/miscUtils";
 
 function Scoreboard(props) {
   var { headers, entries, handleSelect } = props;
@@ -32,7 +32,7 @@ function Scoreboard(props) {
       fillColor = tinyColor(fillColor).desaturate(40).toString();
     }
     return {
-      color: Game.isLightColor(entry.color) ? "black" : "white",
+      color: isLightColor(entry.color) ? "black" : "white",
       "--fillColor": fillColor,
       "--selected": notSelected ? "normal" : "italic",
     };

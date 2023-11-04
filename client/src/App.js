@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Game from "./utils/game";
+import API from "./utils/api";
+import { removeLogin } from "./utils/miscUtils";
 import "./App.css";
 
 import HomePage from "./pages/HomePage";
@@ -15,14 +16,14 @@ function App() {
 
   const handleLogin = (playerName) => {
     setLoggedIn(playerName);
-    if (!playerName) Game.removeLogin();
+    if (!playerName) removeLogin();
   };
 
   useEffect(() => {
     if (loggedIn) return;
-    Game.autoLogin().then((res) => {
-      if (res.accepted) {
-        setLoggedIn(res.accepted);
+    new API().autoLogin().newRequest().then((res) => {
+      if (res.login) {
+        setLoggedIn(res.login.name);
       }
     });
   }, []);
