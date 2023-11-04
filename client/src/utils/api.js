@@ -10,7 +10,7 @@ class API {
     this.requests = {};
   }
 
-  //#region Queue Requests
+  //#region REQUEST DATA
   episodes() {
     this.requests.episodeData = `${apiRoot}episodes`;
     return this;
@@ -42,9 +42,10 @@ class API {
 
   autoLogin() {
     var playerName = localStorage.getItem("playerName");
-    var password = localStorage.getItem("password");
-    if (playerName && password) {
-      return this.login(playerName, password);
+    var rememberMeToken = localStorage.getItem("rememberMeToken");
+    if (playerName && rememberMeToken) {
+      this.requests.login = `${apiRoot}player/${playerName}/rememberMe/${rememberMeToken}`;
+      return this;
     }
     return this;
   }
@@ -65,14 +66,14 @@ class API {
 
   //#region WRITE DATA
   // add new episode
-  static async AddEpisode(newEpisode) {
+  static async addEpisode(newEpisode) {
     return axios
       .post(`${apiRoot}episode/new`, newEpisode)
       .catch((err) => console.log(err));
   }
 
   // update episode
-  static async UpdateEpisode(updatedEpisode) {
+  static async updateEpisode(updatedEpisode) {
     return axios
       .post(`${apiRoot}episode/update`, updatedEpisode)
       .catch((err) => console.log(err));
@@ -93,7 +94,12 @@ class API {
   }
 
   // update player password
-  static async updatePassword(playerName, newPassword, confirmNewPassword) {
+  static async changePassword(
+    playerName,
+    oldPassword,
+    newPassword,
+    confirmNewPassword
+  ) {
     if (newPassword !== confirmNewPassword) {
       return "Passwords do not match";
     }
@@ -103,9 +109,24 @@ class API {
 
     return axios
       .post(`${apiRoot}player/${playerName}/password`, {
+        oldPassword,
         newPassword,
       })
-      .then(() => "success")
+      .then((res) => {
+        if (res.data.error) {
+          return res.data.error;
+        }
+        return "success";
+      })
+      .catch((err) => console.log(err));
+  }
+
+  // remember me
+  static async remberMe(playerName, token) {
+    return axios
+      .post(`${apiRoot}player/${playerName}/rememberMe`, {
+        token,
+      })
       .catch((err) => console.log(err));
   }
 

@@ -60,8 +60,7 @@ function LoginContent(props) {
           setModalOpen(false);
           return;
         }
-
-        setWarningText(res.rejected);
+        setWarningText(res.login.error);
         setTimeout(() => {
           setWarningText("");
         }, 3000);
@@ -83,7 +82,7 @@ function LoginContent(props) {
               className="text-input"
               id="username"
               name="username"
-              type="text"
+              type="username"
               value={playerName}
               onChange={(e) => setLocalPlayerName(e.target.value)}
             />
@@ -240,24 +239,28 @@ function ColorModalContent(props) {
 
 function PasswordModalContent(props) {
   var { playerName, setModalOpen } = props;
+  var [oldPassword, setOldPassword] = useState("");
   var [newPassword, setNewPassword] = useState("");
   var [confirmNewPassword, setConfirmNewPassword] = useState("");
 
   var [warningText, setWarningText] = useState("");
 
   const updatePassword = () => {
-    API.updatePassword(playerName, newPassword, confirmNewPassword).then(
-      (warning) => {
-        if (warning === "success") {
-          setModalOpen(false);
-          return;
-        }
-        setWarningText(warning);
-        setTimeout(() => {
-          setWarningText("");
-        }, 3000);
+    API.changePassword(
+      playerName,
+      oldPassword,
+      newPassword,
+      confirmNewPassword
+    ).then((warning) => {
+      if (warning === "success") {
+        setModalOpen(false);
+        return;
       }
-    );
+      setWarningText(warning);
+      setTimeout(() => {
+        setWarningText("");
+      }, 3000);
+    });
   };
 
   return (
@@ -268,6 +271,15 @@ function PasswordModalContent(props) {
         <div className="modal-warning">{warningText}</div>
         <form className="survivor-body">
           <label>
+            Old Password:{" "}
+            <input
+              className="text-input"
+              type="text"
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+            />
+          </label>
+          <label>
             New Password:{" "}
             <input
               className="text-input"
@@ -276,11 +288,20 @@ function PasswordModalContent(props) {
               onChange={(e) => setNewPassword(e.target.value)}
             />
           </label>
+          <label style={{ display: "none" }}>
+            <input
+              className="text-input"
+              id="username"
+              name="username"
+              type="username"
+              value={playerName}
+            />
+          </label>
           <label>
             Confirm Password:{" "}
             <input
               className="text-input"
-              type="text"
+              type="password"
               value={confirmNewPassword}
               onChange={(e) => setConfirmNewPassword(e.target.value)}
             />

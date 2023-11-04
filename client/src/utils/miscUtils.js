@@ -1,4 +1,6 @@
 import tinyColor from "tinycolor2";
+import API from "./api";
+import { nanoid } from "nanoid";
 
 // get running point total
 function getRunningPoints(episodePoints) {
@@ -35,15 +37,17 @@ Array.prototype.memberSort = function () {
 
 // need to update this to store hashed password
 // save login safely
-function saveLogin(playerName, password) {
+function saveLogin(playerName) {
+  var token = nanoid(32);
   localStorage.setItem("playerName", playerName);
-  localStorage.setItem("password", password);
+  localStorage.setItem("rememberMeToken", token);
+  API.remberMe(playerName, token);
 }
 
 // remove login safely
 function removeLogin() {
   localStorage.removeItem("playerName");
-  localStorage.removeItem("password");
+  localStorage.removeItem("rememberMeToken");
 }
 
 export { getRunningPoints, DelayedChart, isLightColor, saveLogin, removeLogin };
