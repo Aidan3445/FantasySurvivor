@@ -5,7 +5,7 @@
   "main": "index.js",
   "proxy": "http://0.0.0.0:1332",
   "scripts": {
-    "start": "webpack serve --mode=development --open --hot --host 0.0.0.0",
+    "start": "webpack serve --mode=development --hot --host 0.0.0.0",
     "build": "webpack --mode=production"
   },
   "keywords": [],

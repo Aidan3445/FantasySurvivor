@@ -15,22 +15,21 @@ export default function DataEntryPage() {
   });
 
   React.useEffect(() => {
+    getEntryValues();
+  }, []);
+
+  const getEntryValues = () =>
     new API().all().then((res) => {
       var gameData = new GameData(res);
       setValues(gameData.dataEntryValues);
     });
-  }, []);
 
   const handleDataEntry = (data) => {
     if (data.newEpisode) {
-      Game.AddEpisode(data.newEpisode);
+      API.AddEpisode(data.newEpisode);
     }
     if (data.updatedEpisode) {
-      Game.UpdateEpisode(data.updatedEpisode).then(() =>
-        Game.getDataEntryValues().then((values) => {
-          setValues(values);
-        })
-      );
+      API.UpdateEpisode(data.updatedEpisode).then(() => getEntryValues());
     }
   };
 

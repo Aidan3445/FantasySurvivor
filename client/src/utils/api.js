@@ -117,19 +117,6 @@ class API {
       })
       .catch((err) => console.log(err));
   }
-
-  // need to update this to store hashed password
-  // save login safely
-  static saveLogin(playerName, password) {
-    localStorage.setItem("playerName", playerName);
-    localStorage.setItem("password", password);
-  }
-
-  // remove login safely
-  static removeLogin() {
-    localStorage.removeItem("playerName");
-    localStorage.removeItem("password");
-  }
   //#endregion
 }
 

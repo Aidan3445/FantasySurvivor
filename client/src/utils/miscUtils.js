@@ -28,8 +28,22 @@ function isLightColor(color) {
   return tinyColor(color).isLight();
 }
 
+// sort array of objects by a player or survivor's points
 Array.prototype.memberSort = function () {
   return this.sort((a, b) => b.stats.points - a.stats.points);
 };
 
-export { getRunningPoints, DelayedChart, isLightColor };
+// need to update this to store hashed password
+// save login safely
+function saveLogin(playerName, password) {
+  localStorage.setItem("playerName", playerName);
+  localStorage.setItem("password", password);
+}
+
+// remove login safely
+function removeLogin() {
+  localStorage.removeItem("playerName");
+  localStorage.removeItem("password");
+}
+
+export { getRunningPoints, DelayedChart, isLightColor, saveLogin, removeLogin };

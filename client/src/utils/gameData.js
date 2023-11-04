@@ -100,10 +100,7 @@ class GameData {
       });
 
     stats.ppe = stats.points / airedCount;
-
     stats.episodeTotals = getRunningPoints(stats.episodeTotals);
-
-    // if (name == "Katurah Topps") console.log(stats);
     return stats;
   }
 
@@ -244,7 +241,7 @@ class GameData {
   get availableSurvivors() {
     var availableSurvivors = this.survivors.filter((survivor) => {
       return (
-        stats.eliminated === 0 &&
+        survivor.stats.eliminated === 0 &&
         !this.players.some((player) => {
           var currentSurvivor =
             player.survivorList[player.survivorList.length - 1];

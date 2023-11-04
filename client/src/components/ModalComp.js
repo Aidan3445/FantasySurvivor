@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { HexColorPicker } from "react-colorful";
-import Game from "../utils/game";
 import API from "../utils/api";
 import GameData from "../utils/gameData";
+import { saveLogin } from "../utils/miscUtils";
 
 function Modal(props) {
   var { isOpen, closeModal, content } = props;
@@ -22,20 +22,17 @@ function Modal(props) {
     };
   }, [isOpen]);
 
+  if (!isOpen) return null;
   return (
-    <>
-      {isOpen && (
-        <div>
-          <div className="modal-content">
-            <span className="close" onClick={closeModal}>
-              &times;
-            </span>
-            {content}
-          </div>
-          <div className="modal-greyout" />
-        </div>
-      )}
-    </>
+    <div>
+      <div className="modal-content">
+        <span className="close" onClick={closeModal}>
+          &times;
+        </span>
+        {content}
+      </div>
+      <div className="modal-greyout" />
+    </div>
   );
 }
 
@@ -44,36 +41,39 @@ function LoginContent(props) {
   var { setLoggedIn, setModalOpen } = props;
   var [playerName, setLocalPlayerName] = useState("");
   var [password, setLocalPassword] = useState("");
-  var [saveLogin, setSaveLogin] = useState(false);
+  var [rememberLogin, setRememberLogin] = useState(false);
 
   var [warningText, setWarningText] = useState("");
 
   const login = () => {
     if (playerName === "") return;
 
-    new API().login(playerName, password).newRequest().then((res) => {
-      if (res.login.name) {
-        setLoggedIn(playerName);
-        if (saveLogin) {
-          API.saveLogin(playerName, password);
+    new API()
+      .login(playerName, password)
+      .newRequest()
+      .then((res) => {
+        if (res.login.name) {
+          setLoggedIn(playerName);
+          if (rememberLogin) {
+            saveLogin(playerName, password);
+          }
+          setModalOpen(false);
+          return;
         }
-        setModalOpen(false);
-        return;
-      }
 
-      setWarningText(res.rejected);
-      setTimeout(() => {
-        setWarningText("");
-      }, 3000);
+        setWarningText(res.rejected);
+        setTimeout(() => {
+          setWarningText("");
+        }, 3000);
 
-      setLoggedIn("");
-    });
+        setLoggedIn("");
+      });
   };
 
   return (
     <div className="centered">
       <div className="survivor-header">Log In</div>
-      <br/>
+      <br />
       <div>
         <div className="modal-warning">{warningText}</div>
         <form className="survivor-body">
@@ -105,8 +105,8 @@ function LoginContent(props) {
       <div className="inline-div">
         Remember Me
         <div
-          className={`toggle ${saveLogin ? "on" : "off"}`}
-          onClick={() => setSaveLogin(!saveLogin)}
+          className={`toggle ${rememberLogin ? "on" : "off"}`}
+          onClick={() => setRememberLogin(!rememberLogin)}
         >
           <div className="slider"></div>
         </div>
@@ -135,27 +135,29 @@ function SurvivorSelectContent(props) {
   ];
 
   useEffect(() => {
-    new API().all().newRequest().then((res) => {
-      var gameData = new GameData(res);
-      setNewSurvivor(gameData.survivorByName(player.survivor));
-    }).getEpisodes().then((episodes) => {
-      if (episodes.length > 0 && episodes[episodes.length - 1].aired === -1) {
-        setCanChange(true);
-      }
-    });
+    new API()
+      .all()
+      .newRequest()
+      .then((res) => {
+        var gameData = new GameData(res);
+        if (
+          gameData.episodes.length > 0 &&
+          gameData.episodes[gameData.episodes.length - 1].aired === -1
+        ) {
+          setCanChange(true);
+        }
 
-    Game.getAvailableSurvivors().then((availableSurvivors) => {
-      if (availableSurvivors.length === 0) {
-        setModalOpen(false);
-        return;
-      }
-      setAvailableSurvivors(availableSurvivors);
-    });
+        if (gameData.availableSurvivors.length === 0) {
+          setModalOpen(false);
+        } else {
+          setAvailableSurvivors(gameData.availableSurvivors);
+        }
+      });
   }, []);
 
   const updateSurvivor = () => {
     if (!survivor || !canChange) return;
-    Game.updateSurvivorPick(player.name, survivor.value);
+    API.updateSurvivorPick(player.name, survivor.value);
     setNewSurvivor(survivor.survivor);
     setModalOpen(false);
   };
@@ -163,7 +165,7 @@ function SurvivorSelectContent(props) {
   return (
     <div className="centered">
       <div className="survivor-header">Change Survivor</div>
-      <br/>
+      <br />
       {canChange ? (
         <div className="centered">
           <Select
@@ -197,7 +199,7 @@ function ColorModalContent(props) {
   var [localColor, setLocalColor] = useState(color);
 
   const updateColor = () => {
-    Game.updateColor(playerName, localColor);
+    API.updateColor(playerName, localColor);
     setColor(localColor);
     setModalOpen(false);
   };
@@ -209,7 +211,7 @@ function ColorModalContent(props) {
   return (
     <div className="centered">
       <div className="survivor-header">Change Color</div>
-      <br/>
+      <br />
       <div className="centered">
         <HexColorPicker
           styles={{
@@ -244,7 +246,7 @@ function PasswordModalContent(props) {
   var [warningText, setWarningText] = useState("");
 
   const updatePassword = () => {
-    Game.updatePassword(playerName, newPassword, confirmNewPassword).then(
+    API.updatePassword(playerName, newPassword, confirmNewPassword).then(
       (warning) => {
         if (warning === "success") {
           setModalOpen(false);
@@ -261,7 +263,7 @@ function PasswordModalContent(props) {
   return (
     <div className="centered">
       <div className="survivor-header">Change Password</div>
-      <br/>
+      <br />
       <div>
         <div className="modal-warning">{warningText}</div>
         <form className="survivor-body">

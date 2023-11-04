@@ -439,6 +439,7 @@ export default class Episode {
   // get points for a single name
   getPoints(survivor) {
     var { name, tribe } = survivor;
+    tribe = survivor.stats ? this.getTribeHelper(survivor.stats) : tribe;
 
     var pointTotals = this.points;
 
