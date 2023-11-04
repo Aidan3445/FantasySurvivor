@@ -7,13 +7,11 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Dot,
 } from "recharts";
-import { smallScreen } from "../utils/screenSize";
+import { smallScreen, mediumScreen } from "../utils/screenSize";
 
 export default function Chart(props) {
   var { data } = props;
-
   if (data.length === 0) return;
 
   return (
@@ -32,7 +30,7 @@ export default function Chart(props) {
           <CartesianGrid strokeDasharray="3 3" stroke="darkgrey" />
           <XAxis dataKey="episode" />
           <YAxis />
-          <Tooltip content={<CustomTooltip />} />
+          {!mediumScreen && <Tooltip content={<CustomTooltip />} />}
           {data.map((data, index) => (
             <Line
               type="monotone"

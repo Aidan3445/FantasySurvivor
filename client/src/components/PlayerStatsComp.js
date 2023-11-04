@@ -1,5 +1,5 @@
 import React from "react";
-import Game from "../utils/game";
+import { isLightColor } from "../utils/miscUtils";
 
 function PlayerStats(props) {
   var { stats, color } = props;
@@ -12,7 +12,7 @@ function PlayerStats(props) {
         className="box"
         style={{
           "--fillColor": color,
-          color: Game.isLightColor(color) ? "black" : "white",
+          color: isLightColor(color) ? "black" : "white",
         }}
       >
         <div className="survivor-body">{stats.points} Points</div>

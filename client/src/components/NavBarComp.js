@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Select from "react-select";
 import { tinyScreen } from "../utils/screenSize";
-import Game from "../utils/game";
+import API from "../utils/api";
+import GameData from "../utils/gameData";
 
 import Modal, { LoginContent } from "../components/ModalComp";
 
@@ -32,9 +33,13 @@ function Navbar(props) {
 
     window.addEventListener("scroll", handleScroll);
 
-    Game.getMenuValues().then((options) => {
-      setMenuOptions(options);
-    });
+    new API()
+      .all()
+      .newRequest()
+      .then((res) => {
+        var gameData = new GameData(res);
+        setMenuOptions(gameData.menuValues);
+      });
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -67,16 +72,10 @@ function Navbar(props) {
               {loggedIn}
             </Link>
           )}
-          <Link
-            className="clean-link survivor-button"
-            to="/"
-          >
+          <Link className="clean-link survivor-button" to="/">
             Home
           </Link>
-          <button
-            className="survivor-button"
-            onClick={() => logInOut()}
-          >
+          <button className="survivor-button" onClick={() => logInOut()}>
             {loggedIn ? "Log Out" : "Log In"}
           </button>
           <Menu

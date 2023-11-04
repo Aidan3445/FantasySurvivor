@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import Game from "../utils/game";
+import API from "../utils/api";
+import GameData from "../utils/gameData";
 
 import NewEpisodeEntry from "../components/NewEpisodeEntryComp";
 import EpisodeUpdateEntry from "../components/EpisodeUpdateComp";
@@ -14,8 +15,9 @@ export default function DataEntryPage() {
   });
 
   React.useEffect(() => {
-    Game.getDataEntryValues().then((values) => {
-      setValues(values);
+    new API().all().then((res) => {
+      var gameData = new GameData(res);
+      setValues(gameData.dataEntryValues);
     });
   }, []);
 
@@ -33,7 +35,9 @@ export default function DataEntryPage() {
   };
 
   useEffect(() => {
-    var airingNow = values.Episodes.find((ep) => ep.episode !== null && ep.episode.aired === 0);
+    var airingNow = values.Episodes.find(
+      (ep) => ep.episode !== null && ep.episode.aired === 0
+    );
     if (selectedEpisode) {
       selectEpisode(
         values.Episodes.find((ep) => ep.value === selectedEpisode.value)

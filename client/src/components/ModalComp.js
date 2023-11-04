@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { HexColorPicker } from "react-colorful";
 import Game from "../utils/game";
+import API from "../utils/api";
+import GameData from "../utils/gameData";
 
 function Modal(props) {
   var { isOpen, closeModal, content } = props;
@@ -49,11 +51,11 @@ function LoginContent(props) {
   const login = () => {
     if (playerName === "") return;
 
-    Game.login(playerName, password).then((res) => {
-      if (res.accepted) {
+    new API().login(playerName, password).newRequest().then((res) => {
+      if (res.login.name) {
         setLoggedIn(playerName);
         if (saveLogin) {
-          Game.saveLogin(playerName, password);
+          API.saveLogin(playerName, password);
         }
         setModalOpen(false);
         return;
@@ -133,7 +135,10 @@ function SurvivorSelectContent(props) {
   ];
 
   useEffect(() => {
-    Game.getEpisodes().then((episodes) => {
+    new API().all().newRequest().then((res) => {
+      var gameData = new GameData(res);
+      setNewSurvivor(gameData.survivorByName(player.survivor));
+    }).getEpisodes().then((episodes) => {
       if (episodes.length > 0 && episodes[episodes.length - 1].aired === -1) {
         setCanChange(true);
       }

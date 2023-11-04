@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Select from "../components/SelectComp";
-import Game from "../utils/game";
+import API from "../utils/api";
 
 function DraftEntries(props) {
   var { player, values } = props;
@@ -60,7 +60,7 @@ function DraftEntries(props) {
       mostIndividualImmunities: mostIndivImm.value,
       firstLoser: firstLoser.value,
     };
-    Game.submitDraft(player.name, draft).then(() =>
+    API.submitDraft(player.name, draft).then(() =>
       navigate(`/Player/${player.name}`)
     );
   };

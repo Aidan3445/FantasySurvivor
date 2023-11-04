@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import Game from "../utils/game";
+import GameData from "../utils/gameData";
+import API from "../utils/api";
 
 import Scoreboard from "../components/ScoreboardComp";
 import Chart from "../components/RechartChartComp";
@@ -18,31 +19,19 @@ export default function HomePage() {
   });
 
   React.useEffect(() => {
-    // can optimize this by making one call to a better helper method
-    Game.getEpisodes().then((episodes) => {
-      setEpisodes(episodes);
-    });
+    new API()
+      .all()
+      .newRequest()
+      .then((res) => {
+        var gameData = new GameData(res);
+        setEpisodes(gameData.episodes);
 
-    Game.getPlayers().then((players) => {
-      var sortedPlayers = players.sort(
-        (a, b) => b.stats.points - a.stats.points
-      );
-      setPlayers(sortedPlayers);
-      setPlayerData(getData([], sortedPlayers));
-    });
+        setPlayers(gameData.players);
+        setPlayerData(getData([], gameData.players));
 
-    Game.getSurvivors().then((survivors) => {
-      var sortedSurvivors = survivors.sort(
-        (a, b) => b.stats.points - a.stats.points
-      );
-      setSurvivors(sortedSurvivors);
-      setSurvivorData(getData([], sortedSurvivors));
-    });
-
-    // used for old CanvasChart
-    // Game.DelayedChart("playerCanvas", "survivorCanvas").then((ids) => {
-    //   setCanvasIds(ids);
-    // });
+        setSurvivors(gameData.survivors);
+        setSurvivorData(getData([], gameData.survivors));
+      });
   }, []);
 
   // Scoreboard

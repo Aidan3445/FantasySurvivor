@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Game from "../utils/game";
+import { isLightColor } from "../utils/miscUtils";
 import Modal, {
   ColorModalContent,
   PasswordModalContent,
@@ -58,7 +58,7 @@ function PlayerEdit(props) {
   const getStyleColors = () => {
     return {
       "--noHoverColor": "lightgrey",
-      color: Game.isLightColor(player.color) ? "black" : "white",
+      color: isLightColor(player.color) ? "black" : "white",
     };
   };
 

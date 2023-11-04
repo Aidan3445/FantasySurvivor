@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Game from "../utils/game";
+import API from "../utils/api";
+import GameData from "../utils/gameData";
 
 import DraftOrder from "../components/DraftOrderComp";
 import DraftEntries from "../components/DraftEntriesComp";
@@ -24,13 +25,14 @@ function DraftPage(props) {
       return;
     }
 
-    Game.getDraftValues().then((values) => {
-      setValues(values);
-    });
-
-    Game.getPlayer(loggedIn).then((player) => {
-      setPlayer(player);
-    });
+    new API()
+      .all()
+      .newRequest()
+      .then((res) => {
+        var gameData = new GameData(res);
+        setValues(gameData);
+        setPlayer(gameData.playerByName(loggedIn));
+      });
   }, [loggedIn]);
 
   var playersTurn = () => {
