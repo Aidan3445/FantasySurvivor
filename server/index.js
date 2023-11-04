@@ -197,18 +197,17 @@ app.post("/api/player/:name/password", (req, res) => {
   const { name } = req.params;
   Player.findOne({ name: name })
     .then((player) => {
-      if (player.validateLogin(oldPassword)) {
+      if (player && player.validation(oldPassword, player.password)) {
         player.password = player.generateHash(newPassword);
         player
           .save()
           .then((player) => res.json(player))
           .catch((err) => res.json(err));
-      } else {
-        res.json({
-          error: `Previous password incorrect. Contact Aidan if you need help.`,
-        });
         return;
       }
+      res.json({
+        error: `Previous password incorrect. Contact Aidan if you need help.`,
+      });
     })
     .catch((err) => res.json(err));
 });
@@ -256,6 +255,14 @@ app.get("/api/tribe/:name", (req, res) => {
     .then((tribes) => res.json(tribes))
     .catch((err) => res.json(err));
 });
+app.post("/api/tribe/new/:tribeName", (req, res) => {
+  var { tribeName } = req.params;
+  var { tribeColor } = req.body;
+  Tribe.create({ name: tribeName, color: tribeColor }).then((tribe) => {
+    res.json(tribe);
+  });
+});
+
 //#endregion
 
 app.listen(1332, () => console.log("Server running on port 1332!"));

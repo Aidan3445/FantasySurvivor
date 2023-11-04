@@ -80,9 +80,8 @@ function LoginContent(props) {
             Player Name:{" "}
             <input
               className="text-input"
-              id="username"
-              name="username"
-              type="username"
+              type="text"
+              autoComplete="username"
               value={playerName}
               onChange={(e) => setLocalPlayerName(e.target.value)}
             />
@@ -91,9 +90,8 @@ function LoginContent(props) {
             Password:{" "}
             <input
               className="text-input"
-              id="password"
-              name="password"
               type="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setLocalPassword(e.target.value)}
             />
@@ -275,6 +273,7 @@ function PasswordModalContent(props) {
             <input
               className="text-input"
               type="text"
+              autoComplete="current-password"
               value={oldPassword}
               onChange={(e) => setOldPassword(e.target.value)}
             />
@@ -283,25 +282,26 @@ function PasswordModalContent(props) {
             New Password:{" "}
             <input
               className="text-input"
+              id="newPassword"
               type="text"
+              autoComplete="new-password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-            />
-          </label>
-          <label style={{ display: "none" }}>
-            <input
-              className="text-input"
-              id="username"
-              name="username"
-              type="username"
-              value={playerName}
             />
           </label>
           <label>
             Confirm Password:{" "}
             <input
+              type="text"
+              autoComplete="username"
+              value={playerName}
+              readOnly
+              hidden
+            />
+            <input
               className="text-input"
               type="password"
+              autoComplete="new-password"
               value={confirmNewPassword}
               onChange={(e) => setConfirmNewPassword(e.target.value)}
             />

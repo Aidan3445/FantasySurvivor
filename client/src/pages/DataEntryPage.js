@@ -19,17 +19,23 @@ export default function DataEntryPage() {
   }, []);
 
   const getEntryValues = () =>
-    new API().all().then((res) => {
-      var gameData = new GameData(res);
-      setValues(gameData.dataEntryValues);
-    });
+    new API()
+      .all()
+      .newRequest()
+      .then((res) => {
+        var gameData = new GameData(res);
+        setValues(gameData.dataEntryValues);
+      });
 
   const handleDataEntry = (data) => {
     if (data.newEpisode) {
-      API.AddEpisode(data.newEpisode);
+      API.addEpisode(data.newEpisode);
     }
     if (data.updatedEpisode) {
-      API.UpdateEpisode(data.updatedEpisode).then(() => getEntryValues());
+      API.updateEpisode(data.updatedEpisode).then(() => getEntryValues());
+      if (data.newTribe) {
+        API.addTribe(data.newTribe);
+      }
     }
   };
 

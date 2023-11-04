@@ -25,6 +25,7 @@ export default class Episode {
     this.quits = [];
     this.tribeUpdates = [];
     this.merged = false;
+    this.newTribes = [];
     this.notes = [];
   }
 
@@ -208,7 +209,7 @@ export default class Episode {
   }
 
   // add event from data entry
-  addEvent(event, eventNames, notes, allNames, additionalString, affected) {
+  addEvent(event, eventNames, notes, allNames, affected, additionalString) {
     eventNames.forEach((name) => {
       switch (event) {
         case "advsFound":
@@ -264,7 +265,14 @@ export default class Episode {
       }
     });
 
-    if (event === "merged") this.merged = true;
+    if (event === "merged") {
+      console.log(affected);
+      this.merged = true;
+      affected.forEach((name) => {
+        this.addTribeUpdate(name, additionalString);
+      });
+      this.addNote(additionalString, `Merged to ${additionalString}!`);
+    }
 
     if (notes) {
       var parsedNotes = this.parseNotes(notes, eventNames, allNames);

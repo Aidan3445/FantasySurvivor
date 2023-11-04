@@ -138,6 +138,14 @@ class API {
       })
       .catch((err) => console.log(err));
   }
+
+  // add a new tribe
+  static async addTribe(newTribe) {
+    var { tribeName, tribeColor } = newTribe;
+    return axios
+      .post(`${apiRoot}tribe/new/${tribeName}`, { tribeColor })
+      .catch((err) => console.log(err));
+  }
   //#endregion
 }
 
