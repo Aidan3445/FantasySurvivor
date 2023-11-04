@@ -53,7 +53,10 @@ const playerSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      default: "password",
+    },
+    rememberMeToken: {
+      type: String,
+      default: "",
     },
     draft: {
       type: draftSchema,
@@ -71,8 +74,8 @@ playerSchema.methods.generateHash = function (password) {
   return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 };
 
-playerSchema.methods.validPassword = function (password) {
-  return bcrypt.compareSync(password, this.password);
+playerSchema.methods.validation = function (input, stored) {
+  return bcrypt.compareSync(input, stored);
 };
 
 const PlayerModel = mongoose.model("players", playerSchema);
