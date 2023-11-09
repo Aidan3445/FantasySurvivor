@@ -351,7 +351,7 @@ class GameData {
         }
         if (episode.merged) {
           firstJurror = [
-            { episodeIndex: episode.number - 1, names: episode.eliminated },
+            { episodeIndex: episode.number - 1, names: [episode.eliminated[episode.eliminated.length - 1]] },
           ];
         }
       }
@@ -426,7 +426,7 @@ class GameData {
 
     mostIndividualImmunities = Object.keys(indivImmCounter).reduce(
       (most, survivor) => {
-        var mostCount = most[0] ? indivImmCounter[most[0]].count : 1;
+        var mostCount = most[0] ? indivImmCounter[most[0].names[0]].count : 1;
         if (indivImmCounter[survivor].count > mostCount) {
           return [
             {
