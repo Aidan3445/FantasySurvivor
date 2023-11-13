@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import Select from "react-select";
 import { HexColorPicker } from "react-colorful";
 import API from "../utils/api";
@@ -7,6 +8,12 @@ import { saveLogin } from "../utils/miscUtils";
 
 function Modal(props) {
   var { isOpen, closeModal, content } = props;
+
+  Modal.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    closeModal: PropTypes.func.isRequired,
+    content: PropTypes.object.isRequired,
+  };
 
   useEffect(() => {
     const handleEscape = (e) => {
@@ -39,6 +46,12 @@ function Modal(props) {
 // modal content
 function LoginContent(props) {
   var { setLoggedIn, setModalOpen } = props;
+
+  LoginContent.propTypes = {
+    setLoggedIn: PropTypes.func.isRequired,
+    setModalOpen: PropTypes.func.isRequired,
+  };
+
   var [playerName, setLocalPlayerName] = useState("");
   var [password, setLocalPassword] = useState("");
   var [rememberLogin, setRememberLogin] = useState(false);
@@ -122,6 +135,12 @@ function LoginContent(props) {
 function SurvivorSelectContent(props) {
   var { player, setNewSurvivor, setModalOpen } = props;
 
+  SurvivorSelectContent.propTypes = {
+    player: PropTypes.object.isRequired,
+    setNewSurvivor: PropTypes.func.isRequired,
+    setModalOpen: PropTypes.func.isRequired,
+  };
+
   var [survivor, setSurvivor] = useState(null);
   var [availableSurvivors, setAvailableSurvivors] = useState([]);
   var [canChange, setCanChange] = useState(false);
@@ -193,6 +212,13 @@ function SurvivorSelectContent(props) {
 function ColorModalContent(props) {
   var { color, setColor, playerName, setModalOpen } = props;
 
+  ColorModalContent.propTypes = {
+    color: PropTypes.string.isRequired,
+    setColor: PropTypes.func.isRequired,
+    playerName: PropTypes.string.isRequired,
+    setModalOpen: PropTypes.func.isRequired,
+  };
+
   var [localColor, setLocalColor] = useState(color);
 
   const updateColor = () => {
@@ -237,6 +263,12 @@ function ColorModalContent(props) {
 
 function PasswordModalContent(props) {
   var { playerName, setModalOpen } = props;
+
+  PasswordModalContent.propTypes = {
+    playerName: PropTypes.string.isRequired,
+    setModalOpen: PropTypes.func.isRequired,
+  };
+
   var [oldPassword, setOldPassword] = useState("");
   var [newPassword, setNewPassword] = useState("");
   var [confirmNewPassword, setConfirmNewPassword] = useState("");

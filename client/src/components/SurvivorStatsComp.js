@@ -1,8 +1,12 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 function SurvivorStats(props) {
   var { stats } = props;
-  var stats;
+
+  SurvivorStats.propTypes = {
+    stats: PropTypes.object.isRequired,
+  };
 
   return (
     <div className="box centered pad-5 marg-5">

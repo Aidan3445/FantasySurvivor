@@ -30,9 +30,11 @@
   "devDependencies": {
     "@babel/core": "^7.22.11",
     "@babel/preset-env": "^7.22.10",
-    "@babel/preset-react": "^7.22.5",
+    "@babel/preset-react": "^7.23.3",
     "babel-loader": "^9.1.3",
     "css-loader": "^6.8.1",
+    "eslint": "^8.53.0",
+    "eslint-plugin-react": "^7.33.2",
     "html-webpack-plugin": "^5.5.3",
     "style-loader": "^3.3.3",
     "webpack": "^5.88.2",

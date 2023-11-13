@@ -1,30 +1,65 @@
 import React, { useEffect } from "react";
+import PropTypes from "prop-types";
 import tinycolor from "tinycolor2";
 import * as points from "../utils/performancePoints.js";
 
 function Episodes(props) {
-  var { episodes, survivor } = props;
+  var { episodes, survivor, player, ascending } = props;
 
-  return (
-    <div>
-      {episodes.map(
-        (episode) =>
-          survivor.stats &&
-          (survivor.stats.eliminated === 0 ||
-            survivor.stats.eliminated >= episode.number) && (
-            <EpisodeComp
-              episode={episode}
-              survivor={survivor}
-              key={episode.number}
-            />
-          )
-      )}
-    </div>
-  );
+  Episodes.propTypes = {
+    episodes: PropTypes.array.isRequired,
+    survivor: PropTypes.object,
+    player: PropTypes.object,
+    ascending: PropTypes.bool,
+  };
+
+  if (!ascending) episodes = episodes.slice().reverse();
+
+  if (survivor)
+    return (
+      <div>
+        {episodes.map(
+          (episode) =>
+            survivor.stats &&
+            (survivor.stats.eliminated === 0 ||
+              survivor.stats.eliminated >= episode.number) && (
+              <EpisodeComp
+                episode={episode}
+                survivor={survivor}
+                key={episode.number}
+              />
+            )
+        )}
+      </div>
+    );
+
+  if (player)
+    return (
+      <div>
+        {episodes.map(
+          (episode) =>
+            player.survivorList && (
+              <EpisodeComp
+                episode={episode}
+                survivor={player.survivorList[episode.number - 1]}
+                key={episode.number}
+              />
+            )
+        )}
+      </div>
+    );
+
+  return null;
 }
 
 function EpisodeComp(props) {
   var { episode, survivor } = props;
+
+  EpisodeComp.propTypes = {
+    episode: PropTypes.object.isRequired,
+    survivor: PropTypes.object.isRequired,
+  };
+
   useEffect(() => {}, [episode]);
 
   return (
@@ -39,7 +74,7 @@ function EpisodeComp(props) {
       <div className="episode-header">
         <div className="survivor-body bottom-between">
           <div>Episode {episode.number}</div>
-          <div>"{episode.title}"</div>
+          <div>&quot;{episode.title}&quot;</div>
         </div>
         <div className="survivor-body just-right bottom-between">
           <div>{survivor.name}</div>
@@ -61,6 +96,11 @@ function EpisodeComp(props) {
 
 function EpisodeTable(props) {
   var { episode, survivor } = props;
+
+  EpisodeTable.propTypes = {
+    episode: PropTypes.object.isRequired,
+    survivor: PropTypes.object.isRequired,
+  };
 
   if (
     episode.getTableValues(survivor).filter((value) => value && value != "No")
@@ -110,6 +150,11 @@ function EpisodeTable(props) {
 
 function EpisodeNotes(props) {
   var { episode, survivor } = props;
+
+  EpisodeNotes.propTypes = {
+    episode: PropTypes.object.isRequired,
+    survivor: PropTypes.object.isRequired,
+  };
 
   return (
     <ul className="survivor-body">

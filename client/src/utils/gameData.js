@@ -1,5 +1,6 @@
 import Episode from "./episode";
-import { getRunningPoints } from "./miscUtils";
+import { sideBetHitValue } from "./performancePoints";
+import { getRunningPoints, sideBetOutcomes } from "./miscUtils";
 
 class GameData {
   constructor(requestData) {
@@ -16,6 +17,15 @@ class GameData {
       );
     }
     return this.data.episodes;
+  }
+
+  get lastAired() {
+    if (!this.data.lastAired) {
+      this.data.lastAired = this.episodes.findLastIndex(
+        (episode) => episode.aired >= 0
+      );
+    }
+    return this.data.lastAired;
   }
 
   // process survivor data
@@ -142,15 +152,12 @@ class GameData {
       needsSurvivor: false,
     };
 
-    var lastAired = this.episodes.findLastIndex(
-      (episode) => episode.aired >= 0
-    );
     var survivorScores = [];
     var survivalPoints = 0;
-    for (var i = 0; i <= lastAired + 1; i++) {
+    for (var i = 0; i <= this.lastAired + 1; i++) {
       var episode = this.episodes[i];
       var survivor = survivors[i];
-      if (i === lastAired + 1) {
+      if (i === this.lastAired + 1) {
         if (!survivor && episode && episode.aired === 1) {
           stats.needsSurvivor = true;
         }
@@ -202,30 +209,34 @@ class GameData {
       stats.episodeTotals = getRunningPoints(stats.episodeTotals);
     }
 
-    if (
-      lastAired === this.episodes.length - 1 &&
-      this.episodes[lastAired].soleSurvivor.length > 0
-    ) {
-      Object.keys(bets).forEach((bet) => {
-        if (bets[bet].length === 0) return;
-
-        bets[bet].forEach((hits) => {
-          if (hits.names.includes(player.draft[bet])) {
-            stats.points += 10;
-            stats.episodeTotals.forEach((_, i) => {
-              if (i >= hits.episodeIndex) {
-                stats.episodeTotals[i] += 10;
-              }
-            });
-            stats.betHits++;
-          }
-        });
-      });
-    }
-
     stats.ppe = stats.points / stats.airedCount || 0;
 
     return stats;
+  }
+
+  // add bet outcomes to player stats
+  // add to score if final episode has aired
+  get betOutcomes() {
+    this.data.players = this.players.map((player) => {
+      var bets = this.sideBets;
+      Object.keys(bets).forEach((bet) => {
+        if (bets[bet].length === 0) return;
+        bets[bet].forEach((hits) => {
+          if (hits.names.includes(player.draft[bet])) {
+            if (
+              this.lastAired === this.episodes.length - 1 &&
+              this.episodes[this.lastAired].soleSurvivor.length > 0
+            ) {
+              player.stats.points += sideBetHitValue;
+            }
+            player.stats.betHits++;
+          }
+        });
+      });
+      return player;
+    });
+
+    return this;
   }
 
   // get tribe by name
@@ -321,7 +332,7 @@ class GameData {
         value: tribe.name,
         label: tribe.name,
       })),
-      AvailableSurvivors: this.availableSurvivorsHelper(survivors, players),
+      AvailableSurvivors: this.availableSurvivors,
       DraftOrder: this.players
         .sort((p1, p2) => p1.draft.order - p2.draft.order)
         .map((player) => ({
@@ -334,126 +345,7 @@ class GameData {
 
   // get side bet outcomes
   get sideBets() {
-    var firstBoot = [],
-      firstJurror = [],
-      winner = [],
-      mostAdvantages = [],
-      mostIndividualImmunities = [],
-      firstLoser = [];
-
-    var advCounter = {};
-    var indivImmCounter = {};
-
-    this.episodes.forEach((episode) => {
-      if (episode.eliminated.length > 0) {
-        if (episode.number === 1) {
-          firstBoot = [{ episodeIndex: 0, names: episode.eliminated }];
-        }
-        if (episode.merged) {
-          firstJurror = [
-            { episodeIndex: episode.number - 1, names: [episode.eliminated[episode.eliminated.length - 1]] },
-          ];
-        }
-      }
-
-      if (episode.soleSurvivor.length > 0) {
-        winner = [
-          { episodeIndex: episode.number - 1, names: episode.soleSurvivor },
-        ];
-      }
-
-      episode.advsFound.forEach((foundBy) => {
-        if (advCounter[foundBy]) {
-          advCounter[foundBy].episodeIndex = episode.number - 1;
-          advCounter[foundBy].count++;
-        } else {
-          advCounter[foundBy] = {
-            episodeIndex: episode.number - 1,
-            count: 1,
-          };
-        }
-      });
-
-      episode.indivWins.forEach((wonBy) => {
-        if (indivImmCounter[wonBy]) {
-          indivImmCounter[wonBy].episodeIndex = episode.number - 1;
-          indivImmCounter[wonBy].count++;
-        } else {
-          indivImmCounter[wonBy] = {
-            episodeIndex: episode.number - 1,
-            count: 1,
-          };
-        }
-      });
-
-      if (firstLoser.length > 0) return;
-      episode.eliminated.forEach((eliminated) => {
-        var losers = this.players.filter((player) =>
-          player.survivorList[episode.number - 1]
-            ? player.survivorList[episode.number - 1].name === eliminated
-            : false
-        );
-        if (losers.length > 0) {
-          firstLoser = [
-            {
-              episodeIndex: episode.number - 1,
-              names: losers.map((loser) => loser.name),
-            },
-          ];
-          return;
-        }
-      });
-    });
-
-    mostAdvantages = Object.keys(advCounter).reduce((most, survivor) => {
-      var mostCount = most[0] ? advCounter[most[0].names[0]].count : 1;
-      if (advCounter[survivor].count > mostCount) {
-        return [
-          {
-            episodeIndex: advCounter[survivor].episodeIndex,
-            names: [survivor],
-          },
-        ];
-      }
-      if (advCounter[survivor].count === mostCount) {
-        return most.concat({
-          episodeIndex: advCounter[survivor].episodeIndex,
-          names: [survivor],
-        });
-      }
-      return most;
-    }, []);
-
-    mostIndividualImmunities = Object.keys(indivImmCounter).reduce(
-      (most, survivor) => {
-        var mostCount = most[0] ? indivImmCounter[most[0].names[0]].count : 1;
-        if (indivImmCounter[survivor].count > mostCount) {
-          return [
-            {
-              episodeIndex: indivImmCounter[survivor].episodeIndex,
-              names: [survivor],
-            },
-          ];
-        }
-        if (indivImmCounter[survivor].count === mostCount) {
-          return most.concat({
-            episodeIndex: indivImmCounter[survivor].episodeIndex,
-            names: [survivor],
-          });
-        }
-        return most;
-      },
-      []
-    );
-
-    return {
-      firstBoot,
-      firstJurror,
-      winner,
-      mostAdvantages,
-      mostIndividualImmunities,
-      firstLoser,
-    };
+    return sideBetOutcomes(this.players, this.episodes);
   }
 }
 

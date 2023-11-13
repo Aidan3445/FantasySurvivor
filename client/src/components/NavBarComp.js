@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Select from "react-select";
 import { tinyScreen } from "../utils/screenSize";
@@ -9,6 +10,12 @@ import Modal, { LoginContent } from "../components/ModalComp";
 
 function Navbar(props) {
   var { loggedIn, setLoggedIn } = props;
+
+  Navbar.propTypes = {
+    loggedIn: PropTypes.string.isRequired,
+    setLoggedIn: PropTypes.func.isRequired,
+  };
+
   var [isNavbarVisible, setNavbarVisible] = useState(true);
   var [modalOpen, setModalOpen] = useState(false);
   var [menuOpen, setMenuOpen] = useState(false);
@@ -23,8 +30,8 @@ function Navbar(props) {
     const handleScroll = () => {
       const currentScrollPos = window.scrollY;
       const shouldShowNavbar =
-        prevScrollPos > currentScrollPos || currentScrollPos === 0;
-
+        (prevScrollPos > currentScrollPos || currentScrollPos < 20) &&
+        currentScrollPos < window.innerHeight;
       setNavbarVisible(shouldShowNavbar);
       prevScrollPos = currentScrollPos;
 
@@ -98,6 +105,13 @@ function Navbar(props) {
 
 function Menu(props) {
   var { isOpen, setIsOpen, options } = props;
+
+  Menu.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    setIsOpen: PropTypes.func.isRequired,
+    options: PropTypes.object.isRequired,
+  };
+
   var [survivorDirect, setSurvivorDirect] = useState("");
   var [playerDirect, setPlayerDirect] = useState("");
 

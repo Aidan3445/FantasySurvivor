@@ -1,10 +1,17 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import Select from "../components/SelectComp";
 import API from "../utils/api";
 
 function DraftEntries(props) {
   var { player, values } = props;
+
+  DraftEntries.propTypes = {
+    player: PropTypes.object.isRequired,
+    values: PropTypes.object.isRequired,
+  };
+
   var [survivor, setSurvivor] = useState({});
   var [firstBoot, setFirstBoot] = useState({});
   var [winner, setWinner] = useState({});
@@ -76,7 +83,7 @@ function DraftEntries(props) {
 
   return (
     <div className="fit-content centered">
-      <div className="survivor-header">{player.name}'s Draft:</div>
+      <div className="survivor-header">{player.name}&apos;s Draft:</div>
       <div className="inline-div">
         Select your Survivor:
         <Select
@@ -139,7 +146,7 @@ function DraftEntries(props) {
         />
       </div>
       <div className="inline-div">
-        Select the player who's pick you think will go home first:
+        Select the player who&apos;s pick you think will go home first:
         <Select
           options={values.DraftOrder.filter(
             (p) => p.player.name !== player.name

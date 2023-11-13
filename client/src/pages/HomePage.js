@@ -13,11 +13,6 @@ export default function HomePage() {
   var [survivorData, setSurvivorData] = useState([]);
   var [playerData, setPlayerData] = useState([]);
 
-  var [canvasIds, setCanvasIds] = useState({
-    players: "noPlayers",
-    survivors: "noSurvivors",
-  });
-
   React.useEffect(() => {
     new API()
       .all()
@@ -131,7 +126,7 @@ export default function HomePage() {
           entries={playerEntries}
           handleSelect={handlePlayerSelect}
         />
-        <Chart canvasId={canvasIds.players} data={playerData} />
+        <Chart data={playerData} />
       </div>
       <div className="box pad-5 marg-5">
         <div className="survivor-header">Survivors</div>
@@ -139,8 +134,9 @@ export default function HomePage() {
           headers={survivorHeaders}
           entries={survivorEntries}
           handleSelect={handleSurvivorSelect}
+          multiPage
         />
-        <Chart canvasId={canvasIds.survivors} data={survivorData} />
+        <Chart data={survivorData} />
       </div>
       <div className="box pad-5 marg-5">
         <div className="survivor-header">Eliminations</div>

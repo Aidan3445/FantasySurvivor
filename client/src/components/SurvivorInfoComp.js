@@ -1,7 +1,12 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 function SurvivorInfo(props) {
   var { survivor } = props;
+
+  SurvivorInfo.propTypes = {
+    survivor: PropTypes.object.isRequired,
+  };
 
   return (
     <div className="box centered pad-5 marg-5">

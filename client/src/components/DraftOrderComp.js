@@ -1,7 +1,13 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 function DraftOrder(props) {
   var { player, draftOrder } = props;
+
+  DraftOrder.propTypes = {
+    player: PropTypes.object.isRequired,
+    draftOrder: PropTypes.array.isRequired,
+  };
 
   var drafted = [];
   var notDrafted = [];

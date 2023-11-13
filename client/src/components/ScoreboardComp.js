@@ -1,16 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import PropTypes from "prop-types";
 import tinyColor from "tinycolor2";
 import { isLightColor } from "../utils/miscUtils";
 
 function Scoreboard(props) {
-  var { headers, entries, handleSelect } = props;
-  const [selected, setSelected] = useState([]);
-  const [multiPage, setMultiPage] = useState(entries.length > 9);
-  const [page, setPage] = useState(0);
+  var { headers, entries, handleSelect, multiPage } = props;
 
-  useEffect(() => {
-    setMultiPage(entries.length > 9);
-  }, [entries]);
+  Scoreboard.propTypes = {
+    headers: PropTypes.array.isRequired,
+    entries: PropTypes.array.isRequired,
+    handleSelect: PropTypes.func,
+    multiPage: PropTypes.bool,
+  };
+
+  const [selected, setSelected] = useState([]);
+  const [page, setPage] = useState(0);
 
   const handleClick = (clickName) => {
     if (!handleSelect) return;

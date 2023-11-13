@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { isLightColor } from "../utils/miscUtils";
 import Modal, {
@@ -10,8 +11,16 @@ import Modal, {
 
 function PlayerEdit(props) {
   var { player, setPlayer, loggedIn, setLoggedIn } = props;
+
+  PlayerEdit.propTypes = {
+    player: PropTypes.object.isRequired,
+    setPlayer: PropTypes.func.isRequired,
+    loggedIn: PropTypes.string.isRequired,
+    setLoggedIn: PropTypes.func.isRequired,
+  };
+
   var [modalOpen, setModalOpen] = useState(false);
-  var [modalContent, setModalContent] = useState(null);
+  var [modalContent, setModalContent] = useState(<div />);
 
   useEffect(() => {
     if (player.stats && player.stats.needsSurvivor) {
@@ -55,17 +64,13 @@ function PlayerEdit(props) {
     });
   };
 
-  const getStyleColors = () => {
-    return {
-      "--noHoverColor": "lightgrey",
-      color: isLightColor(player.color) ? "black" : "white",
-    };
-  };
-
   return (
     <div
       className="box centered pad-5 marg-5"
-      style={{ "--fillColor": player.color }}
+      style={{
+        "--fillColor": player.color,
+        color: isLightColor(player.color) ? "black" : "white",
+      }}
     >
       <div
         className="survivor-header"
@@ -73,7 +78,7 @@ function PlayerEdit(props) {
           if (player.isAdmin && loggedIn === player.name)
             navigate("/DataEntry");
         }}
-        style={{ ...getStyleColors(), marginBottom: "15px" }}
+        style={{ marginBottom: "15px" }}
       >
         {player.name}
       </div>
@@ -81,7 +86,6 @@ function PlayerEdit(props) {
         <div className="inline-div">
           <button
             className="survivor-button width-100"
-            style={getStyleColors()}
             onClick={() => {
               openModal(
                 <SurvivorSelectContent
@@ -96,7 +100,6 @@ function PlayerEdit(props) {
           </button>
           <button
             className="survivor-button width-100"
-            style={getStyleColors()}
             onClick={() => {
               openModal(
                 <ColorModalContent
@@ -112,7 +115,6 @@ function PlayerEdit(props) {
           </button>
           <button
             className="survivor-button width-100"
-            style={getStyleColors()}
             onClick={() =>
               openModal(
                 <PasswordModalContent

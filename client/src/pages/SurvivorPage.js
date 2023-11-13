@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { useLoaderData } from "react-router-dom";
 import API from "../utils/api";
 import GameData from "../utils/gameData";
@@ -10,6 +11,11 @@ import Episodes from "../components/EpisodesComp";
 
 export default function SurvivorPage(props) {
   var { survivorName } = props;
+
+  SurvivorPage.propTypes = {
+    survivorName: PropTypes.string,
+  };
+
   var [survivor, setSurvivor] = useState({});
   var [episodes, setEpisodes] = useState([]);
 

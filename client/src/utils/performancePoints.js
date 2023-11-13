@@ -25,3 +25,5 @@ export const soleSurvivorValue = 15;
 export const badAdvPlayMultiplier = -5;
 
 export const advEliminatedMultiplier = -10;
+
+export const sideBetHitValue = 10;

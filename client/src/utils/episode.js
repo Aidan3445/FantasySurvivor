@@ -266,7 +266,6 @@ export default class Episode {
     });
 
     if (event === "merged") {
-      console.log(affected);
       this.merged = true;
       affected.forEach((name) => {
         this.addTribeUpdate(name, additionalString);

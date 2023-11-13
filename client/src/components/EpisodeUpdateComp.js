@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import { EpisodeComp as Episode } from "../components/EpisodesComp";
 
 function EpisodeUpdateEntryComp(props) {
   var { dataEntry, values, episode } = props;
+
+  EpisodeUpdateEntryComp.propTypes = {
+    dataEntry: PropTypes.func.isRequired,
+    values: PropTypes.object.isRequired,
+    episode: PropTypes.object.isRequired,
+  };
 
   var [selectedEvent, setSelectedEvent] = useState([]);
   var [selectedFor, setSelectedFor] = useState([]);
@@ -206,6 +213,18 @@ function AdditionalFields(props) {
     Survivors,
     Tribes,
   } = props;
+
+  AdditionalFields.propTypes = {
+    additionalFields: PropTypes.array.isRequired,
+    addlField1: PropTypes.string.isRequired,
+    setAddlField1: PropTypes.func.isRequired,
+    addlField2: PropTypes.string.isRequired,
+    setAddlField2: PropTypes.func.isRequired,
+    affected: PropTypes.array.isRequired,
+    setAffected: PropTypes.func.isRequired,
+    Survivors: PropTypes.array.isRequired,
+    Tribes: PropTypes.array.isRequired,
+  };
 
   const getAddlField = (index) => {
     if (index === 0) return { val: addlField1, set: setAddlField1 };

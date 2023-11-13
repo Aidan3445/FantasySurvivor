@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import {
   LineChart,
   Line,
@@ -12,6 +13,11 @@ import { smallScreen, mediumScreen } from "../utils/screenSize";
 
 export default function Chart(props) {
   var { data } = props;
+
+  Chart.propTypes = {
+    data: PropTypes.array.isRequired,
+  };
+
   if (data.length === 0) return;
 
   return (
@@ -68,16 +74,23 @@ function FormatData(data) {
 
 function CustomTooltip(props) {
   const { payload, label } = props;
+
+  CustomTooltip.propTypes = {
+    payload: PropTypes.array,
+    label: PropTypes.string,
+  };
+
   if (!label) return;
 
   payload.sort((a, b) => b.value - a.value);
 
+  var firstSet, secondSet;
   if (payload.length > 9) {
-    var firstSet = payload.slice(0, payload.length / 2 + 1);
-    var secondSet = payload.slice(payload.length / 2);
+    firstSet = payload.slice(0, payload.length / 2 + 1);
+    secondSet = payload.slice(payload.length / 2);
   } else {
-    var firstSet = payload;
-    var secondSet = [];
+    firstSet = payload;
+    secondSet = [];
   }
 
   return (

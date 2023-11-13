@@ -1,8 +1,15 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import Episode from "../utils/episode";
 
 function NewEpisodeEntryComp(props) {
   var { dataEntry, nextEpisodeNumber, resetEpisode } = props;
+
+  NewEpisodeEntryComp.propTypes = {
+    dataEntry: PropTypes.func.isRequired,
+    nextEpisodeNumber: PropTypes.number.isRequired,
+    resetEpisode: PropTypes.func.isRequired,
+  };
 
   var [newEpisodeTitle, setNewEpisodeTitle] = useState("");
   var [newEpisodeDate, setNewEpisodeDate] = useState("");
