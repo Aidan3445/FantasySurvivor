@@ -22,7 +22,8 @@ function sideBetOutcomes(players, episodes) {
     winner = [],
     mostAdvantages = [],
     mostIndividualImmunities = [],
-    firstLoser = [];
+    firstLoser = [],
+    eliminated = [];
 
   var advCounter = {};
   var indivImmCounter = {};
@@ -40,6 +41,7 @@ function sideBetOutcomes(players, episodes) {
           },
         ];
       }
+      eliminated = eliminated.concat(episode.eliminated);
     }
 
     if (episode.soleSurvivor.length > 0) {
@@ -141,6 +143,7 @@ function sideBetOutcomes(players, episodes) {
     mostAdvantages,
     mostIndividualImmunities,
     firstLoser,
+    eliminated,
   };
 }
 

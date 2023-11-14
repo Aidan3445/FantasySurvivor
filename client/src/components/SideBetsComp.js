@@ -14,9 +14,9 @@ function SideBets(props) {
     color: PropTypes.string.isRequired,
   };
 
-  const getColor = (outcome, bet) => {
+  const getColor = (outcome, bet, eliminated) => {
     var out = { color: "white" };
-    if (outcome.length === 0) {
+    if (outcome.length === 0 && !eliminated?.includes(bet)) {
       out["--fillColor"] = "grey";
     } else if (outcome.some((o) => o.names.includes(bet))) {
       out["--fillColor"] = "green";
@@ -76,7 +76,7 @@ function SideBets(props) {
           data-tooltip={outcomes.winner
             .reduce((acc, curr) => acc.concat(curr.names), [])
             .join(", ")}
-          style={getColor(outcomes.winner, bets.winner)}
+          style={getColor(outcomes.winner, bets.winner, outcomes.eliminated)}
         >
           Winner: {bets.winner}
         </h4>

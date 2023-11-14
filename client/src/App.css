@@ -485,7 +485,10 @@ th:last-child {
 .stats-bets {
   display: flex;
   flex-direction: row;
-  overflow: hidden;
+
+  > * {
+    overflow-x: hidden;
+  }
 }
 
 /* split first child top 25% and second child bottom 75% */

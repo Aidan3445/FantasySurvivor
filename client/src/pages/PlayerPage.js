@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import GameData from "../utils/gameData";
 import API from "../utils/api";
-import { smallScreen, mediumScreen } from "../utils/screenSize";
+import { smallScreen, mediumScreen, largeScreen } from "../utils/screenSize";
 
 import PlayerStats from "../components/PlayerStatsComp";
 import SideBets from "../components/SideBetsComp";
@@ -33,6 +33,7 @@ export default function PlayerPage(props) {
     winner: [],
     mostIndividualImmunities: [],
     firstLoser: [],
+    eliminated: [],
   });
 
   const navigate = useNavigate();
@@ -58,16 +59,17 @@ export default function PlayerPage(props) {
     setEpisodeEntries(updateEntries());
   }, [player]);
 
-  var episodeHeaders = !smallScreen
-    ? [
-        "Episode",
-        "Survivor",
-        "Performance Points",
-        "Survival Points",
-        "Episode Total",
-        "Season Total",
-      ]
-    : ["Ep", "Survivor", "Perf", "Surv", "Ep Total", "Szn Total"];
+  var episodeHeaders =
+    !largeScreen || (mediumScreen && !smallScreen)
+      ? [
+          "Episode",
+          "Survivor",
+          "Performance Points",
+          "Survival Points",
+          "Episode Total",
+          "Season Total",
+        ]
+      : ["Ep", "Survivor", "Perf", "Surv", "Ep Total", "Szn Total"];
 
   const updateEntries = () => {
     return player.survivorList && player.stats && !player.stats.needsSurvivor

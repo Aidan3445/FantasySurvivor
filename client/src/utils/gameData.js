@@ -222,7 +222,7 @@ class GameData {
       Object.keys(bets).forEach((bet) => {
         if (bets[bet].length === 0) return;
         bets[bet].forEach((hits) => {
-          if (hits.names.includes(player.draft[bet])) {
+          if (hits.names?.includes(player.draft[bet])) {
             if (
               this.lastAired === this.episodes.length - 1 &&
               this.episodes[this.lastAired].soleSurvivor.length > 0
