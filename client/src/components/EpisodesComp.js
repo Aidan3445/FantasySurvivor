@@ -20,7 +20,7 @@ function Episodes(props) {
       <div>
         {episodes.map(
           (episode) =>
-            survivor.stats &&
+            survivor?.stats &&
             (survivor.stats.eliminated === 0 ||
               survivor.stats.eliminated >= episode.number) && (
               <EpisodeComp
@@ -38,7 +38,7 @@ function Episodes(props) {
       <div>
         {episodes.map(
           (episode) =>
-            player.survivorList && (
+            player?.survivorList[episode.number - 1] && (
               <EpisodeComp
                 episode={episode}
                 survivor={player.survivorList[episode.number - 1]}

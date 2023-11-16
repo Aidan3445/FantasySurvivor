@@ -19,8 +19,6 @@ function App() {
     if (!playerName) removeLogin();
   };
 
-  console.log("loggedIn: ", loggedIn);
-
   useEffect(() => {
     if (loggedIn) return;
     new API()
