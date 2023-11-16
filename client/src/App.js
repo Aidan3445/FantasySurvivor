@@ -19,13 +19,18 @@ function App() {
     if (!playerName) removeLogin();
   };
 
+  console.log("loggedIn: ", loggedIn);
+
   useEffect(() => {
     if (loggedIn) return;
-    new API().autoLogin().newRequest().then((res) => {
-      if (res.login) {
-        setLoggedIn(res.login.name);
-      }
-    });
+    new API()
+      .autoLogin()
+      .newRequest()
+      .then((res) => {
+        if (res.login) {
+          setLoggedIn(res.login.name);
+        }
+      });
   }, []);
   const router = createBrowserRouter([
     {

@@ -12,7 +12,7 @@ function Navbar(props) {
   var { loggedIn, setLoggedIn } = props;
 
   Navbar.propTypes = {
-    loggedIn: PropTypes.string.isRequired,
+    loggedIn: PropTypes.string,
     setLoggedIn: PropTypes.func.isRequired,
   };
 

@@ -707,6 +707,16 @@ to pass variables to media queries
   }
 }
 
+@media (max-width: 620px) {
+  .stats-bets {
+    display: flex;
+    flex-direction: column;
+    * {
+      width: 100%;
+    }
+  }
+}
+
 @media (max-width: 535px) {
   .survivor-header {
     font-size: 3em;
@@ -747,13 +757,5 @@ to pass variables to media queries
     top: -0.3rem;
     left: 0;
     right: -10rem;
-  }
-
-  .stats-bets {
-    display: flex;
-    flex-direction: column;
-    * {
-      width: 100%;
-    }
   }
 }
