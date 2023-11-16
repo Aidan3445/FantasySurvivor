@@ -44,7 +44,7 @@ function sideBetOutcomes(players, episodes) {
       eliminated = eliminated.concat(episode.eliminated);
     }
 
-    if (episode.soleSurvivor.length > 0) {
+    if (episode.lastEp) {
       winner = [
         { episodeIndex: episode.number - 1, names: episode.soleSurvivor },
       ];

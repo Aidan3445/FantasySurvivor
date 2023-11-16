@@ -472,6 +472,10 @@ export default class Episode {
     return 0;
   }
 
+  get lastEp() {
+    return this.soleSurvivor.length > 0;
+  }
+
   // component helpers
   getTableValues(survivor) {
     var { name, stats } = survivor;

@@ -25,6 +25,8 @@ function PlayerStats(props) {
         </div>
       </div>
       <div className="spread-down">
+        <h4>Performance Points: {stats.performancePoints}</h4>
+        <h4>Survival Points: {stats.survivalPoints}</h4>
         <h4>Points Per Episode: {stats.ppe > 0 ? stats.ppe.toFixed(2) : ""}</h4>
         {stats.highestScorer.points > 0 && (
           <h4>
@@ -33,8 +35,6 @@ function PlayerStats(props) {
           </h4>
         )}
         <h4>Survivor Count: {stats.survivorCount}</h4>
-        <h4>Performance Points: {stats.performancePoints}</h4>
-        <h4>Survival Points: {stats.survivalPoints}</h4>
       </div>
     </div>
   );

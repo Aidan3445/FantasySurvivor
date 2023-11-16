@@ -225,7 +225,7 @@ class GameData {
           if (hits.names?.includes(player.draft[bet])) {
             if (
               this.lastAired === this.episodes.length - 1 &&
-              this.episodes[this.lastAired].soleSurvivor.length > 0
+              this.episodes[this.lastAired].lastEp
             ) {
               player.stats.points += sideBetHitValue;
             }
