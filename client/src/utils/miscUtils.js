@@ -166,6 +166,11 @@ Array.prototype.memberSort = function () {
   return this.sort((a, b) => b.stats.points - a.stats.points);
 };
 
+// get last element of an array
+Array.prototype.last = function () {
+  return this[this.length - 1];
+};
+
 // need to update this to store hashed password
 // save login safely
 function saveLogin(playerName) {

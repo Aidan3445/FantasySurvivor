@@ -124,14 +124,16 @@ export default function PlayerPage(props) {
           {player.stats && (
             <PlayerStats stats={player.stats} color={player.color} />
           )}
-          {player.draft && loggedIn === playerName && (
-            <SideBets
-              bets={player.draft}
-              outcomes={betOutcomes}
-              betHits={player.stats.betHits}
-              color={player.color}
-            />
-          )}
+          {player.draft &&
+            (loggedIn === playerName ||
+              episodes.last().soleSurvivor.length > 0) && (
+              <SideBets
+                bets={player.draft}
+                outcomes={betOutcomes}
+                betHits={player.stats.betHits}
+                color={player.color}
+              />
+            )}
         </div>
         <div className="box centered pad-5 marg-5">
           <div className="survivor-header">Episodes</div>
