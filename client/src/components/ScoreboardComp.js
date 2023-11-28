@@ -4,17 +4,18 @@ import tinyColor from "tinycolor2";
 import { isLightColor } from "../utils/miscUtils";
 
 function Scoreboard(props) {
-  var { headers, entries, handleSelect, multiPage } = props;
+  var { headers, entries, handleSelect, offset } = props;
 
   Scoreboard.propTypes = {
     headers: PropTypes.array.isRequired,
     entries: PropTypes.array.isRequired,
     handleSelect: PropTypes.func,
-    multiPage: PropTypes.bool,
+    offset: PropTypes.number,
   };
 
+  offset = offset || 0;
+
   const [selected, setSelected] = useState([]);
-  const [page, setPage] = useState(0);
 
   const handleClick = (clickName) => {
     if (!handleSelect) return;
@@ -42,17 +43,6 @@ function Scoreboard(props) {
     };
   };
 
-  const getPage = () => {
-    if (multiPage) {
-      return entries.slice(page * 9, (page + 1) * 9);
-    }
-    return entries;
-  };
-
-  const changePage = () => {
-    setPage(page + (page === 0 ? 1 : -1));
-  };
-
   return (
     <div>
       <table className="scoreboard">
@@ -69,14 +59,14 @@ function Scoreboard(props) {
           </tr>
         </thead>
         <tbody>
-          {getPage().map((entry, index) => (
+          {entries.map((entry, index) => (
             <tr
               className={handleSelect ? "clickable" : ""}
               onClick={() => handleClick(entry.data[0])}
               key={index}
             >
               <td key={index} style={getStyle(entry, 1)}>
-                {index + 1 + page * 9}
+                {offset + index + 1}
               </td>
               {entry.data.map((cell, index) => (
                 <td key={index} style={getStyle(entry, index)}>
@@ -87,17 +77,6 @@ function Scoreboard(props) {
           ))}
         </tbody>
       </table>
-      {multiPage && (
-        <button
-          className="min-width"
-          style={{
-            "--min-width": "5rem",
-          }}
-          onClick={() => changePage()}
-        >
-          {page === 0 ? "Next ⇨" : "⇦ Prev"}
-        </button>
-      )}
     </div>
   );
 }

@@ -314,6 +314,12 @@ th:last-child {
   border-bottom-right-radius: 5px;
 }
 
+.scoreboard-chart {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+}
+
 /* Episode Header */
 .episode-header {
   display: flex;
@@ -704,6 +710,11 @@ to pass variables to media queries
     margin: 0 auto;
     padding-bottom: 1rem;
     overflow-x: hidden;
+  }
+
+  .scoreboard-chart {
+    display: block;
+    align-items: center;
   }
 }
 

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import GameData from "../utils/gameData";
-import API from "../utils/api";
 import { smallScreen, mediumScreen, largeScreen } from "../utils/screenSize";
 
 import PlayerStats from "../components/PlayerStatsComp";
@@ -12,52 +11,30 @@ import PlayerEdit from "../components/PlayerEditComp";
 import Episodes from "../components/EpisodesComp";
 
 export default function PlayerPage(props) {
-  var { loggedIn, setLoggedIn, playerName } = props;
+  var { loggedIn, setLoggedIn, gameData, playerName } = props;
 
   PlayerPage.propTypes = {
     loggedIn: PropTypes.string.isRequired,
     setLoggedIn: PropTypes.func.isRequired,
+    gameData: PropTypes.instanceOf(GameData).isRequired,
     playerName: PropTypes.string,
   };
 
   var loadedPlayer = useLoaderData();
   playerName = playerName || loadedPlayer;
+  var [player, setPlayer] = useState(gameData.playerByName(playerName));
 
-  var [episodes, setEpisodes] = useState([]);
-  var [player, setPlayer] = useState({});
-  var [episodeEntries, setEpisodeEntries] = useState([]);
-  var [betOutcomes, setBetOutcomes] = useState({
-    firstBoot: [],
-    firstJurror: [],
-    mostAdvantages: [],
-    winner: [],
-    mostIndividualImmunities: [],
-    firstLoser: [],
-    eliminated: [],
-  });
+  useEffect(() => {
+    setPlayer(gameData.playerByName(playerName));
+  }, [playerName]);
+
+  var episodes = gameData.episodes;
+  var betOutcomes = gameData.betOutcomes.sideBets;
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    new API()
-      .all()
-      .newRequest()
-      .then((res) => {
-        var gameData = new GameData(res);
-        setEpisodes(gameData.episodes);
-        setBetOutcomes(gameData.betOutcomes.sideBets);
-
-        var player = gameData.playerByName(playerName);
-        if (loggedIn === playerName && player.survivorList.length === 0) {
-          navigate(`/Draft`);
-        }
-        setPlayer(player);
-      });
-  }, [playerName, loggedIn]);
-
-  useEffect(() => {
-    setEpisodeEntries(updateEntries());
-  }, [player]);
+  if (loggedIn === playerName && player.survivorList.length === 0) {
+    navigate(`/Draft`);
+  }
 
   var episodeHeaders =
     !largeScreen || (mediumScreen && !smallScreen)
@@ -71,8 +48,8 @@ export default function PlayerPage(props) {
         ]
       : ["Ep", "Survivor", "Perf", "Surv", "Ep Total", "Szn Total"];
 
-  const updateEntries = () => {
-    return player.survivorList && player.stats && !player.stats.needsSurvivor
+  var episodeEntries =
+    player.survivorList && player.stats && !player.stats.needsSurvivor
       ? player.survivorList
           .map((survivor, index) => {
             if (!survivor)
@@ -106,7 +83,6 @@ export default function PlayerPage(props) {
               : []
           )
       : [];
-  };
 
   return (
     <div className="content">

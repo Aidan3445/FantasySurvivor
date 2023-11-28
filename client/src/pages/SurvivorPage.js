@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { useLoaderData } from "react-router-dom";
-import API from "../utils/api";
 import GameData from "../utils/gameData";
 
 import SurvivorInfo from "../components/SurvivorInfoComp";
@@ -10,28 +9,18 @@ import SurvivorStats from "../components/SurvivorStatsComp";
 import Episodes from "../components/EpisodesComp";
 
 export default function SurvivorPage(props) {
-  var { survivorName } = props;
+  var { gameData, survivorName } = props;
 
   SurvivorPage.propTypes = {
+    gameData: PropTypes.instanceOf(GameData).isRequired,
     survivorName: PropTypes.string,
   };
-
-  var [survivor, setSurvivor] = useState({});
-  var [episodes, setEpisodes] = useState([]);
 
   var loadedPlayer = useLoaderData();
   survivorName = survivorName || loadedPlayer;
 
-  useEffect(() => {
-    new API()
-      .all()
-      .newRequest()
-      .then((res) => {
-        var gameData = new GameData(res);
-        setEpisodes(gameData.episodes);
-        setSurvivor(gameData.survivorByName(survivorName));
-      });
-  }, [survivorName]);
+  var episodes = gameData.episodes;
+  var survivor = gameData.survivorByName(survivorName);
 
   return (
     <div className="content">

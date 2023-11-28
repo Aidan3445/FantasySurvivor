@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import API from "./utils/api";
+import GameData from "./utils/gameData";
 import { removeLogin } from "./utils/miscUtils";
 import "./App.css";
 
@@ -13,15 +14,28 @@ import Navbar from "./components/NavBarComp";
 
 function App() {
   var [loggedIn, setLoggedIn] = useState("");
+  var [game, setGame] = useState(null);
 
   const handleLogin = (playerName) => {
     setLoggedIn(playerName);
     if (!playerName) removeLogin();
   };
 
+  var api = new API();
+
+  const updateGame = () => {
+    api
+      .all()
+      .newRequest()
+      .then((res) => {
+        setGame(new GameData(res));
+      });
+  };
+
   useEffect(() => {
     if (loggedIn) return;
-    new API()
+
+    api
       .autoLogin()
       .newRequest()
       .then((res) => {
@@ -29,14 +43,17 @@ function App() {
           setLoggedIn(res.login.name);
         }
       });
+
+    updateGame();
   }, []);
+
   const router = createBrowserRouter([
     {
       path: "/",
       element: (
         <div>
           <Navbar loggedIn={loggedIn} setLoggedIn={handleLogin} />
-          <HomePage />
+          <HomePage gameData={game} />
         </div>
       ),
     },
@@ -45,7 +62,11 @@ function App() {
       element: (
         <div>
           <Navbar loggedIn={loggedIn} setLoggedIn={handleLogin} />
-          <PlayerPage loggedIn={loggedIn} setLoggedIn={handleLogin} />
+          <PlayerPage
+            loggedIn={loggedIn}
+            setLoggedIn={handleLogin}
+            gameData={game}
+          />
         </div>
       ),
       loader: nameLoader,
@@ -55,11 +76,12 @@ function App() {
       element: (
         <div>
           <Navbar loggedIn={loggedIn} setLoggedIn={handleLogin} />
-          <SurvivorPage />
+          <SurvivorPage gameData={game} />
         </div>
       ),
       loader: nameLoader,
     },
+    // Pages below edit data and don't use the localized game data
     {
       path: "/DataEntry",
       element: (
@@ -80,6 +102,7 @@ function App() {
     },
   ]);
 
+  if (!game) return <div>Loading...</div>;
   return (
     <RouterProvider router={router} future={{ v7_startTransition: true }} />
   );

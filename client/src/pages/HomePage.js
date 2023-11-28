@@ -1,33 +1,35 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import GameData from "../utils/gameData";
-import API from "../utils/api";
 
 import Scoreboard from "../components/ScoreboardComp";
 import Chart from "../components/RechartChartComp";
 
-export default function HomePage() {
-  var [survivors, setSurvivors] = useState([]);
-  var [players, setPlayers] = useState([]);
-  var [episodes, setEpisodes] = useState([]);
+export default function HomePage(props) {
+  var { gameData } = props;
 
-  var [survivorData, setSurvivorData] = useState([]);
-  var [playerData, setPlayerData] = useState([]);
+  HomePage.propTypes = {
+    gameData: PropTypes.instanceOf(GameData).isRequired,
+  };
 
-  React.useEffect(() => {
-    new API()
-      .all()
-      .newRequest()
-      .then((res) => {
-        var gameData = new GameData(res);
-        setEpisodes(gameData.episodes);
+  const getData = (selectedNames, population) => {
+    return population
+      .map((member) => {
+        return {
+          draw:
+            selectedNames.length === 0 || selectedNames.includes(member.name),
+          data: member.stats.episodeTotals,
+          color: member.color,
+          name: member.name,
+        };
+      })
+      .reverse();
+  };
 
-        setPlayers(gameData.players);
-        setPlayerData(getData([], gameData.players));
-
-        setSurvivors(gameData.survivors);
-        setSurvivorData(getData([], gameData.survivors));
-      });
-  }, []);
+  var episodes = gameData.episodes;
+  var players = gameData.players;
+  var [playerData, setPlayerData] = useState(getData([], gameData.players));
+  var survivors = gameData.survivors;
 
   // Scoreboard
   var playerHeaders = ["Rank", "Name", "Current Survivor", "Score"];
@@ -40,6 +42,7 @@ export default function HomePage() {
       color: survivor.color,
     };
   });
+  var sliceAt = Math.ceil(survivorEntries.length / 2);
 
   var playerEntries = players.map((player) => {
     return {
@@ -66,31 +69,6 @@ export default function HomePage() {
       }),
     ];
   }, []);
-
-  // Chart
-  const getData = (selectedNames, population) => {
-    return population
-      .map((member) => {
-        return {
-          draw:
-            selectedNames.length === 0 || selectedNames.includes(member.name),
-          data: member.stats.episodeTotals,
-          color: member.color,
-          name: member.name,
-        };
-      })
-      .reverse();
-  };
-
-  const handleSurvivorSelect = (selected, clickName) => {
-    return handleSelect(
-      selected,
-      clickName,
-      survivorEntries,
-      survivors,
-      setSurvivorData
-    );
-  };
 
   const handlePlayerSelect = (selected, clickName) => {
     return handleSelect(
@@ -121,22 +99,28 @@ export default function HomePage() {
       <br />
       <div className="box pad-5 marg-5">
         <div className="survivor-header">Players</div>
-        <Scoreboard
-          headers={playerHeaders}
-          entries={playerEntries}
-          handleSelect={handlePlayerSelect}
-        />
-        <Chart data={playerData} />
+        <div className="scoreboard-chart">
+          <Scoreboard
+            headers={playerHeaders}
+            entries={playerEntries}
+            handleSelect={handlePlayerSelect}
+          />
+          <Chart data={playerData} />
+        </div>
       </div>
       <div className="box pad-5 marg-5">
         <div className="survivor-header">Survivors</div>
-        <Scoreboard
-          headers={survivorHeaders}
-          entries={survivorEntries}
-          handleSelect={handleSurvivorSelect}
-          multiPage
-        />
-        <Chart data={survivorData} />
+        <div className="scoreboard-chart">
+          <Scoreboard
+            headers={survivorHeaders}
+            entries={survivorEntries.slice(0, sliceAt)}
+          />
+          <Scoreboard
+            headers={survivorHeaders}
+            entries={survivorEntries.slice(sliceAt)}
+            offset={sliceAt}
+          />
+        </div>
       </div>
       <div className="box pad-5 marg-5">
         <div className="survivor-header">Eliminations</div>
