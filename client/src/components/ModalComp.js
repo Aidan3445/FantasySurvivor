@@ -133,22 +133,21 @@ function LoginContent(props) {
 }
 
 function SurvivorSelectContent(props) {
-  var { player, setNewSurvivor, setModalOpen } = props;
+  var { player, setModalOpen, updateGameData } = props;
 
   SurvivorSelectContent.propTypes = {
     player: PropTypes.object.isRequired,
-    setNewSurvivor: PropTypes.func.isRequired,
     setModalOpen: PropTypes.func.isRequired,
+    updateGameData: PropTypes.func.isRequired,
   };
 
   var [survivor, setSurvivor] = useState(null);
   var [availableSurvivors, setAvailableSurvivors] = useState([]);
-  var [canChange, setCanChange] = useState(false);
-
-  var warningText = [
+  var [canChange, setCanChange] = useState(true);
+  var [warningText, setWarningText] = useState([
     "Cannot change survivor.",
     "Contact Aidan if you think this is a mistake.",
-  ];
+  ]);
 
   useEffect(() => {
     new API()
@@ -157,14 +156,16 @@ function SurvivorSelectContent(props) {
       .then((res) => {
         var gameData = new GameData(res);
         if (
-          gameData.episodes.length > 0 &&
-          gameData.episodes[gameData.episodes.length - 1].aired === -1
+          gameData.episodes.length == 0 ||
+          gameData.episodes[gameData.episodes.length - 1].aired != -1
         ) {
-          setCanChange(true);
+          setCanChange(false);
         }
 
         if (gameData.availableSurvivors.length === 0) {
-          setModalOpen(false);
+          warningText[0] = "No available survivors.";
+          setWarningText(warningText);
+          setCanChange(false);
         } else {
           setAvailableSurvivors(gameData.availableSurvivors);
         }
@@ -173,8 +174,9 @@ function SurvivorSelectContent(props) {
 
   const updateSurvivor = () => {
     if (!survivor || !canChange) return;
-    API.updateSurvivorPick(player.name, survivor.value);
-    setNewSurvivor(survivor.survivor);
+    API.updateSurvivorPick(player.name, survivor.value).then(() =>
+      updateGameData()
+    );
     setModalOpen(false);
   };
 
@@ -210,20 +212,19 @@ function SurvivorSelectContent(props) {
 }
 
 function ColorModalContent(props) {
-  var { color, setColor, playerName, setModalOpen } = props;
+  var { color, playerName, setModalOpen, updateGameData } = props;
 
   ColorModalContent.propTypes = {
     color: PropTypes.string.isRequired,
-    setColor: PropTypes.func.isRequired,
     playerName: PropTypes.string.isRequired,
     setModalOpen: PropTypes.func.isRequired,
+    updateGameData: PropTypes.func.isRequired,
   };
 
   var [localColor, setLocalColor] = useState(color);
 
   const updateColor = () => {
-    API.updateColor(playerName, localColor);
-    setColor(localColor);
+    API.updateColor(playerName, localColor).then(() => updateGameData());
     setModalOpen(false);
   };
 

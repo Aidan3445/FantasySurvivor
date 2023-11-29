@@ -66,6 +66,7 @@ function App() {
             loggedIn={loggedIn}
             setLoggedIn={handleLogin}
             gameData={game}
+            updateGameData={updateGame}
           />
         </div>
       ),

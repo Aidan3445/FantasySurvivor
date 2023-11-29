@@ -10,11 +10,11 @@ import Modal, {
 } from "../components/ModalComp";
 
 function PlayerEdit(props) {
-  var { player, setPlayer, loggedIn, setLoggedIn } = props;
+  var { player, updateGameData, loggedIn, setLoggedIn } = props;
 
   PlayerEdit.propTypes = {
     player: PropTypes.object.isRequired,
-    setPlayer: PropTypes.func.isRequired,
+    updateGameData: PropTypes.func.isRequired,
     loggedIn: PropTypes.string.isRequired,
     setLoggedIn: PropTypes.func.isRequired,
   };
@@ -25,11 +25,7 @@ function PlayerEdit(props) {
   useEffect(() => {
     if (player.stats && player.stats.needsSurvivor) {
       openModal(
-        <SurvivorSelectContent
-          player={player}
-          setNewSurvivor={setNewSurvivor}
-          setModalOpen={setModalOpen}
-        />
+        <SurvivorSelectContent player={player} setModalOpen={setModalOpen} />
       );
     }
   }, [player]);
@@ -51,17 +47,6 @@ function PlayerEdit(props) {
     openModal(
       <LoginContent setLoggedIn={setLoggedIn} setModalOpen={setModalOpen} />
     );
-  };
-
-  const setColor = (color) => {
-    setPlayer({ ...player, color });
-  };
-
-  const setNewSurvivor = (survivor) => {
-    setPlayer({
-      ...player,
-      survivorList: [...player.survivorList.slice(0, -1), survivor],
-    });
   };
 
   return (
@@ -90,8 +75,8 @@ function PlayerEdit(props) {
               openModal(
                 <SurvivorSelectContent
                   player={player}
-                  setNewSurvivor={setNewSurvivor}
                   setModalOpen={setModalOpen}
+                  updateGameData={updateGameData}
                 />
               );
             }}
@@ -104,9 +89,9 @@ function PlayerEdit(props) {
               openModal(
                 <ColorModalContent
                   color={player.color}
-                  setColor={setColor}
                   playerName={player.name}
                   setModalOpen={setModalOpen}
+                  updateGameData={updateGameData}
                 />
               );
             }}

@@ -6,7 +6,6 @@ class GameData {
   constructor(requestData) {
     this.rawData = requestData;
     this.data = {};
-    this.epCalls = 0;
   }
 
   // process episode data

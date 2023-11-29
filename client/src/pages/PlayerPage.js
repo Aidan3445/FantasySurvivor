@@ -11,12 +11,13 @@ import PlayerEdit from "../components/PlayerEditComp";
 import Episodes from "../components/EpisodesComp";
 
 export default function PlayerPage(props) {
-  var { loggedIn, setLoggedIn, gameData, playerName } = props;
+  var { loggedIn, setLoggedIn, gameData, updateGameData, playerName } = props;
 
   PlayerPage.propTypes = {
     loggedIn: PropTypes.string.isRequired,
     setLoggedIn: PropTypes.func.isRequired,
     gameData: PropTypes.instanceOf(GameData).isRequired,
+    updateGameData: PropTypes.func.isRequired,
     playerName: PropTypes.string,
   };
 
@@ -26,7 +27,7 @@ export default function PlayerPage(props) {
 
   useEffect(() => {
     setPlayer(gameData.playerByName(playerName));
-  }, [playerName]);
+  }, [playerName, gameData]);
 
   var episodes = gameData.episodes;
   var betOutcomes = gameData.betOutcomes.sideBets;
@@ -57,6 +58,13 @@ export default function PlayerPage(props) {
                 data: ["Choose Survivor", null, null, null, null],
                 color: "grey",
               };
+
+            if (index > gameData.lastAired + 1) {
+              return {
+                data: ["", null, null, null, null],
+                color: "grey",
+              };
+            }
 
             var performancePoints = player.stats.performanceByEp[index];
             var survivalPoints = player.stats.survivalByEp[index];
@@ -90,7 +98,7 @@ export default function PlayerPage(props) {
       {player.name && (
         <PlayerEdit
           player={player}
-          setPlayer={setPlayer}
+          updateGameData={updateGameData}
           loggedIn={loggedIn}
           setLoggedIn={setLoggedIn}
         />
