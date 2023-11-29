@@ -1,9 +1,10 @@
 import axios from "axios";
 
-const apiRoot =
+var root =
   process.env.NODE_ENV === "production"
     ? process.env.REACT_APP_API_ROOT
     : process.env.REACT_APP_API_ROOT_DEV;
+const apiRoot = `${root}/api/`;
 
 class API {
   constructor() {

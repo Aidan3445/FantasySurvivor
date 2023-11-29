@@ -5,6 +5,19 @@ const env = require("dotenv");
 
 env.config();
 const app = express();
+const server = app.listen(1332, () =>
+  console.log("Server running on port 1332!")
+);
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "*",
+  },
+});
+io.on("connection", (socket) => {
+  socket.on("update", (data) => {
+    socket.broadcast.emit("update", data);
+  });
+});
 
 const Episode = require("./models/EpisodeModel");
 const Player = require("./models/PlayerModel");
@@ -264,5 +277,3 @@ app.post("/api/tribe/new/:tribeName", (req, res) => {
 });
 
 //#endregion
-
-app.listen(1332, () => console.log("Server running on port 1332!"));

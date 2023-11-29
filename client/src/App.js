@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import io from "socket.io-client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import API from "./utils/api";
 import GameData from "./utils/gameData";
@@ -12,9 +13,15 @@ import DataEntryPage from "./pages/DataEntryPage";
 import DraftPage from "./pages/DraftPage";
 import Navbar from "./components/NavBarComp";
 
+var root =
+  process.env.NODE_ENV === "production"
+    ? process.env.REACT_APP_API_ROOT
+    : process.env.REACT_APP_API_ROOT_DEV;
+
 function App() {
   var [loggedIn, setLoggedIn] = useState("");
   var [game, setGame] = useState(null);
+  var [socket, setSocket] = useState(null);
 
   const handleLogin = (playerName) => {
     setLoggedIn(playerName);
@@ -23,17 +30,21 @@ function App() {
 
   var api = new API();
 
-  const updateGame = () => {
-    api
-      .all()
-      .newRequest()
-      .then((res) => {
-        setGame(new GameData(res));
-      });
+  const updateGame = async () => {
+    const res = await api.all().newRequest();
+    var g = new GameData(res);
+    socket?.emit("update", g.rawData);
+    setGame(g);
   };
 
+  socket?.on("update", (data) => {
+    setGame(new GameData(data));
+  });
+
   useEffect(() => {
-    if (loggedIn) return;
+    setSocket(io.connect(root));
+
+    updateGame();
 
     api
       .autoLogin()
@@ -43,9 +54,14 @@ function App() {
           setLoggedIn(res.login.name);
         }
       });
-
-    updateGame();
   }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+    updateGame();
+
+    return () => socket.disconnect();
+  }, [socket]);
 
   const router = createBrowserRouter([
     {
