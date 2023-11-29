@@ -51,46 +51,41 @@ export default function PlayerPage(props) {
 
   var episodeEntries =
     player.survivorList && player.stats && !player.stats.needsSurvivor
-      ? player.survivorList
-          .map((survivor, index) => {
-            if (!survivor)
-              return {
-                data: ["Choose Survivor", null, null, null, null],
-                color: "grey",
-              };
-
-            if (index > gameData.lastAired + 1) {
-              return {
-                data: ["", null, null, null, null],
-                color: "grey",
-              };
-            }
-
-            var performancePoints = player.stats.performanceByEp[index];
-            var survivalPoints = player.stats.survivalByEp[index];
-            var total = player.stats.episodeTotals[index];
+      ? player.survivorList.map((survivor, index) => {
+          if (!survivor)
             return {
-              data: [
-                survivor.name,
-                performancePoints,
-                survivalPoints,
-                performancePoints + survivalPoints,
-                total,
-              ],
-              color: survivor.stats.tribeList.findLast(
-                (update) => update.episode <= index
-              ).color,
+              data: ["Choose Survivor", null, null, null, null],
+              color: "grey",
             };
-          })
-          .concat(
-            !mediumScreen
-              ? new Array(16 - player.survivorList.length).fill({
-                  data: ["", null, null, null, null],
-                  color: "grey",
-                })
-              : []
-          )
+
+          if (index > gameData.lastAired + 1) return null;
+
+          var performancePoints = player.stats.performanceByEp[index];
+          var survivalPoints = player.stats.survivalByEp[index];
+          var total = player.stats.episodeTotals[index];
+          return {
+            data: [
+              survivor.name,
+              performancePoints,
+              survivalPoints,
+              performancePoints + survivalPoints,
+              total,
+            ],
+            color: survivor.stats.tribeList.findLast(
+              (update) => update.episode <= index
+            ).color,
+          };
+        })
       : [];
+  episodeEntries = episodeEntries.filter((entry) => entry);
+  episodeEntries = episodeEntries.concat(
+    !mediumScreen
+      ? new Array(16 - episodeEntries.length).fill({
+          data: ["", null, null, null, null],
+          color: "grey",
+        })
+      : []
+  );
 
   return (
     <div className="content">
@@ -104,7 +99,11 @@ export default function PlayerPage(props) {
         />
       )}
       <section className="player-info">
-        <div className="stats-bets gap-0">
+        <div
+          className={`stats-bets gap-0 ${
+            loggedIn === playerName ? "cols" : ""
+          }`}
+        >
           {player.stats && (
             <PlayerStats stats={player.stats} color={player.color} />
           )}

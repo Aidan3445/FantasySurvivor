@@ -672,6 +672,9 @@ to pass variables to media queries
 
   .stats-bets {
     display: grid;
+  }
+
+  .cols {
     grid-template-columns: repeat(2, 1fr);
   }
 
