@@ -178,7 +178,7 @@ class GameData {
       stats.performancePoints += performancePoints;
       stats.performanceByEp.push(performancePoints);
 
-      if (episode.eliminated.includes(survivor.name) || episode.aired === -1) {
+      if (episode.eliminated.includes(survivor.name) || episode.aired < 1) {
         survivalPoints = 0;
       } else {
         survivalPoints += 1;
