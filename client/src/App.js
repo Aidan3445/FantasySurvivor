@@ -32,8 +32,8 @@ function App() {
 
   const updateGame = async () => {
     const res = await api.all().newRequest();
+    socket?.emit("update", res);
     var g = new GameData(res);
-    socket?.emit("update", g.rawData);
     setGame(g);
   };
 

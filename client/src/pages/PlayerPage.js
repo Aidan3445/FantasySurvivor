@@ -29,7 +29,12 @@ export default function PlayerPage(props) {
     setPlayer(gameData.playerByName(playerName));
   }, [playerName, gameData]);
 
-  var episodes = gameData.episodes;
+  var episodes = gameData.episodes.slice(0, gameData.lastAired + 1);
+  var currentSurvivor = player.survivorList[player.survivorList.length - 1];
+  if (currentSurvivor?.stats?.eliminated) {
+    episodes = episodes.slice(0, currentSurvivor.stats.eliminated);
+  }
+
   var betOutcomes = gameData.betOutcomes.sideBets;
 
   const navigate = useNavigate();
@@ -58,7 +63,11 @@ export default function PlayerPage(props) {
               color: "grey",
             };
 
-          if (index > gameData.lastAired + 1) return null;
+          if (
+            index > gameData.lastAired + 1 ||
+            (survivor.stats.eliminated && survivor.stats.eliminated <= index)
+          )
+            return null;
 
           var performancePoints = player.stats.performanceByEp[index];
           var survivalPoints = player.stats.survivalByEp[index];
@@ -74,6 +83,7 @@ export default function PlayerPage(props) {
             color: survivor.stats.tribeList.findLast(
               (update) => update.episode <= index
             ).color,
+            eliminated: survivor.stats.eliminated === index + 1,
           };
         })
       : [];

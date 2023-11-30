@@ -16,6 +16,20 @@ export default function DataEntryPage(props) {
   };
 
   var values = gameData.dataEntryValues;
+  var airingNow = values.Episodes.find(
+    (ep) => ep.episode !== null && ep.episode.aired === 0
+  );
+
+  var [selectedEpisode, selectEpisode] = useState(null);
+  useEffect(() => {
+    if (selectedEpisode) {
+      selectEpisode(
+        values.Episodes.find((ep) => ep.value === selectedEpisode.value)
+      );
+    } else if (airingNow) {
+      selectEpisode(airingNow);
+    }
+  }, []);
 
   const handleDataEntry = (data) => {
     if (data.newEpisode) {
@@ -28,21 +42,6 @@ export default function DataEntryPage(props) {
       }
     }
   };
-
-  useEffect(() => {
-    var airingNow = values.Episodes.find(
-      (ep) => ep.episode !== null && ep.episode.aired === 0
-    );
-    if (selectedEpisode) {
-      selectEpisode(
-        values.Episodes.find((ep) => ep.value === selectedEpisode.value)
-      );
-    } else if (airingNow) {
-      selectEpisode(airingNow);
-    }
-  }, [values]);
-
-  var [selectedEpisode, selectEpisode] = useState(null);
 
   const followUp = () => {
     if (selectedEpisode.value === 0) {

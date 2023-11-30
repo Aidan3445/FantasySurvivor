@@ -4,16 +4,21 @@ import { getRunningPoints, sideBetOutcomes } from "./miscUtils";
 
 class GameData {
   constructor(requestData) {
-    this.rawData = requestData;
-    this.data = {};
+    this.data = requestData;
+    this.processed = {
+      episodes: false,
+      survivors: false,
+      players: false,
+    };
   }
 
   // process episode data
   get episodes() {
-    if (!this.data.episodes) {
-      this.data.episodes = this.rawData.episodeData.map((episode) =>
+    if (!this.processed.episodes) {
+      this.data.episodes = this.data.episodes.map((episode) =>
         Episode.fromJSON(episode)
       );
+      this.processed.episodes = true;
     }
     return this.data.episodes;
   }
@@ -29,16 +34,19 @@ class GameData {
 
   // process survivor data
   get survivors() {
-    if (!this.data.survivors) {
-      this.data.survivors = this.rawData.survivorData.map((survivor) => {
-        survivor.stats = this.survivorStats(survivor);
-        survivor.color = this.tribes.find(
-          (tribe) => tribe.name === survivor.tribe
-        ).color;
-        return survivor;
-      });
+    if (!this.processed.survivors) {
+      this.data.survivors = this.data.survivors
+        .map((survivor) => {
+          survivor.stats = this.survivorStats(survivor);
+          survivor.color = this.tribes.find(
+            (tribe) => tribe.name === survivor.tribe
+          ).color;
+          return survivor;
+        })
+        .memberSort();
+      this.processed.survivors = true;
     }
-    return this.data.survivors.memberSort();
+    return this.data.survivors;
   }
 
   survivorByName(name) {
@@ -54,7 +62,7 @@ class GameData {
       wins: 0,
       indivWins: 0,
       tribeWins: 0,
-      eliminated: 0,
+      eliminated: null,
       episodeTotals: [],
       tribeList: [
         {
@@ -115,19 +123,19 @@ class GameData {
 
   // process player data
   get players() {
-    if (!this.data.players) {
-      this.data.players = this.rawData.playerData.map((player) => {
-        player.survivorList = player.survivorList.map((survivorName) => {
-          return this.survivors.find(
-            (survivor) => survivor.name === survivorName
-          );
-        });
-        player.stats = this.playerStats(player);
-        return player;
-      });
+    if (!this.processed.players) {
+      this.data.players = this.data.players
+        .map((player) => {
+          player.survivorList = player.survivorList
+            .slice(0, this.lastAired + 2)
+            .map((survivorName) => this.survivorByName(survivorName));
+          player.stats = this.playerStats(player);
+          return player;
+        })
+        .memberSort();
+      this.processed.players = true;
     }
-
-    return this.data.players.memberSort();
+    return this.data.players;
   }
 
   playerByName(name) {
@@ -156,7 +164,10 @@ class GameData {
     for (var i = 0; i <= this.lastAired + 1; i++) {
       var episode = this.episodes[i];
       var survivor = survivors[i];
-      if (i === this.lastAired + 1) {
+      if (
+        i === this.lastAired + 1 ||
+        (survivor.stats.eliminated > 0 && survivor.stats.eliminated < i + 1)
+      ) {
         if (!survivor && episode && episode.aired === 1) {
           stats.needsSurvivor = true;
         }
@@ -240,10 +251,6 @@ class GameData {
 
   // get tribe by name
   get tribes() {
-    if (!this.data.tribes) {
-      this.data.tribes = this.rawData.tribeData;
-    }
-
     return this.data.tribes;
   }
 

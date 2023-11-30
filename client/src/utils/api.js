@@ -13,22 +13,22 @@ class API {
 
   //#region REQUEST DATA
   episodes() {
-    this.requests.episodeData = `${apiRoot}episodes`;
+    this.requests.episodes = `${apiRoot}episodes`;
     return this;
   }
 
   survivors(name) {
-    this.requests.survivorData = `${apiRoot}survivor${name ? `/${name}` : "s"}`;
+    this.requests.survivors = `${apiRoot}survivor${name ? `/${name}` : "s"}`;
     return this.episodes().tribes();
   }
 
   players(name) {
-    this.requests.playerData = `${apiRoot}player${name ? `/${name}` : "s"}`;
+    this.requests.players = `${apiRoot}player${name ? `/${name}` : "s"}`;
     return this.survivors();
   }
 
   tribes() {
-    this.requests.tribeData = `${apiRoot}tribes`;
+    this.requests.tribes = `${apiRoot}tribes`;
     return this;
   }
 
@@ -60,6 +60,12 @@ class API {
     var data = {};
     for (var i = 0; i < requests.length; i++) {
       data[requests[i]] = responses[i].data;
+
+      if (requests[i] !== "players") continue;
+      data[requests[i]].forEach((d) => {
+        delete d.password;
+        delete d.rememberMeToken;
+      });
     }
     return data;
   }

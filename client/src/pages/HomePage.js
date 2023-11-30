@@ -48,9 +48,7 @@ export default function HomePage(props) {
     return {
       data: [
         player.name,
-        player.survivorList[player.survivorList.length - 1]?.name
-          ? player.survivorList[player.survivorList.length - 1].name
-          : "None",
+        player.survivorList[player.survivorList.length - 1]?.name || "None",
         player.stats.points,
       ],
       color: player.color,

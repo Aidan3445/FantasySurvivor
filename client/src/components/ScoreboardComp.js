@@ -36,10 +36,11 @@ function Scoreboard(props) {
     if (selected.length > 0 && notSelected) {
       fillColor = tinyColor(fillColor).desaturate(40).toString();
     }
+
     return {
       color: isLightColor(entry.color) ? "black" : "white",
       "--fillColor": fillColor,
-      "--selected": notSelected ? "normal" : "italic",
+      "--selected": notSelected && !entry.eliminated ? "normal" : "italic",
     };
   };
 
