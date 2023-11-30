@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import Select from "react-select";
 import API from "../utils/api";
 import GameData from "../utils/gameData";
@@ -6,35 +7,24 @@ import GameData from "../utils/gameData";
 import NewEpisodeEntry from "../components/NewEpisodeEntryComp";
 import EpisodeUpdateEntry from "../components/EpisodeUpdateComp";
 
-export default function DataEntryPage() {
-  var [values, setValues] = useState({
-    SurvivorNames: [],
-    TribeNames: [],
-    Episodes: [],
-    Survivors: [],
-  });
+export default function DataEntryPage(props) {
+  var { gameData, updateGameData } = props;
 
-  React.useEffect(() => {
-    getEntryValues();
-  }, []);
+  DataEntryPage.propTypes = {
+    gameData: PropTypes.instanceOf(GameData).isRequired,
+    updateGameData: PropTypes.func.isRequired,
+  };
 
-  const getEntryValues = () =>
-    new API()
-      .all()
-      .newRequest()
-      .then((res) => {
-        var gameData = new GameData(res);
-        setValues(gameData.dataEntryValues);
-      });
+  var values = gameData.dataEntryValues;
 
   const handleDataEntry = (data) => {
     if (data.newEpisode) {
       API.addEpisode(data.newEpisode);
     }
     if (data.updatedEpisode) {
-      API.updateEpisode(data.updatedEpisode).then(() => getEntryValues());
+      API.updateEpisode(data.updatedEpisode).then(() => updateGameData());
       if (data.newTribe) {
-        API.addTribe(data.newTribe);
+        API.addTribe(data.newTribe).then(() => updateGameData());
       }
     }
   };

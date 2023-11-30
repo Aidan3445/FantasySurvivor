@@ -104,7 +104,7 @@ function App() {
       element: (
         <div>
           <Navbar loggedIn={loggedIn} setLoggedIn={handleLogin} />
-          <DataEntryPage />
+          <DataEntryPage gameData={game} updateGameData={updateGame} />
         </div>
       ),
     },
