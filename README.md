@@ -9,7 +9,8 @@ My goal was to create a web application that would automate and enhance the Fant
 ### Scoring System
 
 - The application has a Data Entry Page that allows me or any other admin to enter certain events or notes 
-- Users can view their team's current score and ranking within the league. WebSockets transmit data updates to all users on the page.
+- Users can view their team's current score and ranking within the league.
+- WebSockets transmit live data updates to all users on the page.
 
 ## Tech Stack (MERN)
 
