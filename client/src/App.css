@@ -92,6 +92,10 @@
   right: 0px;
 }
 
+.loading-image {
+  max-height: 40vh;
+}
+
 /* Content Under Nav */
 .content {
   margin-top: 50px;

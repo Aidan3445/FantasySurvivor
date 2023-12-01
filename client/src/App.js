@@ -11,6 +11,7 @@ import PlayerPage from "./pages/PlayerPage";
 import SurvivorPage from "./pages/SurvivorPage";
 import DataEntryPage from "./pages/DataEntryPage";
 import DraftPage from "./pages/DraftPage";
+import LoadingPage from "./pages/LoadingPage";
 import Navbar from "./components/NavBarComp";
 
 var root =
@@ -119,7 +120,7 @@ function App() {
     },
   ]);
 
-  if (!game) return <div>Loading...</div>;
+  if (!game) return <LoadingPage />;
   return (
     <RouterProvider router={router} future={{ v7_startTransition: true }} />
   );
