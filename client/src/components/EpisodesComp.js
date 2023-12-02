@@ -21,7 +21,7 @@ function Episodes(props) {
         {episodes.map(
           (episode) =>
             survivor?.stats &&
-            (survivor.stats.eliminated === 0 ||
+            (!survivor.stats.eliminated ||
               survivor.stats.eliminated >= episode.number) && (
               <EpisodeComp
                 episode={episode}

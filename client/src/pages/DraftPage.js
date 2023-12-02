@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 import API from "../utils/api";
 import GameData from "../utils/gameData";
 
@@ -8,6 +9,10 @@ import DraftEntries from "../components/DraftEntriesComp";
 
 function DraftPage(props) {
   var { loggedIn } = props;
+
+  DraftPage.propTypes = {
+    loggedIn: PropTypes.string.isRequired,
+  };
 
   var [player, setPlayer] = useState({});
   var [values, setValues] = useState({
@@ -51,7 +56,7 @@ function DraftPage(props) {
         rel="noreferrer"
         target="_blank"
       >
-        Learn about this year's castaways
+        Learn about this year&aposs castaways
       </a>
       {playersTurn() ? (
         <DraftEntries player={player} values={values} />

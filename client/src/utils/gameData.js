@@ -15,9 +15,9 @@ class GameData {
   // process episode data
   get episodes() {
     if (!this.processed.episodes) {
-      this.data.episodes = this.data.episodes.map((episode) =>
-        Episode.fromJSON(episode)
-      );
+      this.data.episodes = this.data.episodes
+        .map((episode) => Episode.fromJSON(episode))
+        .filter((episode) => episode.aired >= 0);
       this.processed.episodes = true;
     }
     return this.data.episodes;
@@ -26,7 +26,7 @@ class GameData {
   get lastAired() {
     if (!this.data.lastAired) {
       this.data.lastAired = this.episodes.findLastIndex(
-        (episode) => episode.aired >= 0
+        (episode) => episode.aired === 1
       );
     }
     return this.data.lastAired;
@@ -76,45 +76,43 @@ class GameData {
 
     var airedCount = 0;
 
-    this.episodes
-      .filter((episode) => episode.aired >= 0)
-      .forEach((episode) => {
-        if (stats.eliminated) return;
+    this.episodes.forEach((episode) => {
+      if (stats.eliminated) return;
 
-        var tribeUpdate = episode.tribeUpdates.find((update) =>
-          update.survivors.includes(name)
-        );
-        if (tribeUpdate) {
-          stats.tribeList.push({
-            episode: episode.number - 1,
-            tribe: tribeUpdate.tribe,
-            color: this.tribes.find((tribe) => tribe.name === tribeUpdate.tribe)
-              .color,
-          });
-          survivor.tribe = tribeUpdate.tribe;
-          tribe = tribeUpdate.tribe;
-        }
+      var tribeUpdate = episode.tribeUpdates.find((update) =>
+        update.survivors.includes(name)
+      );
+      if (tribeUpdate) {
+        stats.tribeList.push({
+          episode: episode.number - 1,
+          tribe: tribeUpdate.tribe,
+          color: this.tribes.find((tribe) => tribe.name === tribeUpdate.tribe)
+            .color,
+        });
+        survivor.tribe = tribeUpdate.tribe;
+        tribe = tribeUpdate.tribe;
+      }
 
-        var points = episode.getPoints(survivor);
-        stats.points += points;
-        stats.episodeTotals.push(points);
+      var points = episode.getPoints(survivor);
+      stats.points += points;
+      stats.episodeTotals.push(points);
 
-        var indivWins = episode.indivWins.filter((val) => val === name);
-        stats.indivWins += indivWins.length;
-        stats.wins += indivWins.length;
+      var indivWins = episode.indivWins.filter((val) => val === name);
+      stats.indivWins += indivWins.length;
+      stats.wins += indivWins.length;
 
-        var tribeWins = episode.tribe1sts.filter(
-          (val) => val === name || val === tribe
-        );
-        stats.tribeWins += tribeWins.length;
-        stats.wins += tribeWins.length;
+      var tribeWins = episode.tribe1sts.filter(
+        (val) => val === name || val === tribe
+      );
+      stats.tribeWins += tribeWins.length;
+      stats.wins += tribeWins.length;
 
-        stats.eliminated = episode.eliminated.includes(name)
-          ? episode.number
-          : stats.eliminated;
+      stats.eliminated = episode.eliminated.includes(name)
+        ? episode.number
+        : stats.eliminated;
 
-        if (episode.aired === 1) airedCount++;
-      });
+      if (episode.aired === 1) airedCount++;
+    });
 
     stats.ppe = stats.points / airedCount;
     stats.episodeTotals = getRunningPoints(stats.episodeTotals);
@@ -162,11 +160,10 @@ class GameData {
     var survivorScores = [];
     var survivalPoints = 0;
     for (var i = 0; i <= this.lastAired + 1; i++) {
-      var episode = this.episodes[i];
       var survivor = survivors[i];
       if (
         i === this.lastAired + 1 ||
-        (survivor.stats.eliminated > 0 && survivor.stats.eliminated < i + 1)
+        (survivor.stats.eliminated && survivor.stats.eliminated < i + 1)
       ) {
         if (!survivor && episode && episode.aired === 1) {
           stats.needsSurvivor = true;
@@ -174,6 +171,7 @@ class GameData {
         continue;
       }
 
+      var episode = this.episodes[i];
       var performancePoints = episode.getPoints(survivor);
       stats.performancePoints += performancePoints;
       stats.performanceByEp.push(performancePoints);
@@ -258,7 +256,7 @@ class GameData {
   get availableSurvivors() {
     var availableSurvivors = this.survivors.filter((survivor) => {
       return (
-        survivor.stats.eliminated === 0 &&
+        !survivor.stats.eliminated &&
         !this.players.some((player) => {
           var currentSurvivor =
             player.survivorList[player.survivorList.length - 1];

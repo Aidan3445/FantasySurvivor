@@ -3,17 +3,17 @@ import PropTypes from "prop-types";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Select from "react-select";
 import { tinyScreen } from "../utils/screenSize";
-import API from "../utils/api";
 import GameData from "../utils/gameData";
 
 import Modal, { LoginContent } from "../components/ModalComp";
 
 function Navbar(props) {
-  var { loggedIn, setLoggedIn } = props;
+  var { loggedIn, setLoggedIn, gameData } = props;
 
   Navbar.propTypes = {
     loggedIn: PropTypes.string,
     setLoggedIn: PropTypes.func.isRequired,
+    gameData: PropTypes.instanceOf(GameData).isRequired,
   };
 
   var [isNavbarVisible, setNavbarVisible] = useState(true);
@@ -40,13 +40,7 @@ function Navbar(props) {
 
     window.addEventListener("scroll", handleScroll);
 
-    new API()
-      .all()
-      .newRequest()
-      .then((res) => {
-        var gameData = new GameData(res);
-        setMenuOptions(gameData.menuValues);
-      });
+    setMenuOptions(gameData.menuValues);
 
     return () => {
       window.removeEventListener("scroll", handleScroll);

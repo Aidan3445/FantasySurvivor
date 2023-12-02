@@ -166,7 +166,7 @@ function EpisodeUpdateEntryComp(props) {
             setAffected={setAffected}
             Survivors={values.Survivors.filter(
               (opt) =>
-                (opt.survivor.stats.eliminated === 0 ||
+                (!opt.survivor.stats.eliminated ||
                   opt.survivor.stats.eliminated > episode.number) &&
                 !displayEpisode.eliminated.includes(opt.value)
             )}
@@ -359,7 +359,7 @@ const getOptions = (values, episodeNumber, showEliminated) => {
   if (!showEliminated) {
     Survivors = Survivors.filter(
       (opt) =>
-        opt.survivor.stats.eliminated === 0 ||
+        !opt.survivor.stats.eliminated ||
         opt.survivor.stats.eliminated > episodeNumber
     );
   }

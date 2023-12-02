@@ -69,7 +69,11 @@ function App() {
       path: "/",
       element: (
         <div>
-          <Navbar loggedIn={loggedIn} setLoggedIn={handleLogin} />
+          <Navbar
+            loggedIn={loggedIn}
+            setLoggedIn={handleLogin}
+            gameData={game}
+          />
           <HomePage gameData={game} />
         </div>
       ),
@@ -78,7 +82,11 @@ function App() {
       path: "/Player/:name",
       element: (
         <div>
-          <Navbar loggedIn={loggedIn} setLoggedIn={handleLogin} />
+          <Navbar
+            loggedIn={loggedIn}
+            setLoggedIn={handleLogin}
+            gameData={game}
+          />
           <PlayerPage
             loggedIn={loggedIn}
             setLoggedIn={handleLogin}
@@ -93,7 +101,11 @@ function App() {
       path: "/Survivor/:name",
       element: (
         <div>
-          <Navbar loggedIn={loggedIn} setLoggedIn={handleLogin} />
+          <Navbar
+            loggedIn={loggedIn}
+            setLoggedIn={handleLogin}
+            gameData={game}
+          />
           <SurvivorPage gameData={game} />
         </div>
       ),
@@ -104,7 +116,11 @@ function App() {
       path: "/DataEntry",
       element: (
         <div>
-          <Navbar loggedIn={loggedIn} setLoggedIn={handleLogin} />
+          <Navbar
+            loggedIn={loggedIn}
+            setLoggedIn={handleLogin}
+            gameData={game}
+          />
           <DataEntryPage gameData={game} updateGameData={updateGame} />
         </div>
       ),
@@ -113,7 +129,11 @@ function App() {
       path: "/Draft",
       element: (
         <div>
-          <Navbar loggedIn={loggedIn} setLoggedIn={handleLogin} />
+          <Navbar
+            loggedIn={loggedIn}
+            setLoggedIn={handleLogin}
+            gameData={game}
+          />
           <DraftPage loggedIn={loggedIn} />
         </div>
       ),

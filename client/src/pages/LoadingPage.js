@@ -13,7 +13,7 @@ function LoadingPage() {
         <br />
         The site will take a few seconds to load as the server wakes up.
         <br />
-        If the site does not load after 30 seconds, please refresh the page.
+        If the site does not load after a few minutes, please refresh the page.
         <br />
         Thank you for your patience.
         <br />

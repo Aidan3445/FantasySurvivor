@@ -29,7 +29,7 @@ export default function PlayerPage(props) {
     setPlayer(gameData.playerByName(playerName));
   }, [playerName, gameData]);
 
-  var episodes = gameData.episodes.slice(0, gameData.lastAired + 1);
+  var episodes = gameData.episodes;
   var currentSurvivor = player.survivorList[player.survivorList.length - 1];
   if (currentSurvivor?.stats?.eliminated) {
     episodes = episodes.slice(0, currentSurvivor.stats.eliminated);
