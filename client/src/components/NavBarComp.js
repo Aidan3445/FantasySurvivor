@@ -140,7 +140,6 @@ function Menu(props) {
       );
 
       for (var i = 0; i < snapShot.snapshotLength; i++) {
-        console.log(snapShot.snapshotItem(i));
         if (editable) {
           snapShot.snapshotItem(i).setAttribute("readonly", true);
           snapShot.snapshotItem(i).removeAttribute("autofocus");

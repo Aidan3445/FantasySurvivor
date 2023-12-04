@@ -79,7 +79,7 @@ function EpisodeComp(props) {
         <div className="survivor-body just-right bottom-between">
           <div
             className={
-              episode.eliminated.includes(survivor.name) && "eliminated"
+              episode.eliminated.includes(survivor.name) ? "eliminated" : ""
             }
           >
             {survivor.name}
