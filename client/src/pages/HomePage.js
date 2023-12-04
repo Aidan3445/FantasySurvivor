@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import PropTypes from "prop-types";
 import GameData from "../utils/gameData";
 
 import Scoreboard from "../components/ScoreboardComp";
 import Chart from "../components/RechartChartComp";
+import WindowContext from "../components/WindowContext";
 
 export default function HomePage(props) {
   var { gameData } = props;
@@ -11,6 +12,8 @@ export default function HomePage(props) {
   HomePage.propTypes = {
     gameData: PropTypes.instanceOf(GameData).isRequired,
   };
+
+  const { smallScreen } = useContext(WindowContext);
 
   const getData = (selectedNames, population) => {
     return population
@@ -92,6 +95,24 @@ export default function HomePage(props) {
     return newSelected;
   };
 
+  const getSurvivorScoreboard = () => {
+    var slice = smallScreen ? survivorEntries.length : sliceAt;
+    return (
+      <div className="scoreboard-chart">
+        <Scoreboard
+          headers={survivorHeaders}
+          entries={survivorEntries.slice(0, slice)}
+        />
+        {!smallScreen && (
+          <Scoreboard
+            headers={survivorHeaders}
+            entries={survivorEntries.slice(sliceAt)}
+          />
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="content centered">
       <br />
@@ -108,17 +129,7 @@ export default function HomePage(props) {
       </div>
       <div className="box pad-5 marg-5">
         <div className="survivor-header">Survivors</div>
-        <div className="scoreboard-chart">
-          <Scoreboard
-            headers={survivorHeaders}
-            entries={survivorEntries.slice(0, sliceAt)}
-          />
-          <Scoreboard
-            headers={survivorHeaders}
-            entries={survivorEntries.slice(sliceAt)}
-            offset={sliceAt}
-          />
-        </div>
+        {getSurvivorScoreboard()}
       </div>
       <div className="box pad-5 marg-5">
         <div className="survivor-header">Eliminations</div>

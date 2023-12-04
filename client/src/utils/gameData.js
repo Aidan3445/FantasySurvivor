@@ -226,6 +226,7 @@ class GameData {
   // add to score if final episode has aired
   get betOutcomes() {
     this.data.players = this.players.map((player) => {
+      player.stats.betHits = 0;
       var bets = this.sideBets;
       Object.keys(bets).forEach((bet) => {
         if (bets[bet].length === 0) return;
@@ -349,7 +350,10 @@ class GameData {
 
   // get side bet outcomes
   get sideBets() {
-    return sideBetOutcomes(this.players, this.episodes);
+    if (!this.data.sideBets) {
+      this.data.sideBets = sideBetOutcomes(this.players, this.episodes);
+    }
+    return this.data.sideBets;
   }
 }
 

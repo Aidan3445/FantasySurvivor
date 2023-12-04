@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import {
   LineChart,
@@ -9,7 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { smallScreen, mediumScreen } from "../utils/screenSize";
+import WindowContext from "./WindowContext";
 
 export default function Chart(props) {
   var { data } = props;
@@ -17,6 +17,8 @@ export default function Chart(props) {
   Chart.propTypes = {
     data: PropTypes.array.isRequired,
   };
+
+  const { smallScreen, mediumScreen } = useContext(WindowContext);
 
   if (data.length === 0) return;
 

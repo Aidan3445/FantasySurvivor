@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import GameData from "../utils/gameData";
-import { smallScreen, mediumScreen, largeScreen } from "../utils/screenSize";
 
 import PlayerStats from "../components/PlayerStatsComp";
 import SideBets from "../components/SideBetsComp";
 import Scoreboard from "../components/ScoreboardComp";
 import PlayerEdit from "../components/PlayerEditComp";
 import Episodes from "../components/EpisodesComp";
+import WindowContext from "../components/WindowContext";
 
 export default function PlayerPage(props) {
   var { loggedIn, setLoggedIn, gameData, updateGameData, playerName } = props;
@@ -20,6 +20,8 @@ export default function PlayerPage(props) {
     updateGameData: PropTypes.func.isRequired,
     playerName: PropTypes.string,
   };
+
+  const { smallScreen, mediumScreen, largeScreen } = useContext(WindowContext);
 
   var loadedPlayer = useLoaderData();
   playerName = playerName || loadedPlayer;

@@ -12,7 +12,7 @@ function Modal(props) {
   Modal.propTypes = {
     isOpen: PropTypes.bool.isRequired,
     closeModal: PropTypes.func.isRequired,
-    content: PropTypes.object,
+    content: PropTypes.node,
   };
 
   useEffect(() => {

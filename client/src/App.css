@@ -94,6 +94,7 @@
 
 .loading-image {
   max-height: 40vh;
+  max-width: 95%;
 }
 
 /* Content Under Nav */
@@ -663,7 +664,7 @@ h4 {
 /* Media query for mobile or narrow screens
 -------------------------------------------
 Please note this value should match 
-the small screen value in utils/screenSize.js
+the small screen value in WindowContext.js
 As far as I can tell there is no reliable way 
 to pass variables to media queries
 */

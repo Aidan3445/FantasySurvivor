@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Select from "react-select";
-import { tinyScreen } from "../utils/screenSize";
 import GameData from "../utils/gameData";
 
 import Modal, { LoginContent } from "../components/ModalComp";
+import WindowContext from "../components/WindowContext";
 
 function Navbar(props) {
   var { loggedIn, setLoggedIn, gameData } = props;
@@ -15,6 +15,8 @@ function Navbar(props) {
     setLoggedIn: PropTypes.func.isRequired,
     gameData: PropTypes.instanceOf(GameData).isRequired,
   };
+
+  const { tinyScreen } = useContext(WindowContext);
 
   var [isNavbarVisible, setNavbarVisible] = useState(true);
   var [modalOpen, setModalOpen] = useState(false);
