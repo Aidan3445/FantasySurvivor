@@ -25,9 +25,11 @@ export default function SurvivorPage(props) {
   return (
     <div className="content">
       <section className="survivor-info">
-        <SurvivorInfo survivor={survivor} />
-        <SurvivorPhoto survivor={survivor} />
-        {survivor.stats ? <SurvivorStats stats={survivor.stats} /> : null}
+        <div className="info-photo">
+          <SurvivorInfo survivor={survivor} />
+          <SurvivorPhoto survivor={survivor} />
+        </div>
+        <SurvivorStats stats={survivor.stats} />
       </section>
       <Episodes episodes={episodes} survivor={survivor} />
     </div>

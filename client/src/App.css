@@ -217,6 +217,17 @@
   left: 0;
 }
 
+.survivor-info {
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 2fr 1fr;
+}
+
+.info-photo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
 /* color label */
 .color-label {
   font-family: "Survivor";
@@ -246,12 +257,6 @@
   grid:
     "sidebar body" 1fr
     / auto 1fr;
-}
-
-.survivor-info {
-  display: grid;
-  grid-template-rows: 1fr;
-  grid-template-columns: repeat(3, 1fr);
 }
 
 /* Text Input */
@@ -758,6 +763,11 @@ to pass variables to media queries
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
   }
 
+  /*shift image crop to the left 10 px*/
+  .photo-container img {
+    object-position: 20% 0;
+  }
+
   th,
   td {
     font-size: 0.75em;
@@ -776,5 +786,16 @@ to pass variables to media queries
     top: -0.3rem;
     left: 0;
     right: -10rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .info-photo {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .photo-container {
+    aspect-ratio: 1/1;
   }
 }

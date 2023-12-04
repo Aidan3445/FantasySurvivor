@@ -21,8 +21,7 @@ function Navbar(props) {
   var [isNavbarVisible, setNavbarVisible] = useState(true);
   var [modalOpen, setModalOpen] = useState(false);
   var [menuOpen, setMenuOpen] = useState(false);
-
-  var [menuOptions, setMenuOptions] = useState({});
+  var [scrollDistance, setScrollDistance] = useState(0);
 
   const navigate = useNavigate();
 
@@ -34,20 +33,31 @@ function Navbar(props) {
       const shouldShowNavbar =
         (prevScrollPos > currentScrollPos || currentScrollPos < 20) &&
         currentScrollPos < window.innerHeight;
+
+      if (menuOpen) {
+        var newDist = scrollDistance + prevScrollPos - currentScrollPos;
+        if (
+          Math.abs(newDist) >
+          (document.body.scrollHeight - window.innerHeight) / 2
+        ) {
+          setScrollDistance(0);
+          setNavbarVisible(false);
+          setMenuOpen(false);
+        } else {
+          setScrollDistance(newDist);
+        }
+        return;
+      }
       setNavbarVisible(shouldShowNavbar);
       prevScrollPos = currentScrollPos;
-
-      setMenuOpen(false);
     };
 
     window.addEventListener("scroll", handleScroll);
 
-    setMenuOptions(gameData.menuValues);
-
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [menuOpen]);
 
   useEffect(() => {
     setMenuOpen(false);
@@ -84,7 +94,7 @@ function Navbar(props) {
           <Menu
             isOpen={menuOpen}
             setIsOpen={setMenuOpen}
-            options={menuOptions}
+            options={gameData.menuValues}
           />
         </div>
       </nav>
@@ -111,8 +121,39 @@ function Menu(props) {
   var [survivorDirect, setSurvivorDirect] = useState("");
   var [playerDirect, setPlayerDirect] = useState("");
 
+  var [editable, setEditable] = useState(false);
+
+  const handleEditToggle = () => {
+    setEditable(!editable);
+  };
+
   const toggleMenu = () => {
     setIsOpen(!isOpen);
+
+    if (!isOpen) {
+      var snapShot = document.evaluate(
+        "//ul[@class='menu-list']//input",
+        document,
+        null,
+        XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+        null
+      );
+
+      for (var i = 0; i < snapShot.snapshotLength; i++) {
+        console.log(snapShot.snapshotItem(i));
+        if (editable) {
+          snapShot.snapshotItem(i).setAttribute("readonly", true);
+          snapShot.snapshotItem(i).removeAttribute("autofocus");
+          snapShot.snapshotItem(i).removeAttribute("onclick");
+        } else {
+          snapShot.snapshotItem(i).removeAttribute("readonly");
+          snapShot.snapshotItem(i).setAttribute("autofocus", "true");
+          snapShot
+            .snapshotItem(i)
+            .setAttribute("onclick", "handleEditToggle()");
+        }
+      }
+    }
   };
 
   const navigate = useNavigate();
@@ -138,6 +179,8 @@ function Menu(props) {
             options={options.Survivors}
             value={survivorDirect}
             onChange={(value) => goTo(`/Survivor/${value.value}`)}
+            onBlur={handleEditToggle}
+            autoFocus
           />
           <Select
             placeholder="Players"

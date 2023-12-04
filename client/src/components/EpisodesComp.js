@@ -77,14 +77,17 @@ function EpisodeComp(props) {
           <div>&quot;{episode.title}&quot;</div>
         </div>
         <div className="survivor-body just-right bottom-between">
-          <div>{survivor.name}</div>
+          <div
+            className={
+              episode.eliminated.includes(survivor.name) && "eliminated"
+            }
+          >
+            {survivor.name}
+          </div>
           <div className="no-wrap">
             Points Earned: {episode.getPoints(survivor)}
           </div>
         </div>
-        {episode.eliminated.includes(survivor.name) && (
-          <div className="eliminated">Eliminated</div>
-        )}
       </div>
       <div className="episode-notes-table">
         <EpisodeNotes episode={episode} survivor={survivor} />
