@@ -159,9 +159,9 @@ class GameData {
 
     var survivorScores = [];
     var survivalPoints = 0;
-    for (var i = 0; i <= this.lastAired + 1; i++) {
+    for (var i = 0; i <= this.lastAired; i++) {
       var survivor = survivors[i];
-      if (survivor.stats.eliminated && survivor.stats.eliminated < i + 1) {
+      if (survivor?.stats.eliminated && survivor.stats.eliminated < i + 1) {
         if (!survivor && episode && episode.aired === 1) {
           stats.needsSurvivor = true;
         }
