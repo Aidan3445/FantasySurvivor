@@ -26,7 +26,7 @@ class GameData {
   get lastAired() {
     if (!this.data.lastAired) {
       this.data.lastAired = this.episodes.findLastIndex(
-        (episode) => episode.aired === 0
+        (episode) => episode.aired > -1
       );
     }
     console.log(this.data.lastAired);
