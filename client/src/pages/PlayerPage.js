@@ -120,7 +120,7 @@ export default function PlayerPage(props) {
             <PlayerStats stats={player.stats} color={player.color} />
           )}
           {player.draft &&
-            (loggedIn === playerName || episodes.last().lastEp) && (
+            (loggedIn === playerName || gameData.episodes.last().lastEp) && (
               <SideBets
                 bets={player.draft}
                 outcomes={betOutcomes}
