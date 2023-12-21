@@ -37,7 +37,7 @@ export default function PlayerPage(props) {
     episodes = episodes.slice(0, currentSurvivor.stats.eliminated);
   }
 
-  var betOutcomes = gameData.betOutcomes.sideBets;
+  var betOutcomes = gameData.sideBets;
 
   const navigate = useNavigate();
   if (loggedIn === playerName && player.survivorList.length === 0) {

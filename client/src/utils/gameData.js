@@ -29,7 +29,6 @@ class GameData {
         (episode) => episode.aired > -1
       );
     }
-    console.log(this.data.lastAired);
     return this.data.lastAired;
   }
 
@@ -123,16 +122,19 @@ class GameData {
   // process player data
   get players() {
     if (!this.processed.players) {
-      this.data.players = this.data.players
-        .map((player) => {
-          player.survivorList = player.survivorList
-            .slice(0, this.lastAired + 2)
-            .map((survivorName) => this.survivorByName(survivorName));
-          player.stats = this.playerStats(player);
-          return player;
-        })
-        .memberSort();
+      this.data.players = this.data.players.map((player) => {
+        player.survivorList = player.survivorList
+          .slice(0, this.lastAired + 2)
+          .map((survivorName) => this.survivorByName(survivorName));
+        player.stats = this.playerStats(player);
+        return player;
+      });
       this.processed.players = true;
+
+      // survivors must be processed before players
+      if (!this.processed.survivors) this.survivors;
+      this.betOutcomes();
+      this.data.players.memberSort();
     }
     return this.data.players;
   }
@@ -222,7 +224,7 @@ class GameData {
 
   // add bet outcomes to player stats
   // add to score if final episode has aired
-  get betOutcomes() {
+  betOutcomes() {
     this.data.players = this.players.map((player) => {
       player.stats.betHits = 0;
       var bets = this.sideBets;
@@ -242,8 +244,6 @@ class GameData {
       });
       return player;
     });
-
-    return this;
   }
 
   // get tribe by name
