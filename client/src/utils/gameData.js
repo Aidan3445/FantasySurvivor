@@ -237,11 +237,15 @@ class GameData {
               this.episodes[this.lastAired].lastEp
             ) {
               player.stats.points += sideBetHitValue;
+              player.stats.episodeTotals[
+                player.stats.episodeTotals.length - 1
+              ] += sideBetHitValue;
             }
             player.stats.betHits++;
           }
         });
       });
+
       return player;
     });
   }

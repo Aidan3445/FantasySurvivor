@@ -147,15 +147,6 @@ function sideBetOutcomes(players, episodes) {
   };
 }
 
-// delay function for canvas fonts to load
-async function DelayedChart(playerId, survivorId) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ players: playerId, survivors: survivorId });
-    }, 10);
-  });
-}
-
 // determine if a color is light or dark
 function isLightColor(color) {
   return tinyColor(color).isLight();
@@ -189,7 +180,6 @@ function removeLogin() {
 export {
   getRunningPoints,
   sideBetOutcomes,
-  DelayedChart,
   isLightColor,
   saveLogin,
   removeLogin,
