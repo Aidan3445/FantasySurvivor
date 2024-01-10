@@ -46,8 +46,6 @@ function App() {
   useEffect(() => {
     setSocket(io.connect(root));
 
-    updateGame();
-
     api
       .autoLogin()
       .newRequest()

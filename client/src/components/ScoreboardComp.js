@@ -5,7 +5,6 @@ import { isLightColor } from "../utils/miscUtils";
 
 function Scoreboard(props) {
   var { headers, entries, handleSelect, offset } = props;
-
   Scoreboard.propTypes = {
     headers: PropTypes.array.isRequired,
     entries: PropTypes.array.isRequired,

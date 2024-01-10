@@ -113,8 +113,6 @@ export default function HomePage(props) {
     );
   };
 
-  console.log(gameData.data.players);
-
   return (
     <div className="content centered">
       <br />
