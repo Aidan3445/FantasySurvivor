@@ -1,11 +1,13 @@
 import React from "react";
-import logo from "../favicon/logo.png";
-import coig from "../favicon/loading.gif";
 
 function LoadingPage() {
   return (
     <div className="centered">
-      <img className="loading-image" src={logo} alt="logo" />
+      <img
+        className="loading-image"
+        src="https://i.imgur.com/PHpPLpm.jpg"
+        alt="logo"
+      />
       <div className="survivor-body">
         Loading...
         <br />
@@ -18,7 +20,11 @@ function LoadingPage() {
         Thank you for your patience.
         <br />
       </div>
-      <img className="loading-image" src={coig} alt="loading" />
+      <img
+        className="loading-image"
+        src="https://i.imgur.com/W9THp0H.jpg"
+        alt="loading"
+      />
     </div>
   );
 }
