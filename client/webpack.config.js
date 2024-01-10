@@ -10,6 +10,7 @@ module.exports = {
   output: {
     path: path.join(__dirname, "/dist"),
     filename: "bundle.js",
+    publicPath: "/",
   },
 
   module: {
@@ -58,6 +59,7 @@ module.exports = {
   devServer: {
     port: 1234,
     https: false,
+    historyApiFallback: true,
   },
   resolve: {
     fallback: {
