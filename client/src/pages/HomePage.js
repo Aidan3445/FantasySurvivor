@@ -107,6 +107,7 @@ export default function HomePage(props) {
           <Scoreboard
             headers={survivorHeaders}
             entries={survivorEntries.slice(sliceAt)}
+            offset={sliceAt}
           />
         )}
       </div>
