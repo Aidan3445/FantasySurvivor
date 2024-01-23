@@ -1,0 +1,707 @@
+FUNCTION  <SNR>59_LocalBrowseRefresh()
+    Defined: /opt/homebrew/Cellar/neovim/HEAD-0c850ad/share/nvim/runtime/autoload/netrw.vim:10842
+Called 2 times
+Total time:   0.000195
+ Self time:   0.000195
+
+count  total (s)   self (s)
+                            "  call Dfunc("s:LocalBrowseRefresh() tabpagenr($)=".tabpagenr("$"))
+                            "  call Decho("s:netrw_browselist =".(exists("s:netrw_browselist")?  string(s:netrw_browselist)  : '<n/a>'),'~'.expand("<slnum>"))
+                            "  call Decho("w:netrw_bannercnt  =".(exists("w:netrw_bannercnt")?   string(w:netrw_bannercnt)   : '<n/a>'),'~'.expand("<slnum>"))
+                            
+                              " determine which buffers currently reside in a tab
+    2              0.000015   if !exists("s:netrw_browselist")
+                            "   call Dret("s:LocalBrowseRefresh : browselist is empty")
+                               return
+    2              0.000002   endif
+    2              0.000004   if !exists("w:netrw_bannercnt")
+                            "   call Dret("s:LocalBrowseRefresh : don't refresh when focus not on netrw window")
+                               return
+    2              0.000001   endif
+    2              0.000006   if !empty(getcmdwintype())
+                                " cannot move away from cmdline window, see :h E11
+                                return
+    2              0.000001   endif
+    2              0.000006   if exists("s:netrw_events") && s:netrw_events == 1
+                               " s:LocalFastBrowser gets called (indirectly) from a
+                               let s:netrw_events= 2
+                            "   call Dret("s:LocalBrowseRefresh : avoid initial double refresh")
+                               return
+    2              0.000000   endif
+    2              0.000004   let itab       = 1
+    2              0.000002   let buftablist = []
+    2              0.000005   let ykeep      = @@
+    4              0.000008   while itab <= tabpagenr("$")
+    2              0.000007    let buftablist = buftablist + tabpagebuflist()
+    2              0.000002    let itab       = itab + 1
+    2              0.000004    sil! tabn
+    4              0.000003   endwhile
+                            "  call Decho("buftablist".string(buftablist),'~'.expand("<slnum>"))
+                            "  call Decho("s:netrw_browselist<".(exists("s:netrw_browselist")? string(s:netrw_browselist) : "").">",'~'.expand("<slnum>"))
+                              "  GO through all buffers on netrw_browselist (ie. just local-netrw buffers):
+                              "   | refresh any netrw window
+                              "   | wipe out any non-displaying netrw buffer
+    2              0.000004   let curwinid = win_getid(winnr())
+    2              0.000002   let ibl    = 0
+    3              0.000004   for ibuf in s:netrw_browselist
+                            "   call Decho("bufwinnr(".ibuf.") index(buftablist,".ibuf.")=".index(buftablist,ibuf),'~'.expand("<slnum>"))
+    1              0.000004    if bufwinnr(ibuf) == -1 && index(buftablist,ibuf) == -1
+                                " wipe out any non-displaying netrw buffer
+                                " (ibuf not shown in a current window AND
+                                "  ibuf not in any tab)
+                            "    call Decho("wiping  buf#".ibuf,"<".bufname(ibuf).">",'~'.expand("<slnum>"))
+    1              0.000015     exe "sil! keepj bd ".fnameescape(ibuf)
+    1              0.000003     call remove(s:netrw_browselist,ibl)
+                            "    call Decho("browselist=".string(s:netrw_browselist),'~'.expand("<slnum>"))
+    1              0.000001     continue
+                               elseif index(tabpagebuflist(),ibuf) != -1
+                                " refresh any netrw buffer
+                            "    call Decho("refresh buf#".ibuf.'-> win#'.bufwinnr(ibuf),'~'.expand("<slnum>"))
+                                exe bufwinnr(ibuf)."wincmd w"
+                                if getline(".") =~# 'Quick Help'
+                                 " decrement g:netrw_quickhelp to prevent refresh from changing g:netrw_quickhelp
+                                 " (counteracts s:NetrwBrowseChgDir()'s incrementing)
+                                 let g:netrw_quickhelp= g:netrw_quickhelp - 1
+                                endif
+                            "    call Decho("#3: quickhelp=".g:netrw_quickhelp,'~'.expand("<slnum>"))
+                                if exists("w:netrw_liststyle") && w:netrw_liststyle == s:TREELIST
+                                 NetrwKeepj call s:NetrwRefreshTreeDict(w:netrw_treetop)
+                                endif
+                                NetrwKeepj call s:NetrwRefresh(1,s:NetrwBrowseChgDir(1,'./'))
+                               endif
+                               let ibl= ibl + 1
+                            "   call Decho("bottom of s:netrw_browselist for loop: ibl=".ibl,'~'.expand("<slnum>"))
+    2              0.000003   endfor
+                            "  call Decho("restore window: win_gotoid(".curwinid.")")
+    2              0.000005   call win_gotoid(curwinid)
+    2              0.000005   let @@= ykeep
+                            
+                            "  call Dret("s:LocalBrowseRefresh")
+
+FUNCTION  <SNR>30_Highlight_Matching_Pair()
+    Defined: /opt/homebrew/Cellar/neovim/HEAD-0c850ad/share/nvim/runtime/plugin/matchparen.vim:43
+Called 2 times
+Total time:   0.000077
+ Self time:   0.000068
+
+count  total (s)   self (s)
+    2              0.000005   if !exists("w:matchparen_ids")
+                                let w:matchparen_ids = []
+    2              0.000001   endif
+                              " Remove any previous match.
+    2   0.000015   0.000006   call s:Remove_Matches()
+                            
+                              " Avoid that we remove the popup menu.
+                              " Return when there are no colors (looks like the cursor jumps).
+    2              0.000004   if pumvisible() || (&t_Co < 8 && !has("gui_running"))
+                                return
+    2              0.000000   endif
+                            
+                              " Get the character under the cursor and check if it's in 'matchpairs'.
+    2              0.000002   let c_lnum = line('.')
+    2              0.000002   let c_col = col('.')
+    2              0.000001   let before = 0
+                            
+    2              0.000002   let text = getline(c_lnum)
+    2              0.000011   let matches = matchlist(text, '\(.\)\=\%'.c_col.'c\(.\=\)')
+    2              0.000002   if empty(matches)
+                                let [c_before, c] = ['', '']
+    2              0.000000   else
+    2              0.000003     let [c_before, c] = matches[1:2]
+    2              0.000000   endif
+    2              0.000009   let plist = split(&matchpairs, '.\zs[:,]')
+    2              0.000002   let i = index(plist, c)
+    2              0.000001   if i < 0
+                                " not found, in Insert mode try character before the cursor
+    2              0.000003     if c_col > 1 && (mode() == 'i' || mode() == 'R')
+                                  let before = strlen(c_before)
+                                  let c = c_before
+                                  let i = index(plist, c)
+    2              0.000000     endif
+    2              0.000001     if i < 0
+                                  " not found, nothing to do
+    2              0.000001       return
+                                endif
+                              endif
+                            
+                              " Figure out the arguments for searchpairpos().
+                              if i % 2 == 0
+                                let s_flags = 'nW'
+                                let c2 = plist[i + 1]
+                              else
+                                let s_flags = 'nbW'
+                                let c2 = c
+                                let c = plist[i - 1]
+                              endif
+                              if c == '['
+                                let c = '\['
+                                let c2 = '\]'
+                              endif
+                            
+                              " Find the match.  When it was just before the cursor move it there for a
+                              " moment.
+                              if before > 0
+                                let has_getcurpos = exists("*getcurpos")
+                                if has_getcurpos
+                                  " getcurpos() is more efficient but doesn't exist before 7.4.313.
+                                  let save_cursor = getcurpos()
+                                else
+                                  let save_cursor = winsaveview()
+                                endif
+                                call cursor(c_lnum, c_col - before)
+                              endif
+                            
+                              if !has("syntax") || !exists("g:syntax_on")
+                                let s_skip = "0"
+                              else
+                                " Build an expression that detects whether the current cursor position is
+                                " in certain syntax types (string, comment, etc.), for use as
+                                " searchpairpos()'s skip argument.
+                                " We match "escape" for special items, such as lispEscapeSpecial, and
+                                " match "symbol" for lispBarSymbol.
+                                let s_skip = 'synstack(".", col("."))' . '->indexof({_, id -> synIDattr(id, "name") =~? ' . '"string\\|character\\|singlequote\\|escape\\|symbol\\|comment"}) >= 0'
+                                " If executing the expression determines that the cursor is currently in
+                                " one of the syntax types, then we want searchpairpos() to find the pair
+                                " within those syntax types (i.e., not skip).  Otherwise, the cursor is
+                                " outside of the syntax types and s_skip should keep its value so we skip
+                                " any matching pair inside the syntax types.
+                                " Catch if this throws E363: pattern uses more memory than 'maxmempattern'.
+                                try
+                                  execute 'if ' . s_skip . ' | let s_skip = "0" | endif'
+                                catch /^Vim\%((\a\+)\)\=:E363/
+                                  " We won't find anything, so skip searching, should keep Vim responsive.
+                                  return
+                                endtry
+                              endif
+                            
+                              " Limit the search to lines visible in the window.
+                              let stoplinebottom = line('w$')
+                              let stoplinetop = line('w0')
+                              if i % 2 == 0
+                                let stopline = stoplinebottom
+                              else
+                                let stopline = stoplinetop
+                              endif
+                            
+                              " Limit the search time to 300 msec to avoid a hang on very long lines.
+                              " This fails when a timeout is not supported.
+                              if mode() == 'i' || mode() == 'R'
+                                let timeout = exists("b:matchparen_insert_timeout") ? b:matchparen_insert_timeout : g:matchparen_insert_timeout
+                              else
+                                let timeout = exists("b:matchparen_timeout") ? b:matchparen_timeout : g:matchparen_timeout
+                              endif
+                              try
+                                let [m_lnum, m_col] = searchpairpos(c, '', c2, s_flags, s_skip, stopline, timeout)
+                              catch /E118/
+                                " Can't use the timeout, restrict the stopline a bit more to avoid taking
+                                " a long time on closed folds and long lines.
+                                " The "viewable" variables give a range in which we can scroll while
+                                " keeping the cursor at the same position.
+                                " adjustedScrolloff accounts for very large numbers of scrolloff.
+                                let adjustedScrolloff = min([&scrolloff, (line('w$') - line('w0')) / 2])
+                                let bottom_viewable = min([line('$'), c_lnum + &lines - adjustedScrolloff - 2])
+                                let top_viewable = max([1, c_lnum-&lines+adjustedScrolloff + 2])
+                                " one of these stoplines will be adjusted below, but the current values are
+                                " minimal boundaries within the current window
+                                if i % 2 == 0
+                                  if has("byte_offset") && has("syntax_items") && &smc > 0
+                            	let stopbyte = min([line2byte("$"), line2byte(".") + col(".") + &smc * 2])
+                            	let stopline = min([bottom_viewable, byte2line(stopbyte)])
+                                  else
+                            	let stopline = min([bottom_viewable, c_lnum + 100])
+                                  endif
+                                  let stoplinebottom = stopline
+                                else
+                                  if has("byte_offset") && has("syntax_items") && &smc > 0
+                            	let stopbyte = max([1, line2byte(".") + col(".") - &smc * 2])
+                            	let stopline = max([top_viewable, byte2line(stopbyte)])
+                                  else
+                            	let stopline = max([top_viewable, c_lnum - 100])
+                                  endif
+                                  let stoplinetop = stopline
+                                endif
+                                let [m_lnum, m_col] = searchpairpos(c, '', c2, s_flags, s_skip, stopline)
+                              endtry
+                            
+                              if before > 0
+                                if has_getcurpos
+                                  call setpos('.', save_cursor)
+                                else
+                                  call winrestview(save_cursor)
+                                endif
+                              endif
+                            
+                              " If a match is found setup match highlighting.
+                              if m_lnum > 0 && m_lnum >= stoplinetop && m_lnum <= stoplinebottom 
+                                if s:has_matchaddpos
+                                  call add(w:matchparen_ids, matchaddpos('MatchParen', [[c_lnum, c_col - before], [m_lnum, m_col]], 10))
+                                else
+                                  exe '3match MatchParen /\(\%' . c_lnum . 'l\%' . (c_col - before) . 'c\)\|\(\%' . m_lnum . 'l\%' . m_col . 'c\)/'
+                                  call add(w:matchparen_ids, 3)
+                                endif
+                                let w:paren_hl_on = 1
+                              endif
+
+FUNCTION  <SNR>18_WinRestViews()
+    Defined: ~/.local/share/nvim/lazy/vim-autoformat/plugin/autoformat.vim:225
+Called 1 time
+Total time:   0.000013
+ Self time:   0.000013
+
+count  total (s)   self (s)
+    2              0.000004     for [winid, winview] in items(s:views)
+    1              0.000006         call win_execute(winid, 'call winrestview(winview)')
+    2              0.000001     endfor
+
+FUNCTION  <SNR>18_GetVerboseMode()
+    Defined: ~/.local/share/nvim/lazy/vim-autoformat/plugin/autoformat.vim:2
+Called 8 times
+Total time:   0.000066
+ Self time:   0.000066
+
+count  total (s)   self (s)
+    8              0.000014     let verbose = &verbose
+    8              0.000017     if exists("g:autoformat_verbosemode ")
+    8              0.000009       if g:autoformat_verbosemode > verbose
+                                    let verbose = g:autoformat_verbosemode
+    8              0.000003       endif
+    8              0.000002     endif
+    8              0.000007     return verbose
+
+FUNCTION  BuildESLintTmpFile()
+    Defined: ~/.local/share/nvim/lazy/vim-autoformat/plugin/defaults.vim:245
+Called 1 time
+Total time:   0.000032
+ Self time:   0.000032
+
+count  total (s)   self (s)
+    1              0.000001         let l:i = 0
+    1              0.000003         let l:result = a:path.'_eslint_tmp_'.l:i.a:ext
+    1              0.000013         while filereadable(l:result) && l:i < 100000
+                                        let l:i = l:i + 1
+                                        let l:result = a:path.'_eslint_tmp_'.l:i.a:ext
+    1              0.000001         endwhile
+    1              0.000005         if filereadable(l:result)
+                                        echoerr "Temporary file could not be created for ".a:path
+                                        echoerr "Tried from ".a:path.'_eslint_tmp_0'.a:ext." to ".a:path.'_eslint_tmp_'.l:i.a:ext
+                                        return ''
+    1              0.000000         endif
+    1              0.000001         return l:result
+
+FUNCTION  BuildXOLocalCmd()
+    Defined: ~/.local/share/nvim/lazy/vim-autoformat/plugin/defaults.vim:219
+Called 1 time
+Total time:   0.000003
+ Self time:   0.000003
+
+count  total (s)   self (s)
+    1              0.000002         return "npx xo --fix --stdin --stdin-filename ".bufname('%')
+
+FUNCTION  <SNR>18_WinSaveViews()
+    Defined: ~/.local/share/nvim/lazy/vim-autoformat/plugin/autoformat.vim:218
+Called 1 time
+Total time:   0.000066
+ Self time:   0.000066
+
+count  total (s)   self (s)
+    1              0.000015     let s:views = {}
+    2              0.000017     for winid in win_findbuf(bufnr())
+    1              0.000024         call win_execute(winid, 'let s:views[winid] = winsaveview()')
+    2              0.000004     endfor
+
+FUNCTION  <SNR>18_FindFormatters()
+    Defined: ~/.local/share/nvim/lazy/vim-autoformat/plugin/autoformat.vim:14
+Called 1 time
+Total time:   0.000138
+ Self time:   0.000131
+
+count  total (s)   self (s)
+                                " Detect verbosity
+    1   0.000014   0.000006     let verbose = s:GetVerboseMode()
+                            
+                                " Extract filetype to be used
+    1              0.000002     let ftype = a:0 ? a:1 : &filetype
+                                " Support composite filetypes by replacing dots with underscores
+    1              0.000019     let compoundtype = substitute(ftype, "[.]", "_", "g")
+    1              0.000003     if ftype =~? "[.]"
+                                    " Try all super filetypes in search for formatters in a sane order
+                                    let ftypes = [compoundtype] + split(ftype, "[.]")
+    1              0.000001     else
+    1              0.000002         let ftypes = [compoundtype]
+    1              0.000000     endif
+                            
+                                " Support multiple formatters per file type
+    1              0.000003     let run_all_formatters_var = "g:run_all_formatters_".compoundtype
+    1              0.000002     if exists(run_all_formatters_var)
+                                    let b:run_all_formatters = eval(run_all_formatters_var)
+    1              0.000000     else
+    1              0.000004         let b:run_all_formatters = 0
+    1              0.000000     endif
+                            
+                                " Warn for backward incompatible configuration
+    1              0.000002     let old_formatprg_var = "g:formatprg_".compoundtype
+    1              0.000002     let old_formatprg_args_var = "g:formatprg_args_".compoundtype
+    1              0.000002     let old_formatprg_args_expr_var = "g:formatprg_args_expr_".compoundtype
+    1              0.000005     if exists(old_formatprg_var) || exists(old_formatprg_args_var) || exists(old_formatprg_args_expr_var)
+                                    echohl WarningMsg | echomsg "WARNING: the options g:formatprg_<filetype>, g:formatprg_args_<filetype> and g:formatprg_args_expr_<filetype> are no longer supported as of June 2015, due to major backward-incompatible improvements. Please check the README for help on how to configure your formatters." | echohl None
+    1              0.000000     endif
+                            
+                                " Detect configuration for all possible ftypes
+    1              0.000006     let b:formatters = []
+    2              0.000003     for supertype in ftypes
+    1              0.000002         let formatters_var = "b:formatters_".supertype
+    1              0.000002         if !exists(formatters_var)
+    1              0.000002             let formatters_var = "g:formatters_".supertype
+    1              0.000000         endif
+    1              0.000002         if !exists(formatters_var)
+                                        " No formatters defined
+                                        if verbose > 0
+                                            echoerr "No formatters defined for supertype ".supertype
+                                        endif
+    1              0.000001         else
+    1              0.000003             let formatters = eval(formatters_var)
+    1              0.000003             if type(formatters) != type([])
+                                            echoerr formatters_var." is not a list"
+    1              0.000000             else
+    1              0.000003                 let b:formatters = b:formatters + formatters
+    1              0.000000             endif
+    1              0.000000         endif
+    2              0.000002     endfor
+                            
+    1              0.000003     if len(b:formatters) == 0
+                                    " No formatters defined
+                                    if verbose > 0
+                                        echoerr "No formatters defined for filetype '".ftype."'."
+                                    endif
+                                    return 0
+    1              0.000000     endif
+    1              0.000001     return 1
+
+FUNCTION  BuildESLintLocalCmd()
+    Defined: ~/.local/share/nvim/lazy/vim-autoformat/plugin/defaults.vim:260
+Called 1 time
+Total time:   0.009312
+ Self time:   0.009017
+
+count  total (s)   self (s)
+    1              0.000066         let l:path = fnamemodify(expand('%'), ':p')
+    1              0.000025         let l:ext = ".".expand('%:p:e')
+    1              0.000003         let verbose = &verbose || g:autoformat_verbosemode == 1
+    1              0.000009         if has('win32')
+                                        return "(>&2 echo 'ESLint not supported on win32')"
+    1              0.000000         endif
+                                    " find formatter & config file
+    1   0.000273   0.000011         let l:prog = s:NodeJsFindPathToExecFile('eslint')
+                            
+                                    "initial
+    1              0.000705         let l:cfg = findfile('.eslintrc.js', l:path.";")
+                            
+    1              0.000004         if empty(l:cfg)
+    1              0.000005             let l:cfg_fallbacks = ['.eslintrc.yaml','.eslintrc.yml','.eslintrc.json','.eslintrc',]
+                            
+    3              0.000006             for i in l:cfg_fallbacks
+    3              0.001443                 let l:tcfg = findfile(i, l:path.";")
+    3              0.000009                 if !empty(l:tcfg)
+    1              0.000001                     break
+    2              0.000001                 endif
+    3              0.000003             endfor
+                            
+    1              0.000001             if !empty(l:tcfg)
+    1              0.000006                 let l:cfg = fnamemodify(l:tcfg, ":p")
+                                        else
+                                            let l:cfg = findfile('~/.eslintrc.js')
+                                            for i in l:cfg_fallbacks
+                                                if !empty(l:cfg)
+                                                    break
+                                                endif
+                                                let l:cfg = findfile("~/".i)
+                                            endfor
+    1              0.000000             endif
+    1              0.000000         endif
+                            
+    1              0.000002         if (empty(l:cfg) || empty(l:prog))
+                                        if verbose > 0
+                                            return "(>&2 echo 'No local or global ESLint program and/or config found')"
+                                        endif
+                                        return
+    1              0.000000         endif
+                            
+                                    " This formatter uses a temporary file as ESLint has not option to print
+                                    " the formatted source to stdout without modifieing the file.
+    1   0.000041   0.000009         let l:eslint_tmp_file = g:BuildESLintTmpFile(l:path, l:ext)
+    1              0.000019         let content = getline('1', '$')
+    1              0.006641         call writefile(content, l:eslint_tmp_file)
+    1              0.000018         return l:prog." -c ".l:cfg." --fix ".l:eslint_tmp_file." 1> /dev/null; exit_code=$?; cat ".l:eslint_tmp_file."; rm -f ".l:eslint_tmp_file."; exit $exit_code"
+
+FUNCTION  <SNR>18_TryFormatterPython3()
+    Defined: ~/.local/share/nvim/lazy/vim-autoformat/plugin/autoformat.vim:297
+Called 6 times
+Total time:   4.640360
+ Self time:   4.640325
+
+count  total (s)   self (s)
+                                " Detect verbosity
+    6   0.000058   0.000023     let verbose = s:GetVerboseMode()
+                            
+    6              0.000008 python3 << EOF
+                            import vim, subprocess, os
+                            from subprocess import Popen, PIPE
+                            
+                            # The return code is `failure`, unless otherwise specified
+                            vim.command('return 1')
+                            
+                            text = bytes(os.linesep.join(vim.current.buffer[:]) + os.linesep, 'utf-8')
+                            formatprg = vim.eval('b:formatprg')
+                            verbose = bool(int(vim.eval('verbose')))
+                            env = os.environ.copy()
+                            if int(vim.eval('exists("g:formatterpath")')):
+                                extra_path = vim.eval('g:formatterpath')
+                                env['PATH'] = os.pathsep.join(extra_path) + os.pathsep + env['PATH']
+                            
+                            try:
+                                p = subprocess.Popen(formatprg, env=env, shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+                                stdoutdata, stderrdata = p.communicate(text)
+                            except (BrokenPipeError, IOError):
+                                if verbose > 0:
+                                    raise
+                            else:
+                                formattername = vim.eval('b:formatters[s:index]')
+                                if stderrdata:
+                                    if verbose > 0:
+                                        print('Formatter {} stderr: {}'.format(formattername, stderrdata))
+                                if p.returncode > 0:
+                                    if verbose > 0:
+                                        print('Formatter {} gives nonzero returncode: {}'.format(formattername, p.returncode))
+                                elif not stdoutdata:
+                                    if verbose > 0:
+                                        print('Formatter {} gives empty result: {}'.format(formattername, stderrdata))
+                                else:
+                                    # It is not certain what kind of line endings are being used by the format program.
+                                    # Therefore we simply split on all possible eol characters.
+                                    possible_eols = ['\r\n', os.linesep, '\r', '\n']
+                            
+                                    stdoutdata = stdoutdata.decode('utf-8')
+                            
+                                    # Often shell commands will append a newline at the end of their output.
+                                    # It is not entirely clear when and why that happens.
+                                    # However, extra newlines are almost never required, while there are linters that complain
+                                    # about superfluous newlines, so we remove one empty newline at the end of the file.
+                                    for eol in possible_eols:
+                                        eol_len = len(eol)
+                                        if len(stdoutdata) > 0 and stdoutdata[-eol_len:] == eol:
+                                            stdoutdata = stdoutdata[:-eol_len]
+                            
+                                    lines = [stdoutdata]
+                                    for eol in possible_eols:
+                                        lines = [splitline for line in lines for splitline in line.split(eol)]
+                            
+                                    if vim.current.buffer[:] != lines:
+                                        vim.current.buffer[:] = lines
+                                    vim.command('return 0')
+                            EOF
+
+FUNCTION  provider#python3#Call()
+    Defined: /opt/homebrew/Cellar/neovim/HEAD-0c850ad/share/nvim/runtime/autoload/provider/python3.vim:26
+Called 6 times
+Total time:   4.640160
+ Self time:   4.640160
+
+count  total (s)   self (s)
+    6              0.000010   if s:err != ''
+                                return
+    6              0.000001   endif
+    6              0.000006   if !exists('s:host')
+                                let s:rpcrequest = function('rpcrequest')
+                            
+                                " Ensure that we can load the Python3 host before bootstrapping
+                                try
+                                  let s:host = remote#host#Require('legacy-python3-provider')
+                                catch
+                                  let s:err = v:exception
+                                  echohl WarningMsg
+                                  echomsg v:exception
+                                  echohl None
+                                  return
+                                endtry
+    6              0.000001   endif
+    6              4.640097   return call(s:rpcrequest, insert(insert(a:args, 'python_'.a:method), s:host))
+
+FUNCTION  <SNR>30_Remove_Matches()
+    Defined: /opt/homebrew/Cellar/neovim/HEAD-0c850ad/share/nvim/runtime/plugin/matchparen.vim:205
+Called 2 times
+Total time:   0.000010
+ Self time:   0.000010
+
+count  total (s)   self (s)
+    2              0.000002   if exists('w:paren_hl_on') && w:paren_hl_on
+                                while !empty(w:matchparen_ids)
+                                  silent! call remove(w:matchparen_ids, 0)->matchdelete()
+                                endwhile
+                                let w:paren_hl_on = 0
+    2              0.000000   endif
+
+FUNCTION  <SNR>18_TryAllFormatters()
+    Defined: ~/.local/share/nvim/lazy/vim-autoformat/plugin/autoformat.vim:82
+Called 1 time
+Total time:   4.650301
+ Self time:   0.000466
+
+count  total (s)   self (s)
+                                " Detect verbosity
+    1   0.000031   0.000008     let verbose = s:GetVerboseMode()
+                            
+                                " Make sure formatters are defined and detected
+    1   0.000148   0.000010     if !call('<SID>FindFormatters', a:000)
+                                    " No formatters defined
+                                    if verbose > 0
+                                        echomsg "No format definitions are defined for this filetype."
+                                    endif
+                                    call s:Fallback()
+                                    return 0
+    1              0.000000     endif
+                            
+                                " Make sure index exist and is valid
+    1              0.000002     if !exists('b:current_formatter_index')
+                                    let b:current_formatter_index = 0
+    1              0.000000     endif
+    1              0.000002     if b:current_formatter_index >= len(b:formatters)
+                                    let b:current_formatter_index = 0
+    1              0.000000     endif
+                            
+                                " Try all formatters, starting with selected one
+    1              0.000001     let s:index = b:current_formatter_index
+                            
+                                " Save if at least one formatter was successful
+    1              0.000002     let l:formatter_run_successfully = 0
+                            
+    6              0.000004     while 1
+                                    " Formatter definition must be existent
+    6              0.000012         let formatdef_var = 'b:formatdef_'.b:formatters[s:index]
+    6              0.000010         if !exists(formatdef_var)
+    6              0.000007             let formatdef_var = 'g:formatdef_'.b:formatters[s:index]
+    6              0.000002         endif
+    6              0.000008         if !exists(formatdef_var)
+                                        echoerr "No format definition found in '".formatdef_var."'."
+                                        return 0
+    6              0.000001         endif
+                            
+                                    " Eval twice, once for getting definition content,
+                                    " once for getting the final expression
+    6   0.009404   0.000089         let b:formatprg = eval(eval(formatdef_var))
+                            
+    6              0.000006         if verbose > 1
+                                        echomsg "Trying definition from ".formatdef_var
+                                        echomsg "Evaluated formatprg: ".b:formatprg
+    6              0.000001         endif
+                            
+                                    " Detect if +python or +python3 is available, and call the corresponding function
+    6              0.000032         if !has("python") && !has("python3")
+                                        echohl WarningMsg | echomsg "WARNING: vim has no support for python, but it is required to run the formatter!" | echohl None
+                                        return 1
+    6              0.000001         endif
+    6              0.000008         if has("python3")
+    6              0.000002             if verbose > 1
+                                            echomsg "Using python 3 code..."
+    6              0.000001             endif
+    6   4.640418   0.000058             let success = s:TryFormatterPython3()
+                                    else
+                                        if verbose > 1
+                                            echomsg "Using python 2 code..."
+                                        endif
+                                        let success = s:TryFormatterPython()
+    6              0.000002         endif
+                            
+    6              0.000014         let s:index = (s:index + 1) % len(b:formatters)
+                            
+    6              0.000005         if success == 0
+    1              0.000000             if verbose > 1
+                                            echomsg "Definition in '".formatdef_var."' was successful."
+    1              0.000000             endif
+                                        " Check if we can run few formatters in row
+    1              0.000001             if b:run_all_formatters == 1
+                                            let l:formatter_run_successfully += 1
+                                            if s:index != b:current_formatter_index
+                                                if verbose > 1
+                                                    echomsg "Running next chained formatter."
+                                                endif
+                                            endif
+    1              0.000000             else
+    1              0.000001                 return 1
+                                        endif
+    5              0.000001         else
+    5              0.000002             if verbose > 0
+                                            echomsg "Definition in '".formatdef_var."' was unsuccessful."
+    5              0.000001             endif
+    5              0.000001         endif
+                            
+    5              0.000004         if s:index == b:current_formatter_index
+                                        if b:run_all_formatters == 1 && l:formatter_run_successfully >= 1
+                                            if verbose > 1
+                                                echomsg l:formatter_run_successfully." formatters were successfuly run."
+                                            endif
+                                            return 1
+                                        else
+                                            if verbose > 0
+                                                echomsg "No format definitions were successful."
+                                            endif
+                                            " Tried all formatters, none worked
+                                            call s:Fallback()
+                                            return 0
+                                        endif
+    5              0.000001         endif
+    5              0.000003     endwhile
+
+FUNCTION  <SNR>19_NodeJsFindPathToExecFile()
+    Defined: ~/.local/share/nvim/lazy/vim-autoformat/plugin/defaults.vim:225
+Called 1 time
+Total time:   0.000263
+ Self time:   0.000263
+
+count  total (s)   self (s)
+    1              0.000025     let l:path = fnamemodify(expand('%'), ':p')
+                                " find formatter & config file
+    1              0.000207     let l:prog = findfile('node_modules/.bin/'.a:exec_name, l:path.";")
+    1              0.000003     if empty(l:prog)
+                                    let l:prog = findfile('~/.npm-global/bin/'.a:exec_name)
+                                    if empty(l:prog)
+                                        let l:prog = findfile('/usr/local/bin/'.a:exec_name)
+                                    endif
+    1              0.000000     else
+    1              0.000020         let l:prog = getcwd()."/".l:prog
+    1              0.000001     endif
+    1              0.000001     return l:prog
+
+FUNCTIONS SORTED ON TOTAL TIME
+count  total (s)   self (s)  function
+    1   4.650301   0.000466  <SNR>18_TryAllFormatters()
+    6   4.640360   4.640325  <SNR>18_TryFormatterPython3()
+    6   4.640160             provider#python3#Call()
+    1   0.009312   0.009017  BuildESLintLocalCmd()
+    1   0.000263             <SNR>19_NodeJsFindPathToExecFile()
+    2   0.000195             <SNR>59_LocalBrowseRefresh()
+    1   0.000138   0.000131  <SNR>18_FindFormatters()
+    2   0.000077   0.000068  <SNR>30_Highlight_Matching_Pair()
+    1   0.000066             <SNR>18_WinSaveViews()
+    8   0.000066             <SNR>18_GetVerboseMode()
+    1   0.000032             BuildESLintTmpFile()
+    1   0.000013             <SNR>18_WinRestViews()
+    2   0.000010             <SNR>30_Remove_Matches()
+    1   0.000003             BuildXOLocalCmd()
+
+FUNCTIONS SORTED ON SELF TIME
+count  total (s)   self (s)  function
+    6   4.640360   4.640325  <SNR>18_TryFormatterPython3()
+    6              4.640160  provider#python3#Call()
+    1   0.009312   0.009017  BuildESLintLocalCmd()
+    1   4.650301   0.000466  <SNR>18_TryAllFormatters()
+    1              0.000263  <SNR>19_NodeJsFindPathToExecFile()
+    2              0.000195  <SNR>59_LocalBrowseRefresh()
+    1   0.000138   0.000131  <SNR>18_FindFormatters()
+    2   0.000077   0.000068  <SNR>30_Highlight_Matching_Pair()
+    1              0.000066  <SNR>18_WinSaveViews()
+    8              0.000066  <SNR>18_GetVerboseMode()
+    1              0.000032  BuildESLintTmpFile()
+    1              0.000013  <SNR>18_WinRestViews()
+    2              0.000010  <SNR>30_Remove_Matches()
+    1              0.000003  BuildXOLocalCmd()
+

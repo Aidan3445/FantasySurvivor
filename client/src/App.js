@@ -1,41 +1,42 @@
 import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import API from "./utils/api";
-import GameData from "./utils/gameData";
-import { removeLogin } from "./utils/miscUtils";
+import API from "./utils/api.js";
+import GameData from "./utils/gameData.js";
+import { removeLogin } from "./utils/miscUtils.js";
 import "./App.css";
+import HomePage from "./pages/HomePage.js";
+import PlayerPage from "./pages/PlayerPage.js";
+import SurvivorPage from "./pages/SurvivorPage.js";
+import DataEntryPage from "./pages/DataEntryPage.js";
+import DraftPage from "./pages/DraftPage.js";
+import LoadingPage from "./pages/LoadingPage.js";
+import Navbar from "./components/NavBarComp.js";
+import { WindowContextProvider } from "./components/WindowContext.js";
 
-import HomePage from "./pages/HomePage";
-import PlayerPage from "./pages/PlayerPage";
-import SurvivorPage from "./pages/SurvivorPage";
-import DataEntryPage from "./pages/DataEntryPage";
-import DraftPage from "./pages/DraftPage";
-import LoadingPage from "./pages/LoadingPage";
-import Navbar from "./components/NavBarComp";
-import { WindowContextProvider } from "./components/WindowContext";
-
-var root =
+const root =
   process.env.NODE_ENV === "production"
     ? process.env.REACT_APP_API_ROOT
     : process.env.REACT_APP_API_ROOT_DEV;
 
 function App() {
-  var [loggedIn, setLoggedIn] = useState("");
-  var [game, setGame] = useState(null);
-  var [socket, setSocket] = useState(null);
+  const [loggedIn, setLoggedIn] = useState("");
+  const [game, setGame] = useState(null);
+  const [socket, setSocket] = useState(null);
 
   const handleLogin = (playerName) => {
     setLoggedIn(playerName);
-    if (!playerName) removeLogin();
+    if (!playerName) {
+      removeLogin();
+    }
   };
 
-  var api = new API();
+  const api = new API();
 
   const updateGame = async () => {
     const res = await api.all().newRequest();
     socket?.emit("update", res);
-    var g = new GameData(res);
+    const g = new GameData(res);
     setGame(g);
   };
 
@@ -57,7 +58,10 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket) {
+      return;
+    }
+
     updateGame();
 
     return () => socket.disconnect();
@@ -139,7 +143,10 @@ function App() {
     },
   ]);
 
-  if (!game) return <LoadingPage />;
+  if (!game) {
+    return <LoadingPage />;
+  }
+
   return (
     <WindowContextProvider>
       <RouterProvider router={router} future={{ v7_startTransition: true }} />

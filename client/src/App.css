@@ -72,10 +72,17 @@
   transform: translateY(-10px) rotate(225deg);
 }
 
+.menu.open .menu-list {
+  display:flex;
+  flex-direction: column;
+  gap: 10px;
+  right: 0px;
+  align-items: space-between;
+}
+
 .menu-list {
   position: fixed;
   list-style-type: none;
-  padding: 0;
   margin: 0;
   text-align: left;
   background-color: rgba(185, 185, 185, 0.85);
@@ -87,9 +94,11 @@
   transition: right 0.3s ease-in-out;
 }
 
-.menu.open .menu-list {
-  display: block;
-  right: 0px;
+.menu-list li {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .loading-image {
@@ -132,7 +141,7 @@
 .survivor-button {
   font-family: "Survivor";
   font-size: 2em;
-  color: black;
+  text-align: center;
   border: 1px solid black;
   border-radius: 5px; /* Add rounded corners */
   padding: 0 10px 0.5rem 10px; /* Add padding to separate content from border */

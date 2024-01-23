@@ -1,53 +1,54 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
-import Select from "../components/SelectComp";
 import API from "../utils/api";
+import Select from "./SelectComp.js";
 
 function DraftEntries(props) {
-  var { player, values } = props;
+  const { player, values, picks } = props;
 
   DraftEntries.propTypes = {
     player: PropTypes.object.isRequired,
     values: PropTypes.object.isRequired,
+    picks: PropTypes.object.isRequired,
   };
 
-  var [survivor, setSurvivor] = useState({});
-  var [firstBoot, setFirstBoot] = useState({});
-  var [winner, setWinner] = useState({});
-  var [firstJurror, setFirstJurror] = useState({});
-  var [mostAdvantages, setMostAdvantages] = useState({});
-  var [mostIndivImm, setMostIndivImm] = useState({});
-  var [firstLoser, setFirstLoser] = useState({});
+  const [sideBetOptions, setSideBetOptions] = useState(values.Survivors);
 
-  var [sideBetOpts, setSideBetOpts] = useState(values.Survivors);
+  const [survivor, setSurvivor] = useState({});
+  const [firstBoot, setFirstBoot] = useState({});
+  const [winner, setWinner] = useState({});
+  const [firstJurror, setFirstJurror] = useState({});
+  const [firstLoser, setFirstLoser] = useState({});
 
-  const setPick = (pick, prev, setCategory, setSurvivor) => {
+  const setPick = (pick, previous, setCategory, setSurvivor) => {
     setCategory(pick);
-    sideBetOpts = sideBetOpts.filter((s) => s.value !== pick.value);
-    if (prev.value) {
-      sideBetOpts.push(prev);
+    sideBetOptions.filter((s) => s.value !== pick.value);
+    if (previous.value) {
+      sideBetOptions.push(previous);
     }
 
-    setSideBetOpts(sideBetOpts);
+    setSideBetOptions(sideBetOptions);
 
-    if (!setSurvivor) return;
+    if (!setSurvivor) {
+      return;
+    }
+
     switch (pick.value) {
-      case firstBoot.value:
+      case firstBoot.value: {
         setFirstBoot({});
         break;
-      case winner.value:
+      }
+
+      case winner.value: {
         setWinner({});
         break;
-      case firstJurror.value:
+      }
+
+      case firstJurror.value: {
         setFirstJurror({});
         break;
-      case mostAdvantages.value:
-        setMostAdvantages({});
-        break;
-      case mostIndivImm.value:
-        setMostIndivImm({});
-        break;
+      }
     }
   };
 
@@ -57,14 +58,13 @@ function DraftEntries(props) {
     if (!verifyPicks) {
       return;
     }
-    var draft = {
+
+    const draft = {
       order: player.draft.order,
       survivor: survivor.value,
       firstBoot: firstBoot.value,
       winner: winner.value,
       firstJurror: firstJurror.value,
-      mostAdvantages: mostAdvantages.value,
-      mostIndividualImmunities: mostIndivImm.value,
       firstLoser: firstLoser.value,
     };
     API.submitDraft(player.name, draft).then(() =>
@@ -77,8 +77,6 @@ function DraftEntries(props) {
     firstBoot.value &&
     winner.value &&
     firstJurror.value &&
-    mostAdvantages.value &&
-    mostIndivImm.value &&
     firstLoser.value;
 
   return (
@@ -98,7 +96,7 @@ function DraftEntries(props) {
       <div className="inline-div">
         Select your first boot prediction:
         <Select
-          options={sideBetOpts}
+          options={sideBetOptions}
           val={firstBoot.value && firstBoot}
           handleChange={(value) => {
             setPick(value, firstBoot, setFirstBoot);
@@ -108,7 +106,7 @@ function DraftEntries(props) {
       <div className="inline-div">
         Select your winner prediction:
         <Select
-          options={sideBetOpts}
+          options={sideBetOptions}
           val={winner.value && winner}
           handleChange={(value) => {
             setPick(value, winner, setWinner);
@@ -118,33 +116,14 @@ function DraftEntries(props) {
       <div className="inline-div">
         Select your first jurror prediction:
         <Select
-          options={sideBetOpts}
+          options={sideBetOptions}
           val={firstJurror.value && firstJurror}
           handleChange={(value) => {
             setPick(value, firstJurror, setFirstJurror);
           }}
         />
       </div>
-      <div className="inline-div">
-        Select a survivor you predict will find the most advantages:
-        <Select
-          options={sideBetOpts}
-          val={mostAdvantages.value && mostAdvantages}
-          handleChange={(value) => {
-            setPick(value, mostAdvantages, setMostAdvantages);
-          }}
-        />
-      </div>
-      <div className="inline-div">
-        Select a survivor you predict will win the most individual challenges:
-        <Select
-          options={sideBetOpts}
-          val={mostIndivImm.value && mostIndivImm}
-          handleChange={(value) => {
-            setPick(value, mostIndivImm, setMostIndivImm);
-          }}
-        />
-      </div>
+
       <div className="inline-div">
         Select the player who&apos;s pick you think will go home first:
         <Select
@@ -170,3 +149,5 @@ function DraftEntries(props) {
 }
 
 export default DraftEntries;
+
+// Const mergeSideBets = ();
