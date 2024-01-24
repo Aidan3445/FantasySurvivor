@@ -175,7 +175,9 @@ function Menu(props) {
 							{loggedIn}
 						</Link>
 					)}
-					<button className='survivor-button' onClick={() => logInOut()}>
+					<button className='survivor-button'
+						style={{gridColumn: !loggedIn && '1 / span 2'}}
+						onClick={() => logInOut()}>
 						{loggedIn ? 'Log Out' : 'Log In'}
 					</button>
 				</li>
