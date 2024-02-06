@@ -31,7 +31,7 @@ function DraftPage(props) {
     }
 
     new API()
-      .all()
+      .get()
       .newRequest()
       .then((res) => {
         var gameData = new GameData(res);

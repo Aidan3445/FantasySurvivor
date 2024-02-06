@@ -631,6 +631,11 @@ th:last-child {
   white-space: nowrap;
 }
 
+/* Span 2 Grid */
+.span-2 {
+  grid-column: span 2;
+}
+
 /* Clean Link */
 a.clean-link {
   text-decoration: inherit;

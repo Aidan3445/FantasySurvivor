@@ -15,147 +15,127 @@ import Navbar from "./components/NavBarComp.js";
 import { WindowContextProvider } from "./components/WindowContext.js";
 
 const root =
-  process.env.NODE_ENV === "production"
-    ? process.env.REACT_APP_API_ROOT
-    : process.env.REACT_APP_API_ROOT_DEV;
+    process.env.NODE_ENV === "production"
+        ? process.env.REACT_APP_API_ROOT
+        : process.env.REACT_APP_API_ROOT_DEV;
 
 function App() {
-  const [loggedIn, setLoggedIn] = useState("");
-  const [game, setGame] = useState(null);
-  const [socket, setSocket] = useState(null);
+    const [loggedIn, setLoggedIn] = useState("");
+    const [game, setGame] = useState(null);
+    const [socket, setSocket] = useState(null);
 
-  const handleLogin = (playerName) => {
-    setLoggedIn(playerName);
-    if (!playerName) {
-      removeLogin();
-    }
-  };
-
-  const api = new API();
-
-  const updateGame = async () => {
-    const res = await api.all().newRequest();
-    socket?.emit("update", res);
-    const g = new GameData(res);
-    setGame(g);
-  };
-
-  socket?.on("update", (data) => {
-    setGame(new GameData(data));
-  });
-
-  useEffect(() => {
-    setSocket(io.connect(root));
-
-    api
-      .autoLogin()
-      .newRequest()
-      .then((res) => {
-        if (res.login) {
-          setLoggedIn(res.login.name);
+    const handleLogin = (playerName) => {
+        setLoggedIn(playerName);
+        if (!playerName) {
+            removeLogin();
         }
-      });
-  }, []);
+    };
 
-  useEffect(() => {
-    if (!socket) {
-      return;
-    }
+    const api = new API();
 
-    updateGame();
+    const updateGame = async () => {
+        const res = await api.get().newRequest();
+        socket?.emit("update", res);
+        const g = new GameData(res);
+        setGame(g);
+    };
 
-    return () => socket.disconnect();
-  }, [socket]);
+    const updateSeason = async (seasonTag) => {
+        await API.seasonConnect(seasonTag);
+        await updateGame();
+    };
 
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      element: (
-        <div>
-          <Navbar
-            loggedIn={loggedIn}
-            setLoggedIn={handleLogin}
-            gameData={game}
-          />
-          <HomePage gameData={game} />
-        </div>
-      ),
-    },
-    {
-      path: "/Player/:name",
-      element: (
-        <div>
-          <Navbar
-            loggedIn={loggedIn}
-            setLoggedIn={handleLogin}
-            gameData={game}
-          />
-          <PlayerPage
-            loggedIn={loggedIn}
-            setLoggedIn={handleLogin}
-            gameData={game}
-            updateGameData={updateGame}
-          />
-        </div>
-      ),
-      loader: nameLoader,
-    },
-    {
-      path: "/Survivor/:name",
-      element: (
-        <div>
-          <Navbar
-            loggedIn={loggedIn}
-            setLoggedIn={handleLogin}
-            gameData={game}
-          />
-          <SurvivorPage gameData={game} />
-        </div>
-      ),
-      loader: nameLoader,
-    },
-    // Pages below edit data and don't use the localized game data
-    {
-      path: "/DataEntry",
-      element: (
-        <div>
-          <Navbar
-            loggedIn={loggedIn}
-            setLoggedIn={handleLogin}
-            gameData={game}
-          />
-          <DataEntryPage gameData={game} updateGameData={updateGame} />
-        </div>
-      ),
-    },
-    {
-      path: "/Draft",
-      element: (
-        <div>
-          <Navbar
-            loggedIn={loggedIn}
-            setLoggedIn={handleLogin}
-            gameData={game}
-          />
-          <DraftPage loggedIn={loggedIn} />
-        </div>
-      ),
-    },
-  ]);
+    socket?.on("update", (data) => {
+        setGame(new GameData(data));
+    });
 
-  if (!game) {
-    return <LoadingPage />;
-  }
+    useEffect(() => {
+        setSocket(io.connect(root));
 
-  return (
-    <WindowContextProvider>
-      <RouterProvider router={router} future={{ v7_startTransition: true }} />
-    </WindowContextProvider>
-  );
+        api
+            .autoLogin()
+            .newRequest()
+            .then((res) => {
+                if (res.login) {
+                    setLoggedIn(res.login.name);
+                }
+            });
+    }, []);
+
+    useEffect(() => {
+        if (!socket) {
+            return;
+        }
+
+        updateGame();
+
+        return () => socket.disconnect();
+    }, [socket]);
+
+    const withLayout = (element) => {
+        return (
+            <div>
+                <Navbar
+                    loggedIn={loggedIn}
+                    setLoggedIn={handleLogin}
+                    setSeason={updateSeason}
+                    gameData={game} />
+                {element}
+            </div>
+        );
+    };
+
+    const router = createBrowserRouter([
+        {
+            path: "/",
+            element: withLayout(
+                <HomePage gameData={game} setLoggedIn={handleLogin} />
+            ),
+        },
+        {
+            path: "/Player/:name",
+            element: withLayout(
+                <PlayerPage
+                    loggedIn={loggedIn}
+                    setLoggedIn={handleLogin}
+                    gameData={game}
+                    updateGameData={updateGame}
+                />
+            ),
+            loader: nameLoader,
+        },
+        {
+            path: "/Survivor/:name",
+            element: withLayout(<SurvivorPage gameData={game} />),
+            loader: nameLoader,
+        },
+        // Pages below edit data and don't use the localized game data
+        {
+            path: "/DataEntry",
+            element: withLayout(
+                <DataEntryPage
+                    gameData={game}
+                    updateGameData={updateGame}
+                    loggedIn={loggedIn}
+                />
+            ),
+        },
+        {
+            path: "/Draft",
+            element: withLayout(<DraftPage loggedIn={loggedIn} />),
+        },
+    ]);
+
+    if (!game) return <LoadingPage />;
+    return (
+        <WindowContextProvider>
+            <RouterProvider router={router} future={{ v7_startTransition: true }} />
+        </WindowContextProvider>
+    );
 }
 
 export default App;
 
 function nameLoader({ params }) {
-  return params.name;
+    return params.name;
 }
