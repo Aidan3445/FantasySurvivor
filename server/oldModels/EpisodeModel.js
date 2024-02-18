@@ -108,14 +108,9 @@ const episodeSchema = new mongoose.Schema(
       type: [notesSchema],
       default: [],
     },
-    season: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Seasons",
-      required: true,
-    },
   },
   { versionKey: false }
 );
 
-const EpisodeModel = mongoose.model("Episodes", episodeSchema);
+const EpisodeModel = mongoose.model("episodes", episodeSchema);
 module.exports = EpisodeModel;
