@@ -11,59 +11,65 @@ class API {
         this.requests = {};
     }
 
-    // establish connection to season database
-    static async seasonConnect(seasonTag) {
-        await axios
-            .post(`${apiRoot}/season/${seasonTag}`)
-            .catch((err) => console.error(err));
-        return this;
-    }
-
     //#region REQUEST DATA
     seasons() {
         this.requests.seasons = `${apiRoot}/seasons`;
         return this;
     }
 
-    episodes() {
-        this.requests.episodes = `${apiRoot}/episodes`;
+    episodes(seasonName) {
+        if (!seasonName) {
+            console.error("No season tag provided");
+            return this;
+        }
+        seasonName = encodeURIComponent(seasonName);
+        this.requests.episodes = `${apiRoot}/${seasonName}/episodes`;
         return this;
     }
 
-    survivors(name) {
-        this.requests.survivors = `${apiRoot}/survivor${name ? `/${name}` : "s"}`;
+    survivors(seasonName, name) {
+        if (!seasonName) {
+            console.error("No season tag provided");
+            return this;
+        }
+        seasonName = encodeURIComponent(seasonName);
+        this.requests.survivors = `${apiRoot}/${seasonName}/survivor${name ? `/${name}` : "s"}`;
         return this.episodes().tribes();
     }
 
-    players(name) {
-        this.requests.players = `${apiRoot}/player${name ? `/${name}` : "s"}`;
+    players(seasonName, name) {
+        if (!seasonName) {
+            console.error("No season tag provided");
+            return this;
+        }
+        seasonName = encodeURIComponent(seasonName);
+        this.requests.players = `${apiRoot}/${seasonName}/player${name ? `/${name}` : "s"}`;
         return this.survivors();
     }
 
-    tribes() {
-        this.requests.tribes = `${apiRoot}/tribes`;
-        return this;
-    }
-
-    get() {
-        return this.episodes().survivors().players().tribes();
-    }
-
-    login(playerName, password) {
-        this.requests.login = `${apiRoot}/player/${playerName}/login/${password}`;
-        return this;
-    }
-
-    autoLogin() {
-        var playerName = localStorage.getItem("playerName");
-        var rememberMeToken = localStorage.getItem("rememberMeToken");
-        if (playerName && rememberMeToken) {
-            this.requests.login = `${apiRoot}/player/${playerName}/rememberMe/${rememberMeToken}`;
+    tribes(seasonName) {
+        if (!seasonName) {
+            console.error("No season tag provided");
             return this;
         }
+        seasonName = encodeURIComponent(seasonName);
+        this.requests.tribes = `${apiRoot}/${seasonName}/tribes`;
         return this;
     }
 
+    get(seasonName) {
+        if (!seasonName) {
+            console.error("No season tag provided");
+            return this;
+        }
+        seasonName = encodeURIComponent(seasonName);
+        return this.episodes(seasonName)
+            .survivors(seasonName)
+            .players(seasonName)
+            .tribes(seasonName);
+    }
+
+   
     async newRequest() {
         var requests = Object.keys(this.requests);
         var responses = await Promise.all(
@@ -73,12 +79,6 @@ class API {
         var data = {};
         for (var i = 0; i < requests.length; i++) {
             data[requests[i]] = responses[i].data;
-
-            if (requests[i] !== "players") continue;
-            data[requests[i]].forEach((d) => {
-                delete d.password;
-                delete d.rememberMeToken;
-            });
         }
         return data;
     }
@@ -86,30 +86,73 @@ class API {
 
     //#region WRITE DATA
     // add new episode
-    static async addEpisode(newEpisode) {
+    static async addEpisode(seasonName, newEpisode) {
+        if (!seasonName) {
+            console.error("No season tag provided");
+            return;
+        }
+        seasonName = encodeURIComponent(seasonName);
         return axios
-            .post(`${apiRoot}/episode/new`, newEpisode)
+            .post(`${apiRoot}/${seasonName}/episode/new`, newEpisode)
             .catch((err) => console.error(err));
     }
 
     // update episode
-    static async updateEpisode(updatedEpisode) {
+    static async updateEpisode(seasonName, updatedEpisode) {
+        if (!seasonName) {
+            console.error("No season tag provided");
+            return;
+        }
+        seasonName = encodeURIComponent(seasonName);
         return axios
-            .post(`${apiRoot}/episode/update`, updatedEpisode)
+            .post(`${apiRoot}/${seasonName}/episode/update`, updatedEpisode)
             .catch((err) => console.error(err));
     }
 
     // submit draft picks
-    static async submitDraft(playerName, draftPicks) {
+    static async submitDraft(seasonName, playerName, draftPicks) {
+        if (!seasonName) {
+            console.error("No season tag provided");
+            return;
+        }
+        seasonName = encodeURIComponent(seasonName);
         return axios
-            .post(`${apiRoot}/player/${playerName}/draft`, draftPicks)
+            .post(`${apiRoot}/${seasonName}/player/draft`, { name: playerName, draft: draftPicks })
             .catch((err) => console.error(err));
     }
 
     // update player survivor pick
-    static async updateSurvivorPick(playerName, survivorName) {
+    static async updateSurvivorPick(seasonName, playerName, update) {
+        if (!seasonName) {
+            console.error("No season tag provided");
+            return;
+        }
+        seasonName = encodeURIComponent(seasonName);
         return axios
-            .post(`${apiRoot}/player/${playerName}/changesurvivor/${survivorName}`)
+            .post(`${apiRoot}/${seasonName}/player/changesurvivor/`, {
+                name: playerName,
+                change: update,
+            })
+            .catch((err) => console.error(err));
+    }
+
+    // login player
+    static async login(playerName, password) {
+        return axios
+            .post(`${apiRoot}/player/login`, {
+                name: playerName,
+                password: password,
+            })
+            .catch((err) => console.error(err));    
+    }
+
+    // auto login player
+    static async autoLogin(playerName, rememberMeToken) {
+        return axios
+            .post(`${apiRoot}/player/login/rememberMe`, {
+                name: playerName,
+                token: rememberMeToken,
+            })
             .catch((err) => console.error(err));
     }
 
@@ -128,7 +171,8 @@ class API {
         }
 
         return axios
-            .post(`${apiRoot}/player/${playerName}/password`, {
+            .post(`${apiRoot}/player/changePassword`, {
+                playerName,
                 oldPassword,
                 newPassword,
             })
@@ -144,7 +188,8 @@ class API {
     // remember me
     static async remberMe(playerName, token) {
         return axios
-            .post(`${apiRoot}/player/${playerName}/rememberMe`, {
+            .post(`${apiRoot}/player/rememberMe`, {
+                playerName,
                 token,
             })
             .catch((err) => console.error(err));
@@ -153,17 +198,22 @@ class API {
     // update player color
     static async updateColor(playerName, newColor) {
         return axios
-            .post(`${apiRoot}/player/${playerName}/color`, {
-                newColor,
+            .post(`${apiRoot}/player/changeColor`, {
+                name: playerName,
+                color: newColor,
             })
             .catch((err) => console.error(err));
     }
 
     // add a new tribe
-    static async addTribe(newTribe) {
-        var { tribeName, tribeColor } = newTribe;
+    static async addTribe(seasonName, newTribe) {
+        if (!seasonName) {
+            console.error("No season tag provided");
+            return;
+        }
+        seasonName = encodeURIComponent(seasonName);
         return axios
-            .post(`${apiRoot}/tribe/new/${tribeName}`, { tribeColor })
+            .post(`${apiRoot}/${seasonName}/tribe/new`, { newTribe })
             .catch((err) => console.error(err));
     }
     //#endregion

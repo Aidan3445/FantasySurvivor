@@ -57,7 +57,7 @@ module.exports = {
     new webpack.optimize.ModuleConcatenationPlugin(),
   ],
   devServer: {
-    port: 1234,
+    port: process.env.PORT || 1234,
     https: false,
     historyApiFallback: true,
   },

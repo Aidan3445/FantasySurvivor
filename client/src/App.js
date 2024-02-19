@@ -34,16 +34,13 @@ function App() {
     const api = new API();
 
     const updateGame = async () => {
-        const res = await api.get().newRequest();
+        const res = await api.get("Season 45").newRequest();
         socket?.emit("update", res);
         const g = new GameData(res);
         setGame(g);
     };
 
-    const updateSeason = async (seasonTag) => {
-        await API.seasonConnect(seasonTag);
-        await updateGame();
-    };
+    const updateSeason = async (seasonTag) => { };
 
     socket?.on("update", (data) => {
         setGame(new GameData(data));
@@ -52,9 +49,7 @@ function App() {
     useEffect(() => {
         setSocket(io.connect(root));
 
-        api
-            .autoLogin()
-            .newRequest()
+        API.autoLogin()
             .then((res) => {
                 if (res.login) {
                     setLoggedIn(res.login.name);

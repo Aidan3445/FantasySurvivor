@@ -6,7 +6,7 @@ const env = require("dotenv");
 env.config();
 const app = express();
 const server = app.listen(process.env.PORT || 1332, async () => {
-    console.log("Server running on port 1332!");
+    console.log(`Server running on port ${process.env.PORT || 1332}!`);
     await mongoose.connect(process.env.DB_CONNECTION_STRING);
 });
 
@@ -31,32 +31,104 @@ const Survivor = require("./models/SurvivorModel");
 const Tribe = require("./models/TribeModel");
 const PlayersSeason = require("./models/PlayersSeasonModel");
 
-//#region season helpers
+//#region helpers
 // get seasonID from seasonName
 const findSeason = async (seasonName) => {
     try {
-        const seasonID = await Season.findOne({ seasonName: seasonName });
+        const name = decodeURIComponent(seasonName);
+        const seasonID = await Season.findOne({ name: name });
 
         if (!seasonID) {
             // return error if season not found
-            throw new Error(`Season ${seasonName} not found`);
+            throw new Error(`Season ${name} not found`);
         }
 
-        return seasonID._id;
+        return seasonID;
     } catch (err) {
         // pass error to caller
         throw err;
     }
 }
+// query and populate episode across all updates
+const queryEpisode = async (query) => {
+    try {
+        return await Episode.find(query)
+            .select("-_id -season")
+            .populate("advsFound", "name -_id")
+            .populate("advPlaysSelf", "name -_id")
+            .populate("advPlaysOther", "name -_id")
+            .populate("badAdvPlays", "name -_id")
+            .populate("advsEliminated", "name -_id")
+            .populate("spokeEpTitle", "name -_id")
+            .populate("tribe1sts.name", "name -_id")
+            .select("-tribe1sts._id")
+            .populate("tribe2nds.name", "name -_id")
+            .select("-tribe2nds._id")
+            .populate("indivWins", "name -_id")
+            .populate("indivRewards", "name -_id")
+            .populate("blindsides", "name -_id")
+            .populate("finalThree", "name -_id")
+            .populate("fireWins", "name -_id")
+            .populate("soleSurvivor", "name -_id")
+            .populate("eliminated", "name -_id")
+            .populate({
+                path: "tribeUpdates", populate: [
+                    { path: "tribe", select: "name -_id" },
+                    { path: "survivors", select: "name -_id" }]
+            })
+            .populate("notes.name", "name -_id")
+            .exec();
+    } catch (err) {
+        throw err;
+    }
+}
+// query and populate playerSeason across all data
+const queryPlayersSeason = async (query) => {
+    try {
+        return await PlayersSeason.find(query)
+            .select("-_id -season")
+            .populate("player", "name -_id")
+            .populate("survivors.survivor", "name -_id")
+            .populate({
+                path: "draft", populate: [
+                    { path: "survivor", select: "name -_id" },
+                    { path: "firstBoot", select: "name -_id" },
+                    { path: "winner", select: "name -_id" },
+                    { path: "firstJurror", select: "name -_id" },
+                    { path: "mostAdvantages", select: "name -_id" },
+                    { path: "mostIndividualImmunities", select: "name -_id" },
+                    { path: "firstLoser", select: "name -_id" }]
+            }).exec();
+    } catch (err) {
+        throw err;
+    }
+}
 //#endregion
+//#region season routes
+app.get("/api/seasons", async (_req, res) => {
+    try {
+        const seasons = await Season.find({}).select("-_id").exec();
 
+        if (seasons.length === 0) {
+            // return error if seasons not found
+            res.status(400).json({ error: "No seasons found" });
+            return;
+        }
+
+        res.json(seasons);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+//#endregion
 //#region episode routes
 app.get("/api/:seasonName/episodes", async (req, res) => {
     try {
         // get the seasonID
         const season = await findSeason(req.params.seasonName);
         // get all episodes from the season sorted by number
-        const episodes = await Episode.find({ season: season }).sort({ number: 1 });
+        const episodes = await queryEpisode({ season: season._id._id });
         res.json(episodes);
     } catch (err) {
         console.error(err);
@@ -68,11 +140,13 @@ app.get("/api/:seasonName/episode/:number", async (req, res) => {
         // get the seasonID
         const season = await findSeason(req.params.seasonName);
         // get the episode from the season
-        const episode = await Episode.findOne({ season: season, number: req.params.number });
+        let episode = await queryEpisode({ season: season._id._id, number: req.params.number });
 
         if (!episode) {
             // return error if episode not found
-            res.status(400).json({ error: `Episode ${req.params.number} not found in season ${req.params.seasonName}` });
+            res.status(400).json(
+                { error: `Episode ${req.params.number} not found in season ${season.name}` }
+            );
             return;
         }
 
@@ -86,28 +160,28 @@ app.post("/api/episode/new", async (req, res) => {
     try {
         const { seasonName, number } = req.body;
         // get the seasonID
-        const season = await findSeason(req.body.season);
+        const season = await findSeason(seasonName);
         // get the previous episode
-        const prevEpisode = await Episode.findOne({ season: season, number: number - 1 });
+        const prevEpisode = await queryEpisode({ season: season._id, number: number - 1 });
 
         if (!prevEpisode && number !== 1) {
             // return error if previous episode does not exist
             // first episode does not need a previous episode
             res.status(400).json({
                 error:
-                    `Previous episode ${number - 1} not found in season ${seasonName}`
+                    `Previous episode ${number - 1} not found in season ${season.name}`
             });
             return;
         }
 
         // check if episode already exists
-        const checkEpisode = await Episode.findOne({ season: season, number: number });
+        const checkEpisode = await Episode.findOne({ season: season._id, number: number });
 
         if (checkEpisode) {
             // return error if episode already exists
             res.status(400).json({
                 error:
-                    `Episode ${number} already exists in season ${seasonName}`
+                    `Episode ${number} already exists in season ${season.name}`
             });
             return;
         }
@@ -129,15 +203,15 @@ app.post("/api/episode/update", async (req, res) => {
         // get the seasonID
         const season = await findSeason(seasonName);
         // update the episode
-        const episode = await Episode.findOneAndUpdate(
-            { season: season, number: number },
+        let episode = await Episode.findOneAndUpdate(
+            { season: season._id, number: number },
             updatedEpisode,
             { new: true }
         );
 
         if (!episode) {
             // return error if episode not found
-            res.status(400).json({ error: `Episode ${number} not found in season ${seasonName}` });
+            res.status(400).json({ error: `Episode ${number} not found in season ${season.name}` });
             return;
         }
 
@@ -156,11 +230,11 @@ app.get("/api/:seasonName/players", async (req, res) => {
         // get the seasonID
         const season = await findSeason(req.params.seasonName);
         // get all players from the season
-        const players = await PlayersSeason.find({ season: season });
+        const players = await queryPlayersSeason({ season: season._id });
 
-        if (!players) {
+        if (players.length === 0) {
             // return error if players not found
-            res.status(400).json({ error: `No players found in season ${req.params.seasonName}` });
+            res.status(400).json({ error: `No players found in season ${season.name}` });
             return;
         }
 
@@ -175,33 +249,39 @@ app.get("/api/:seasonName/player/:name", async (req, res) => {
         const { seasonName, name } = req.params;
         // get the seasonID
         const season = await findSeason(seasonName);
+        // get the playerID
+        const player = await Player.findOne({ name: name });
         // get the player from the season
-        const player = await PlayersSeason.find({ season: season, name: name });
+        let playerSeason = await queryPlayersSeason({ season: season._id, player: player._id });
 
-        if (!player) {
+        if (!playerSeason) {
             // return error if player not found
-            res.status(400).json({ error: `Player ${name} not found in season ${seasonName}` });
+            res.status(400).json({ error: `Player ${name} not found in season ${season.name}` });
             return;
         }
 
-        res.json(player);
+        res.json(playerSeason);
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Server error" });
     }
 });
-app.post("/api/:seasonName/player/:name/draft", async (req, res) => {
+app.post("/api/:seasonName/player/draft", async (req, res) => {
     try {
-        const { seasonName, name } = req.params;
+        const { seasonName } = req.params;
+        const { name, draft } = req.body;
         // get the seasonID
         const season = await findSeason(seasonName);
-        const draft = req.body;
+        // get the playerID
+        const player = await Player.findOne({ name: name });
         // get the player from the season
-        const player = await PlayersSeason.findOne({ season: season, name: name })
-        if (!player) {
+        let playerSeason = await queryPlayersSeason({ season: season._id, player: player._id });
+
+        if (!playerSeason) {
             // return error if player not found
-            res.status(400).json({ error: `Player ${name} not found in season ${seasonName}` });
+            res.status(400).json({ error: `Player ${name} not found in season ${season.name}` });
         }
+
         // remap draft names to survivor IDs
         const draftPromises = Object.keys(draft).map(async (key) => {
             const survivor = await Survivor.findOne({ name: draft[key] });
@@ -211,47 +291,59 @@ app.post("/api/:seasonName/player/:name/draft", async (req, res) => {
         });
         await Promise.all(draftPromises);
 
-        player.draft = draft;
-        player.survivors = draft.survivor ? [draft.survivor] : [];
+        playerSeason.draft = draft;
+        playerSeason.survivors = draft.survivor ? [draft.survivor] : [];
 
-        const updatedPlayer = await player.save();
+        const updatedPlayer = await playerSeason.save();
         res.json(updatedPlayer);
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Server error" });
     }
 });
-app.post("/api/:seasonName/player/:playerName/changesurvivor/:survivorName", async (req, res) => {
+app.post("/api/:seasonName/player/changeSurvivor", async (req, res) => {
     try {
-        const { seasonName, playerName, survivorName } = req.params;
+        const { change, name } = req.body;
+        const { seasonName } = req.params;
         // get the seasonID
         const season = await findSeason(seasonName);
+        // get the playerID
+        const player = await Player.findOne({ name: name });
         // get the player from the season
-        const player = await PlayersSeason.findOne({ season: season, name: playerName });
+        let playerSeason = await queryPlayersSeason({ season: season._id, player: player._id });
 
-        if (!player) {
+        if (!playerSeason) {
             // return error if player not found
             res.status(400).json({
-                error: `Player ${playerName} not found ` +
-                    `in season ${seasonName}`
+                error: `Player ${playerName} not found in season ${season.name}`
             });
             return;
         }
 
         // find the survivor by name
-        const survivor = await Survivor.findOne({ season: season, name: survivorName });
+        const survivor = await Survivor.findOne({ season: season._id, name: change.survivor });
 
         if (!survivor) {
             // return error if survivor not found
             res.status(400).json({
-                error: `Survivor ${survivorName} ` +
-                    `not found in season ${seasonName}`
+                error: `Survivor ${change.survivor} not found in season ${season.name}`
             });
             return;
         }
 
+        // check if this is a new change an updated change
+        const oldChange = player.survivors.findIndex((surv) => surv.episode === change.episode);
+
+        if (oldChange > -1) {
+            // if the change already exists, update the survivorID
+            playerSeason.survivors[oldChange].survivor = survivor._id;
+            return;
+        } else {
+            // if the change does not exist, add the change to the player's survivor list
+            playerSeason.survivors.push({ survivor: survivor._id, episode: change.episode });
+        }
+
         // update the player's survivor list
-        player.survivorList[player.survivorList.length - 1] = survivor._id;
         const updatedPlayer = await player.save();
         res.json(updatedPlayer);
     } catch (err) {
@@ -263,7 +355,7 @@ app.post("/api/:seasonName/player/:playerName/changesurvivor/:survivorName", asy
 
 //#region player routes
 // TODO: use passport.js for authentication
-app.get("/api/player/login/", async (req, res) => {
+app.post("/api/player/login", async (req, res) => {
     try {
         const { name, password } = req.body;
         // find player by name
@@ -279,15 +371,16 @@ app.get("/api/player/login/", async (req, res) => {
             res.json(player);
             return;
         }
+
         res.status(400).json({ error: "Player Name and Password combination not found." });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Server error" });
     }
 });
-app.get("/api/player/:name/rememberMe/:token", async (req, res) => {
+app.post("/api/player/login/rememberMe", async (req, res) => {
     try {
-        var { name, token } = req.params;
+        var { name, token } = req.body;
         const player = await Player.findOne({ name: name });
 
         if (!player) {
@@ -306,10 +399,9 @@ app.get("/api/player/:name/rememberMe/:token", async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 });
-app.post("/api/player/:name/rememberMe", async (req, res) => {
+app.post("/api/player/rememberMe", async (req, res) => {
     try {
-        const { name } = req.params;
-        const { token } = req.body;
+        const { name, token } = req.body;
         const player = await Player.findOne({ name: name });
 
         if (!player) {
@@ -326,10 +418,9 @@ app.post("/api/player/:name/rememberMe", async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 });
-app.post("/api/player/:name/changePassword", async (req, res) => {
+app.post("/api/player/changePassword", async (req, res) => {
     try {
-        const { newPassword, oldPassword } = req.body;
-        const { name } = req.params;
+        const { name, newPassword, oldPassword } = req.body;
         const player = await Player.findOne({ name: name })
 
         if (!player) {
@@ -354,10 +445,9 @@ app.post("/api/player/:name/changePassword", async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 });
-app.post("/api/player/:name/changeColor", async (req, res) => {
+app.post("/api/player/changeColor", async (req, res) => {
     try {
-        const { newColor } = req.body;
-        const { name } = req.params;
+        const { name, newColor } = req.body;
         const player = await Player.findOne({ name: name });
 
         if (!player) {
@@ -365,7 +455,7 @@ app.post("/api/player/:name/changeColor", async (req, res) => {
             res.status(400).json({ error: `Player ${name} not found` });
             return;
         }
-        
+
         // update player color and save
         player.color = newColor;
         player.save();
@@ -382,11 +472,12 @@ app.get("/api/:seasonName/survivors", async (req, res) => {
     try {
         // get the seasonID
         const season = await findSeason(req.params.seasonName);
-        const survivors = await Survivor.find({ season: season });
-
+        const survivors = await Survivor.find({ season: season._id })
+            .select("name -_id")
+            .exec();
         if (!survivors) {
             // return error if survivors not found
-            res.status(400).json({ error: `No survivors found in season ${req.params.seasonName}` });
+            res.status(400).json({ error: `No survivors found in season ${season.name}` });
             return;
         }
 
@@ -396,10 +487,25 @@ app.get("/api/:seasonName/survivors", async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 });
-app.get("/api/survivor/:name", async (req, res) => {
-    Survivor.find({ name: req.params.name })
-        .then((survivors) => res.json(survivors))
-        .catch((err) => res.json(err));
+app.get("/api/:seasonName/survivor/:name", async (req, res) => {
+    try {
+        // get the seasonID
+        const season = await findSeason(req.params.seasonName);
+        const survivor = await Survivor.findOne({ season: season._id, name: req.params.name })
+            .select("-_id -season")
+            .exec();
+
+        if (!survivor) {
+            // return error if survivor not found
+            res.status(400).json({ error: `Survivor ${req.params.name} not found` });
+            return;
+        }
+
+        res.json(survivor);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Server error" });
+    }
 });
 //#endregion
 
@@ -408,11 +514,13 @@ app.get("/api/:seasonName/tribes", async (req, res) => {
     try {
         // get the seasonID
         const season = await findSeason(req.params.seasonName);
-        const tribes = await Tribe.find({ season: season });
+        const tribes = await Tribe.find({ season: season._id })
+            .select("-_id -season")
+            .exec();
 
         if (!tribes) {
             // return error if tribes not found
-            res.status(400).json({ error: `No tribes found in season ${req.params.seasonName}` });
+            res.status(400).json({ error: `No tribes found in season ${season.name}` });
             return;
         }
 
@@ -426,11 +534,16 @@ app.get("/api/:seasonName/tribe/:name", async (req, res) => {
     try {
         // get the seasonID
         const season = await findSeason(req.params.seasonName);
-        const tribe = await Tribe.find({ season: season, name: req.params.name });
+        const tribe = await Tribe.find({ season: season._id, name: req.params.name })
+            .select("-_id -season")
+            .exec();
 
         if (!tribe) {
             // return error if tribe not found
-            res.status(400).json({ error: `Tribe ${req.params.name} not found in season ${req.params.seasonName}` });
+            res.status(400).json({
+                error: `Tribe ${req.params.name} ` +
+                    `not found in season ${season.name}`
+            });
             return;
         }
 
@@ -448,15 +561,17 @@ app.post("/api/:seasonName/tribe/new", async (req, res) => {
         const season = await findSeason(seasonName);
 
         // check if tribe already exists
-        const checkTribe = await Tribe.findOne({ name: tribeName, season: season });
+        const checkTribe = await Tribe.findOne({ name: tribeName, season: season._id });
         if (checkTribe) {
             // return error if tribe already exists
-            res.status(400).json({ error: `Tribe ${tribeName} already exists in season ${seasonName}` });
+            res.status(400).json({
+                error: `Tribe ${tribeName} already exists in season ${season.name}`
+            });
             return;
         }
 
         // create new tribe
-        const newTribe = new Tribe({ name: tribeName, color: tribeColor, season: season });
+        const newTribe = new Tribe({ name: tribeName, color: tribeColor, season: season._id });
         // save new tribe
         await newTribe.save();
         res.json(newTribe);
