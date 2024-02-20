@@ -22,25 +22,31 @@ const root =
 function App() {
     const [loggedIn, setLoggedIn] = useState("");
     const [game, setGame] = useState(null);
+    const [season, setSeason] = useState("");
     const [socket, setSocket] = useState(null);
 
     const handleLogin = (playerName) => {
         setLoggedIn(playerName);
         if (!playerName) {
             removeLogin();
-        }
+        } else {
+                   }
     };
 
     const api = new API();
 
     const updateGame = async () => {
-        const res = await api.get("Season 45").newRequest();
+        if (!season) return;
+
+        const res = await api.get(season).newRequest();
         socket?.emit("update", res);
         const g = new GameData(res);
         setGame(g);
     };
 
-    const updateSeason = async (seasonTag) => { };
+    useEffect(() => {
+        updateGame();
+    }, [season]);
 
     socket?.on("update", (data) => {
         setGame(new GameData(data));
@@ -51,10 +57,16 @@ function App() {
 
         API.autoLogin()
             .then((res) => {
-                if (res.login) {
-                    setLoggedIn(res.login.name);
+                if (res?.data?.login) {
+                    handleLogin(res.data.player.name);
                 }
             });
+
+        const api = new API();
+        api.seasons().newRequest().then((res) => {
+            setSeason(res.seasons[0].name);
+            // res.seasons.length - 1
+        });
     }, []);
 
     useEffect(() => {
@@ -73,7 +85,7 @@ function App() {
                 <Navbar
                     loggedIn={loggedIn}
                     setLoggedIn={handleLogin}
-                    setSeason={updateSeason}
+                    setSeason={setSeason}
                     gameData={game} />
                 {element}
             </div>

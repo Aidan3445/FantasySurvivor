@@ -77,6 +77,10 @@ const playersSeasonSchema = new mongoose.Schema({
         type: draftSchema,
         default: () => ({}),
     },
+    color: {
+        type: String,
+        required: true,
+    },
 },
     { versionKey: false }
 );

@@ -106,6 +106,7 @@ export default function PlayerPage(props) {
         <PlayerEdit
           player={player}
           updateGameData={updateGameData}
+          gameData={gameData}
           loggedIn={loggedIn}
           setLoggedIn={setLoggedIn}
         />

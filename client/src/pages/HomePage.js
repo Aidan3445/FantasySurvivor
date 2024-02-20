@@ -14,7 +14,6 @@ export default function HomePage(props) {
     };
 
     useEffect(() => {
-        console.log(getData([], gameData.players));
         setPlayerData(getData([], gameData.players));
     }, [gameData]);
 

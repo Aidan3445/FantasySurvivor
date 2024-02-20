@@ -5,7 +5,7 @@ import Select from 'react-select';
 import GameData from '../utils/gameData';
 import Modal, { LoginContent } from './ModalComp.js';
 import WindowContext from './WindowContext.js';
-import API from '../utils/api.js';
+import { fetchSeasons } from '../utils/miscUtils.js';
 
 function Navbar(props) {
     const { loggedIn, setLoggedIn, setSeason, gameData } = props;
@@ -30,17 +30,12 @@ function Navbar(props) {
     }, [gameData]);
 
     useEffect(() => {
-        const fetchSeasons = async () => {
-            let data = await new API().seasons().newRequest();
-            let seasons = data.seasons.seasons.map(season => {
-                return { value: season.name, label: season.name.replace("-", " ") };
-            });
-            let defaultSeason = seasons.find(
-                season => season.value === data.seasons.defaultSeason);
-            setSeasons({ seasons, defaultSeason });
-        };
-        fetchSeasons();
-    }, []);
+        if (loggedIn) {
+            setSeason(fetchSeasons(loggedIn, setSeasons).defaultSeason);
+            
+        }
+        else setSeasons({ seasons: [], defaultSeason: '' });
+    }, [loggedIn]);
 
     const navigate = useNavigate();
 
@@ -188,6 +183,7 @@ function Menu(props) {
                 </li>
                 <li>
                     <Select
+                        id='season-select'
                         className='span-2'
                         placeholder='Seasons'
                         options={seasons.seasons}

@@ -108,7 +108,6 @@ const queryPlayersSeason = async (query) => {
 app.get("/api/seasons", async (_req, res) => {
     try {
         const seasons = await Season.find({}).select("-_id").exec();
-
         if (seasons.length === 0) {
             // return error if seasons not found
             res.status(400).json({ error: "No seasons found" });
@@ -266,6 +265,33 @@ app.get("/api/:seasonName/player/:name", async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 });
+app.get("/api/playersSeasons/:name", async (req, res) => {
+    try {
+        const { name } = req.params;
+        // get the seasonID
+        const seasons = await Season.find({});
+        // get the playerID
+        const player = await Player.findOne({ name: name });
+        // get the list of seasons for the player
+        const playersSeasons = await PlayersSeason.find({ player: player._id })
+
+        if (playersSeasons.length === 0) {
+            // return error if players not found
+            res.status(400).json({ error: `No seasons found for player ${name}` });
+            return;
+        }
+
+        // map the seasonID to season names
+        const seasonStrings = seasons.filter((season) =>
+            playersSeasons.some((playerSeason) => playerSeason.season.equals(season._id)))
+            .map((season) => season.name);
+
+        res.json(seasonStrings);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
 app.post("/api/:seasonName/player/draft", async (req, res) => {
     try {
         const { seasonName } = req.params;
@@ -337,7 +363,6 @@ app.post("/api/:seasonName/player/changeSurvivor", async (req, res) => {
         if (oldChange > -1) {
             // if the change already exists, update the survivorID
             playerSeason.survivors[oldChange].survivor = survivor._id;
-            return;
         } else {
             // if the change does not exist, add the change to the player's survivor list
             playerSeason.survivors.push({ survivor: survivor._id, episode: change.episode });
@@ -351,6 +376,38 @@ app.post("/api/:seasonName/player/changeSurvivor", async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 });
+app.post("/api/:seasonName/player/changeColor", async (req, res) => {
+    try {
+        const { seasonName } = req.params;
+        const { name, newColor } = req.body;
+        const season = await findSeason(seasonName);
+        // get the playerID
+        const player = await Player.findOne({ name: name });
+        // get the player from the season
+        let playerSeason = await PlayersSeason.findOne({ season: season._id, player: player._id });
+
+        if (!playerSeason) {
+            // return error if player not found
+            res.status(400).json({
+                error: `Player ${playerName} not found in season ${season.name}`
+            });
+            return;
+        }
+
+        // update player color and save
+        playerSeason.color = newColor;
+        const updatedPlayer = await PlayersSeason.findOneAndUpdate(
+            { season: season._id, player: player._id },
+            playerSeason,
+            { new: true }
+        );
+        res.json(updatedPlayer);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
 //#endregion
 
 //#region player routes
@@ -368,7 +425,7 @@ app.post("/api/player/login", async (req, res) => {
         }
 
         if (player.validation(password, player.password)) {
-            res.json(player);
+            res.json({ player: player, login: true });
             return;
         }
 
@@ -390,7 +447,7 @@ app.post("/api/player/login/rememberMe", async (req, res) => {
         }
 
         if (player.validation(token, player.rememberMeToken)) {
-            res.json(player);
+            res.json({ player: player, login: true });
             return;
         }
         res.status(400).json({ error: "Login information not found." });
@@ -445,21 +502,19 @@ app.post("/api/player/changePassword", async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 });
-app.post("/api/player/changeColor", async (req, res) => {
+app.get("/api/player/:name/isAdmin", async (req, res) => {
     try {
-        const { name, newColor } = req.body;
-        const player = await Player.findOne({ name: name });
+        // find a player by name
+        const player = await Player.findOne({ name: req.params.name });
 
         if (!player) {
             // return error if player not found
-            res.status(400).json({ error: `Player ${name} not found` });
+            res.status(400).json({ error: `Player ${req.params.name} not found` });
             return;
         }
 
-        // update player color and save
-        player.color = newColor;
-        player.save();
-        res.json(player);
+        // return if player is an admin
+        res.json({ isAdmin: player.isAdmin });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Server error" });
@@ -473,7 +528,7 @@ app.get("/api/:seasonName/survivors", async (req, res) => {
         // get the seasonID
         const season = await findSeason(req.params.seasonName);
         const survivors = await Survivor.find({ season: season._id })
-            .select("name -_id")
+            .select("-_id")
             .exec();
         if (!survivors) {
             // return error if survivors not found
@@ -502,6 +557,33 @@ app.get("/api/:seasonName/survivor/:name", async (req, res) => {
         }
 
         res.json(survivor);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+app.post("/api/:seasonName/survivor/new", async (req, res) => {
+    try {
+        const { seasonName } = req.params;
+        // get the seasonID
+        const season = await findSeason(seasonName);
+        // check if survivor already exists
+        const checkSurvivor = await Survivor.findOne({ name: req.body.name, season: season._id });
+
+        if (checkSurvivor) {
+            // return error if survivor already exists
+            res.status(400).json({
+                error:
+                    `Survivor ${req.body.name} already exists in season ${season.name}`
+            });
+            return;
+        }
+
+        // create new survivor
+        const newSurvivor = new Survivor({ ...req.body, season: season._id });
+        // save new survivor
+        await newSurvivor.save();
+        res.json(newSurvivor);
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Server error" });

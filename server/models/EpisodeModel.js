@@ -123,6 +123,10 @@ const episodeSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Survivors",
         }],
+        quits: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Survivors",
+        }],
         merged: {
             type: Boolean,
             default: false,
