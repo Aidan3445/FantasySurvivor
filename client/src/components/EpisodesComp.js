@@ -38,10 +38,10 @@ function Episodes(props) {
       <div>
         {episodes.map(
           (episode) =>
-            player?.survivorList[episode.number - 1] && (
+            player?.survivors[episode.number - 1] && (
               <EpisodeComp
                 episode={episode}
-                survivor={player.survivorList[episode.number - 1]}
+                survivor={player.survivors[episode.number - 1]}
                 key={episode.number}
               />
             )

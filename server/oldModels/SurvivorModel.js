@@ -30,14 +30,13 @@ const survivorSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    season: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Seasons",
+    tribe: {
+      type: String,
       required: true,
     },
   },
   { versionKey: false }
 );
 
-const SurvivorModel = mongoose.model("Survivors", survivorSchema);
+const SurvivorModel = mongoose.model("survivors", survivorSchema);
 module.exports = SurvivorModel;

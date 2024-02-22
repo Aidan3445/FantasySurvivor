@@ -1,80 +1,101 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import Select from "react-select";
+import { useNavigate } from "react-router-dom";
 import API from "../utils/api";
 import GameData from "../utils/gameData";
+import { fetchSeasons } from "../utils/miscUtils";
 
-import NewEpisodeEntry from "../components/NewEpisodeEntryComp";
-import EpisodeUpdateEntry from "../components/EpisodeUpdateComp";
+import EpisodeSelect from "../components/EpisodeSelectComp";
+import NewSurvivorEntry from "../components/NewSurvivorEntryComp";
+import TribeEntry from "../components/NewTribeEntryComp";
 
 export default function DataEntryPage(props) {
-  var { gameData, updateGameData } = props;
+    var { updateGameData, loggedIn } = props;
 
-  DataEntryPage.propTypes = {
-    gameData: PropTypes.instanceOf(GameData).isRequired,
-    updateGameData: PropTypes.func.isRequired,
-  };
+    DataEntryPage.propTypes = {
+        updateGameData: PropTypes.func.isRequired,
+        loggedIn: PropTypes.string.isRequired,
+    };
 
-  var values = gameData.dataEntryValues;
-  var airingNow = values.Episodes.find(
-    (ep) => ep.episode !== null && ep.episode.aired === 0
-  );
+    var [gameData, setGameData] = useState(null);
+    var [seasons, setSeasons] = useState({ seasons: [], defaultSeason: "" });
+    var [season, setSeason] = useState({ value: "", label: "" });
 
-  var [selectedEpisode, selectEpisode] = useState(null);
-  useEffect(() => {
-    if (selectedEpisode) {
-      selectEpisode(
-        values.Episodes.find((ep) => ep.value === selectedEpisode.value)
-      );
-    } else if (airingNow) {
-      selectEpisode(airingNow);
-    }
-  }, []);
+    const navigate = useNavigate();
+    useEffect(() => {
+        const verifyAndSelect = async () => {
+            if (!loggedIn) {
+                navigate("/");
+                return;
+            }
 
-  const handleDataEntry = (data) => {
-    if (data.newEpisode) {
-      API.addEpisode(data.newEpisode);
-    }
-    if (data.updatedEpisode) {
-      API.updateEpisode(data.updatedEpisode).then(() => updateGameData());
-      if (data.newTribe) {
-        API.addTribe(data.newTribe).then(() => updateGameData());
-      }
-    }
-  };
+            const api = new API();
 
-  const followUp = () => {
-    if (selectedEpisode.value === 0) {
-      return (
-        <NewEpisodeEntry
-          dataEntry={handleDataEntry}
-          nextEpisodeNumber={values.Episodes.length}
-          resetEpisode={selectEpisode}
-        />
-      );
-    }
+            const p = await api.playerIsAdmin(loggedIn).newRequest();
+            if (!p.playerIsAdmin.isAdmin) {
+                navigate("/");
+                return;
+            }
+
+            const s = await fetchSeasons(null, setSeasons);
+            setSeason(s.defaultSeason);
+        }
+        verifyAndSelect();
+    }, []);
+
+    useEffect(() => {
+        if (season.value) {
+            new API().get(season.value).newRequest().then((res) => {
+                setGameData(new GameData(res));
+            });
+        }
+    }, [season]);
+
+    const dataTypes = [
+        { value: "episode", label: "Episode" },
+        { value: "survivor", label: "Survivor" },
+        { value: "tribe", label: "Tribe" },
+    ];
+    var [selectedDataType, selectDataType] = useState(dataTypes[0]);
+
+    const dataSelect = () => {
+        switch (selectedDataType.value) {
+            case "episode":
+                return <EpisodeSelect
+                    season={season.value}
+                    gameData={gameData}
+                    updateGameData={updateGameData} />;
+            case "survivor":
+                return <NewSurvivorEntry season={season.value} />;
+            case "tribe":
+                return <TribeEntry season={season.value} gameData={gameData} />;
+            default:
+                return null;
+        }
+    };
+
     return (
-      <EpisodeUpdateEntry
-        dataEntry={handleDataEntry}
-        episode={selectedEpisode.episode}
-        values={values}
-      />
+        <div className="content">
+            <div className="centered">
+                <div className="survivor-header">Data Entry</div>
+                <Select
+                    className="fit-content min-width-20rem"
+                    id="seasonSelect"
+                    options={seasons.seasons}
+                    value={season}
+                    onChange={(value) => setSeason(value)}
+                />
+                <Select
+                    className="fit-content min-width-20rem"
+                    id="dataTypeSelect"
+                    options={dataTypes}
+                    value={selectedDataType}
+                    onChange={(value) => selectDataType(value)}
+                />
+                <br />
+                {gameData && dataSelect()}
+            </div>
+        </div>
     );
-  };
-
-  return (
-    <div className="content">
-      <div className="centered">
-        <div className="survivor-header">Data Entry</div>
-        <Select
-          className="fit-content min-width-20rem"
-          id="episodeSelect"
-          options={values.Episodes}
-          value={selectedEpisode}
-          onChange={(value) => selectEpisode(value)}
-        />
-      </div>
-      {selectedEpisode && followUp()}
-    </div>
-  );
 }

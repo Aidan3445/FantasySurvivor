@@ -1,70 +1,50 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
-import API from "../utils/api";
 import GameData from "../utils/gameData";
 
 import DraftOrder from "../components/DraftOrderComp";
 import DraftEntries from "../components/DraftEntriesComp";
 
 function DraftPage(props) {
-  var { loggedIn } = props;
+    var { loggedIn, gameData, updateGameData } = props;
 
-  DraftPage.propTypes = {
-    loggedIn: PropTypes.string.isRequired,
-  };
+    DraftPage.propTypes = {
+        loggedIn: PropTypes.string.isRequired,
+        gameData: PropTypes.instanceOf(GameData).isRequired,
+        updateGameData: PropTypes.func.isRequired,
+    };
 
-  var [player, setPlayer] = useState({});
-  var [values, setValues] = useState({
-    Survivors: [],
-    Tribes: [],
-    AvailableSurvivors: [],
-    DraftOrder: [],
-  });
+    var [player, setPlayer] = useState(null);
+    var [allPlayers, setAllPlayers] = useState([]);
+    var [nextPick, setNextPick] = useState(0);
 
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!loggedIn) {
-      navigate("/");
-      return;
-    }
-
-    new API()
-      .all()
-      .newRequest()
-      .then((res) => {
-        var gameData = new GameData(res);
-        setValues(gameData);
+    useEffect(() => {
         setPlayer(gameData.playerByName(loggedIn));
-      });
-  }, [loggedIn]);
-
-  var playersTurn = () => {
-    if (!player.draft) return false;
+        const draftOrder = gameData.players.toSorted((a, b) => a.draft.order - b.draft.order);
+        setAllPlayers(draftOrder);
+        setNextPick(draftOrder.findIndex((p) => !p.draft.survivor) + 1);
+    }, [loggedIn, gameData]);
 
     return (
-      player.draft.order ===
-      1 + values.DraftOrder.findIndex((p) => p.player.survivorList.length === 0)
+        <div className="content">
+            <a
+                href="https://parade.com/tv/survivor-46-cast/"
+                rel="noreferrer"
+                target="_blank"
+            >
+                {"Learn about this year's castaways"}
+            </a>
+        {nextPick == player?.draft?.order ? (
+            <DraftEntries 
+                player={player} 
+                values={gameData.draftValues} 
+                updateGameData={updateGameData}
+            />
+        ) : (
+            <DraftOrder player={player} draftOrder={allPlayers} nextPick={nextPick} />
+        )}
+        </div>
     );
-  };
-
-  return (
-    <div className="content">
-      <a
-        href="https://survivor.fandom.com/wiki/Survivor_45#:~:text=physical%22%2C%20and%20%22strategic%22.-,Castaways,-Contestant"
-        rel="noreferrer"
-        target="_blank"
-      >
-        Learn about this year&aposs castaways
-      </a>
-      {playersTurn() ? (
-        <DraftEntries player={player} values={values} />
-      ) : (
-        <DraftOrder player={player} draftOrder={values.DraftOrder} />
-      )}
-    </div>
-  );
 }
 
 export default DraftPage;

@@ -10,14 +10,9 @@ const tribeSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    season: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Seasons',
-        required: true
-    }
   },
   { versionKey: false }
 );
 
-const TribeModel = mongoose.model("Tribes", tribeSchema);
+const TribeModel = mongoose.model("tribes", tribeSchema);
 module.exports = TribeModel;
