@@ -599,7 +599,6 @@ app.get("/api/player/:name/isAdmin", async (req, res) => {
     }
 });
 //#endregion
-
 //#region survivor routes
 app.get("/api/:seasonName/survivors", async (req, res) => {
     try {
