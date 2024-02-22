@@ -25,7 +25,6 @@ export default class Episode {
         this.quits = [];
         this.tribeUpdates = [];
         this.merged = false;
-        this.newTribes = [];
         this.notes = [];
     }
 
@@ -83,27 +82,31 @@ export default class Episode {
 
     // make shallow copy of the episode
     copy() {
-        return Episode.fromJSON(JSON.parse(JSON.stringify(this)));
+        var epCopy = Episode.fromJSON(JSON.parse(JSON.stringify(this)));
+        // not quite sure why this is necessary now but it fixes a bug where
+        // the tribe updates are not coppied correctly
+        epCopy.tribeUpdates = JSON.parse(JSON.stringify(this.tribeUpdates));
+        return epCopy;
     }
 
     //#region add functions
     // add single note
-    addNote(name, note) {
-        if (note.length > 0) this.notes.push({ name: name, notes: [note] });
+    addNote(name, note, onModel) {
+        if (note.length > 0) this.notes.push({ name: name, notes: [note], onModel: onModel });
         return this;
     }
 
     // add advantage found
     addAdvFound(survivorName, advName) {
         this.advsFound.push(survivorName);
-        this.addNote(survivorName, `Found ${advName}!`);
+        this.addNote(survivorName, `Found ${advName}!`, "Survivors");
         return this;
     }
 
     // add advantage played on self
     addAdvPlaySelf(survivorName, advName) {
         this.advPlaysSelf.push(survivorName);
-        this.addNote(survivorName, `Played ${advName} on themselves!`);
+        this.addNote(survivorName, `Played ${advName} on themselves!`, "Survivors");
         return this;
     }
 
@@ -112,7 +115,7 @@ export default class Episode {
         this.advPlaysOther.push(survivorName);
         this.addNote(survivorName, `Played ${advName} on ${played}!`);
         played.forEach((name) => {
-            this.addNote(name, `${survivorName} played ${advName} on them!`);
+            this.addNote(name, `${survivorName} played ${advName} on them!`, "Survivors");
         });
         return this;
     }
@@ -120,41 +123,46 @@ export default class Episode {
     // add advantage played incorrectly
     addBadAdvPlay(survivorName, advName) {
         this.badAdvPlays.push(survivorName);
-        this.addNote(survivorName, `Played ${advName} incorrectly!`);
+        this.addNote(survivorName, `Played ${advName} incorrectly!`, "Survivors");
         return this;
     }
 
     // add advantage held when eliminated
     addAdvEliminated(survivorName, advName) {
         this.advsEliminated.push(survivorName);
-        this.addNote(survivorName, `Eliminated with ${advName}!`);
+        this.addNote(survivorName, `Eliminated with ${advName}!`, "Survivors");
         return this;
     }
 
     // add spoke episode title
     setSpokeEpTitle(survivorName) {
         this.spokeEpTitle.push(survivorName);
-        this.addNote(survivorName, "Spoke episode title!");
+        this.addNote(survivorName, "Spoke episode title!", "Survivors");
         return this;
     }
 
     // add tribe that won challenge
-    addTribe1st(tribe, wasReward) {
-        this.tribe1sts.push(tribe);
+    // note that tribe includes team challenges post merge whiere
+    // 'name' is a survivor's name, not a tribe name
+    addTribe1st(name, onModel, wasReward) {
+        this.tribe1sts.push(name);
         this.addNote(
-            tribe,
-            `${tribe} won a challenge! ${wasReward ? "(reward)" : "(immunity)"}`
+            name,
+            `${name} won a challenge! ${wasReward ? "(reward)" : "(immunity)"}`,
+            onModel
         );
         return this;
     }
 
     // add tribe that got second in challenge
-    addTribe2nd(tribe, wasReward) {
-        this.tribe2nds.push(tribe);
+    // note that tribe includes team challenges post merge whiere
+    // 'name' is a survivor's name, not a tribe name
+    addTribe2nd(name, onModel, wasReward) {
+        this.tribe2nds.push(name);
         this.addNote(
-            tribe,
-            `${tribe} got seccond in a challenge! ${wasReward ? "(reward)" : "(immunity)"
-            }`
+            name,
+            `${name} got seccond in a challenge! ${wasReward ? "(reward)" : "(immunity)" }`,
+            onModel
         );
         return this;
     }
@@ -162,50 +170,50 @@ export default class Episode {
     // add individual immunity win
     addIndivWin(survivorName) {
         this.indivWins.push(survivorName);
-        this.addNote(survivorName, "Won individual immunity!");
+        this.addNote(survivorName, "Won individual immunity!", "Survivors");
         return this;
     }
 
     // add individual reward win
     addIndivReward(survivorName) {
         this.indivRewards.push(survivorName);
-        this.addNote(survivorName, "Won individual reward!");
+        this.addNote(survivorName, "Won individual reward!", "Survivors");
         return this;
     }
 
     // add blindside
     addBlindside(survivorName) {
         this.blindsides.push(survivorName);
-        this.addNote(survivorName, "Orchestraded the blindside!");
+        this.addNote(survivorName, "Orchestraded the blindside!", "Survivors");
         return this;
     }
 
     // add final three
     addFinalThree(survivorName) {
         this.finalThree.push(survivorName);
-        this.addNote(survivorName, "Made it to the final three!");
+        this.addNote(survivorName, "Made it to the final three!", "Survivors");
         return this;
     }
 
     // add fire making challenge win
     addWonFire(survivorName) {
         this.fireWins.push(survivorName);
-        this.addNote(survivorName, "Won the fire making challenge!");
+        this.addNote(survivorName, "Won the fire making challenge!", "Survivors");
         return this;
     }
 
     // add sole survivorName
     addSoleSurvivor(survivorName) {
         this.soleSurvivor.push(survivorName);
-        this.addNote(survivorName, "Won is the Sole Survivor!");
+        this.addNote(survivorName, "Won is the Sole Survivor!", "Survivors");
         return this;
     }
 
     // add eliminated
     addEliminated(survivorName, votesAgainst) {
         this.eliminated.push(survivorName);
-        this.addNote(survivorName, "Eliminated!");
-        this.addNote(survivorName, `Votes against: ${votesAgainst.join(", ")}`);
+        this.addNote(survivorName, "Eliminated!", "Survivors");
+        this.addNote(survivorName, `Votes against: ${votesAgainst.join(", ")}`, "Survivors");
         return this;
     }
 
@@ -213,7 +221,7 @@ export default class Episode {
     addQuit(survivorName) {
         this.quits.push(survivorName);
         this.eliminated.push(survivorName);
-        this.addNote(survivorName, "Quit!");
+        this.addNote(survivorName, "Quit!", "Survivors");
         return this;
     }
 
@@ -232,8 +240,9 @@ export default class Episode {
     }
 
     // add event from data entry
-    addEvent(event, eventNames, notes, allNames, affected, additionalString) {
-        eventNames.forEach((name) => {
+    addEvent(event, eventEffects, notes, allNameModels, affected, additionalString) {
+        eventEffects.forEach((effects) => {
+            const { name, onModel } = effects;
             switch (event) {
                 case "advsFound":
                     this.addAdvFound(name, additionalString);
@@ -254,10 +263,10 @@ export default class Episode {
                     this.setSpokeEpTitle(name);
                     break;
                 case "tribe1sts":
-                    this.addTribe1st(name, additionalString);
+                    this.addTribe1st(name, onModel, additionalString);
                     break;
                 case "tribe2nds":
-                    this.addTribe2nd(name, additionalString);
+                    this.addTribe2nd(name, onModel, additionalString);
                     break;
                 case "indivWins":
                     this.addIndivWin(name);
@@ -297,7 +306,7 @@ export default class Episode {
         }
 
         if (notes) {
-            var parsedNotes = this.parseNotes(notes, eventNames, allNames);
+            var parsedNotes = this.parseNotes(notes, eventEffects, allNameModels);
             this.notes = this.notes.concat(parsedNotes);
         }
         return this.consolidateNotes();
@@ -306,31 +315,37 @@ export default class Episode {
     //#endregion
 
     // parse notes from data entry
-    parseNotes(notes, eventNames, allNames) {
+    parseNotes(notes, eventEffects, allNameModels) {
         var notesArr = notes.split("\n");
         var parsedNotes = [];
 
         notesArr.forEach((note) => {
             if (note.startsWith("@")) {
                 var taggedName = note.split(" ")[0].substring(1);
-                var fullName = allNames.find((name) => name.startsWith(taggedName));
-                if (!fullName) {
+                var fullNameModel = allNameModels.find((nameModel) =>
+                    nameModel.name.startsWith(taggedName));
+                if (!fullNameModel) {
                     return;
                 }
                 var afterTag = note.split(`@${taggedName} `)[1];
-                var index = parsedNotes.findIndex((note) => note.name === fullName);
+                var index = parsedNotes.findIndex((note) => note.name === fullNameModel.name);
                 if (index !== -1) {
                     parsedNotes[index].notes.push(afterTag);
                 } else {
-                    parsedNotes.push({ name: fullName, notes: [afterTag] });
+                    parsedNotes.push({
+                        name: fullNameModel.name, 
+                        notes: [afterTag], 
+                        onModel: fullNameModel.onModel
+                    });
                 }
             } else {
-                eventNames.forEach((name) => {
+                eventEffects.forEach((effect) => {
+                    const { name, onModel } = effect;
                     var index = parsedNotes.findIndex((note) => note.name === name);
                     if (index !== -1) {
                         parsedNotes[index].notes.push(note);
                     } else {
-                        parsedNotes.push({ name: name, notes: [note] });
+                        parsedNotes.push({ name: name, notes: [note], onModel: onModel});
                     }
                 });
             }

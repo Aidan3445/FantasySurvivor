@@ -29,8 +29,7 @@ function App() {
         setLoggedIn(playerName);
         if (!playerName) {
             removeLogin();
-        } else {
-                   }
+        }
     };
 
     const api = new API();
@@ -42,6 +41,7 @@ function App() {
         socket?.emit("update", res);
         const g = new GameData(res);
         setGame(g);
+        console.log("Game updated", g);
     };
 
     useEffect(() => {
@@ -64,8 +64,7 @@ function App() {
 
         const api = new API();
         api.seasons().newRequest().then((res) => {
-            setSeason(res.seasons[0].name);
-            // res.seasons.length - 1
+            setSeason(res.seasons[res.seasons.length - 1].name);
         });
     }, []);
 
@@ -121,7 +120,6 @@ function App() {
             path: "/DataEntry",
             element: withLayout(
                 <DataEntryPage
-                    gameData={game}
                     updateGameData={updateGame}
                     loggedIn={loggedIn}
                 />
@@ -129,7 +127,9 @@ function App() {
         },
         {
             path: "/Draft",
-            element: withLayout(<DraftPage loggedIn={loggedIn} />),
+            element: withLayout(
+                <DraftPage loggedIn={loggedIn} gameData={game} updateGameData={updateGame} />
+            ),
         },
     ]);
 

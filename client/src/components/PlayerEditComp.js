@@ -51,7 +51,10 @@ function PlayerEdit(props) {
         );
     };
 
-
+    const verifyAdmin = async () => {
+        const p = await new API().playerIsAdmin(loggedIn).newRequest();        
+        return p.isAdmin && loggedIn === player.name
+    };
 
     return (
         <div

@@ -55,7 +55,7 @@ export default function HomePage(props) {
         return {
             data: [
                 player.name,
-                player.survivorList[player.survivorList.length - 1]?.name || "None",
+                player.survivors[player.survivors.length - 1]?.name || "None",
                 player.stats.points,
             ],
             color: player.color,
@@ -136,10 +136,12 @@ export default function HomePage(props) {
                 <div className="survivor-header">Survivors</div>
                 {getSurvivorScoreboard()}
             </div>
-            <div className="box pad-5 marg-5">
-                <div className="survivor-header">Eliminations</div>
-                <Scoreboard headers={eliminationHeaders} entries={eliminationEntries} />
-            </div>
+            {eliminationEntries.length > 0 && (
+                <div className="box pad-5 marg-5">
+                    <div className="survivor-header">Eliminations</div>
+                    <Scoreboard headers={eliminationHeaders} entries={eliminationEntries} />
+                </div>
+            )}
         </div>
     );
 }

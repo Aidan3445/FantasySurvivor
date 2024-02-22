@@ -5,6 +5,7 @@ import { getRunningPoints, sideBetOutcomes } from "./miscUtils";
 class GameData {
     constructor(requestData) {
         this.data = requestData;
+        console.log("raw data", requestData);
         this.processed = {
             episodes: false,
             survivors: false,
@@ -17,7 +18,7 @@ class GameData {
         if (!this.processed.episodes) {
             this.data.episodes = this.data.episodes
                 .map((episode) => Episode.fromJSON(episode))
-                .filter((episode) => episode.aired >= 0);
+                .filter((episode) => episode.aired >= 0 || episode.number === 1);
             this.processed.episodes = true;
         }
         return this.data.episodes;
@@ -40,7 +41,7 @@ class GameData {
                     survivor.stats = this.survivorStats(survivor);
                     survivor.color = this.tribes.find(
                         (tribe) => tribe.name === survivor.tribe
-                    ).color;
+                    )?.color;
                     return survivor;
                 })
                 .memberSort();
@@ -78,7 +79,7 @@ class GameData {
             if (tribeUpdate) {
                 stats.tribeList.push({
                     episode: episode.number - 1,
-                    tribe: tribeUpdate.tribe.name,
+                    tribe: tribeUpdate.tribe,
                     color: this.tribes.find((tribe) => tribe.name === tribeUpdate.tribe)
                         .color,
                 });
@@ -120,7 +121,7 @@ class GameData {
             this.data.players = this.data.players.map((player) => {
                 player.name = player?.player?.name;
                 player.draft = this.getDraft(player);
-                player.survivorList = this.getSurvivorList(player);
+                player.survivors = this.getSurvivorList(player);
 
                 player.stats = this.playerStats(player);
                 return player;
@@ -146,6 +147,9 @@ class GameData {
                 for (var j = survivor?.episode; j < player.survivors[i + 1]?.episode; j++) {
                     survivorList.push(this.survivorByName(survivor?.survivor?.name));
                 }
+            } else if (this.lastAired === -1) {
+                // add survivor first to list
+                survivorList.push(this.survivorByName(survivor?.survivor?.name));
             } else {
                 // add survivor to list until last aired episode
                 for (var j = survivor?.episode; j <= this.lastAired + 1; j++) {
@@ -159,7 +163,7 @@ class GameData {
     getDraft(player) {
         var draft = {};
         Object.keys(player.draft).forEach((key) => {
-            if (player.draft[key].name) {
+            if (player.draft[key]?.name) {
                 draft[key] = player.draft[key].name;
             } else {
                 draft[key] = player.draft[key];
@@ -169,7 +173,7 @@ class GameData {
     }
 
     playerStats(player) {
-        var survivors = player.survivorList;
+        var survivors = player.survivors;
         var stats = {
             points: 0,
             survivalPoints: 0,
@@ -287,7 +291,7 @@ class GameData {
                 !survivor.stats.eliminated &&
                 !this.players.some((player) => {
                     var currentSurvivor =
-                        player.survivorList[player.survivorList.length - 1];
+                        player.survivors[player.survivors.length - 1];
                     if (!currentSurvivor) currentSurvivor = { name: "_" };
                     return (
                         !player.stats.needsSurvivor &&
@@ -300,7 +304,6 @@ class GameData {
         return availableSurvivors.map((survivor) => ({
             value: survivor.name,
             label: survivor.name,
-            survivor: survivor,
         }));
     }
 
@@ -325,6 +328,7 @@ class GameData {
                 value: survivor.name,
                 label: survivor.name,
                 survivor: survivor,
+                onModel: "Survivors",
             })),
             // using survivors rather than tribes to get tribes currently in the game
             Tribes: this.survivors.reduce((list, surv) => {
@@ -332,6 +336,7 @@ class GameData {
                     list.push({
                         value: surv.tribe,
                         label: surv.tribe,
+                        onModel: "Tribes",
                     });
                 }
                 return list;
@@ -339,11 +344,12 @@ class GameData {
             Episodes: this.episodes
                 .map((episode) => ({
                     value: episode.number,
-                    label: `${episode.number}: ${episode.title} (${episode.aired === 1
-                        ? "Aired"
-                        : episode.aired === 0
-                            ? "Airing"
-                            : "Not Aired"
+                    label: `${episode.number}: ${episode.title} 
+                    (${episode.aired === 1
+                            ? "Aired"
+                            : episode.aired === 0
+                                ? "Airing"
+                                : "Not Aired"
                         })`,
                     episode: episode,
                 }))
@@ -357,19 +363,17 @@ class GameData {
             Survivors: this.survivors.map((survivor) => ({
                 value: survivor.name,
                 label: survivor.name,
-                survivor: survivor,
             })),
-            Tribes: this.tribes.map((tribe) => ({
+            /*Tribes: this.tribes.map((tribe) => ({
                 value: tribe.name,
                 label: tribe.name,
-            })),
+            })),*/
             AvailableSurvivors: this.availableSurvivors,
             DraftOrder: this.players
                 .sort((p1, p2) => p1.draft.order - p2.draft.order)
                 .map((player) => ({
                     value: player.name,
                     label: player.name,
-                    player: player,
                 })),
         };
     }

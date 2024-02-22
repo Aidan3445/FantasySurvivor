@@ -79,8 +79,8 @@ function sideBetOutcomes(players, episodes) {
         }
         episode.eliminated.forEach((eliminated) => {
             var losers = players.filter((player) =>
-                player.survivorList[episode.number - 1]
-                    ? player.survivorList[episode.number - 1].name === eliminated
+                player.survivors[episode.number - 1]
+                    ? player.survivors[episode.number - 1].name === eliminated
                     : false
             );
             if (losers.length > 0) {
