@@ -168,7 +168,7 @@ function Menu(props) {
             </div>
             <ul className='menu-list'>
                 <li>
-                    {loggedIn && !tinyScreen && (
+                    {loggedIn && (
                         <Link
                             className='clean-link survivor-button'
                             to={`/Player/${loggedIn}`}
