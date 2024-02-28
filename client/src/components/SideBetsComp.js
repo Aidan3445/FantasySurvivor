@@ -27,7 +27,7 @@ function SideBets(props) {
   };
 
   return (
-    <div className="box centered pad-5 marg-5 split-25-75">
+    <div className="box centered pad-5 marg-5 split-top-third">
       <div>
         <span className="survivor-header">Side Bets</span>
         <InfoButton infoContent={<InfoContent />} />

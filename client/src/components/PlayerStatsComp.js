@@ -11,7 +11,7 @@ function PlayerStats(props) {
   };
 
   return (
-    <div className="box centered pad-5 marg-5 split-25-75">
+    <div className="box centered pad-5 marg-5 split-top-third">
       <div>
         <div className="survivor-header">Stats</div>
         <div
