@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import Select from "react-select";
 import { HexColorPicker } from "react-colorful";
 import API from "../utils/api";
-import GameData from "../utils/gameData";
 import { saveLogin } from "../utils/miscUtils";
 
 function Modal(props) {

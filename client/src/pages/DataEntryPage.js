@@ -67,9 +67,13 @@ export default function DataEntryPage(props) {
                     gameData={gameData}
                     updateGameData={updateGameData} />;
             case "survivor":
-                return <NewSurvivorEntry season={season.value} />;
+                return <NewSurvivorEntry season={season.value} updateGameData={updateGameData} />;
             case "tribe":
-                return <TribeEntry season={season.value} gameData={gameData} />;
+                return <TribeEntry 
+                            season={season.value} 
+                            gameData={gameData} 
+                            updateGameData={updateGameData} 
+                        />;
             default:
                 return null;
         }

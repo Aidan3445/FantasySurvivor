@@ -40,7 +40,7 @@ export default function EpisodeSelect(props) {
 
     const handleDataEntry = (data) => {
         if (data.newEpisode) {
-            API.addEpisode(season, data.newEpisode);
+            API.addEpisode(season, data.newEpisode).then(() => updateGameData());
         }
         if (data.updatedEpisode) {
             API.updateEpisode(season, data.updatedEpisode).then(() => updateGameData());

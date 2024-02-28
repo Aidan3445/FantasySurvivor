@@ -5,11 +5,12 @@ import API from "../utils/api";
 import Select from "react-select";
 
 function DraftEntries(props) {
-    const { player, values } = props;
+    const { player, values, updateGameData } = props;
 
     DraftEntries.propTypes = {
         player: PropTypes.object.isRequired,
         values: PropTypes.object.isRequired,
+        updateGameData: PropTypes.func.isRequired,
     };
 
     const [sideBetOptions, setSideBetOptions] = useState(values.Survivors);
@@ -74,9 +75,10 @@ function DraftEntries(props) {
         };
         API.submitDraft(
             document.getElementById("season-select").innerText,
-            player.name, draft).then(() =>
-            navigate(`/Player/${player.name}`)
-        );
+            player.name, draft).then(() => {
+                updateGameData();
+                navigate(`/Player/${player.name}`);
+            });
     };
 
     const verifyPicks =

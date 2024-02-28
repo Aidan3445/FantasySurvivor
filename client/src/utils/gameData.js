@@ -5,7 +5,6 @@ import { getRunningPoints, sideBetOutcomes } from "./miscUtils";
 class GameData {
     constructor(requestData) {
         this.data = requestData;
-        console.log("raw data", requestData);
         this.processed = {
             episodes: false,
             survivors: false,

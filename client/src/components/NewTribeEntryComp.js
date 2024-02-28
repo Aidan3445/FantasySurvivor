@@ -4,11 +4,12 @@ import Select from "react-select";
 import API from "../utils/api";
 
 export default function NewTribeComp(props) {
-    var { season, gameData } = props;
+    var { season, gameData, updateGameData } = props;
 
     NewTribeComp.propTypes = {
         season: PropTypes.string.isRequired,
         gameData: PropTypes.object.isRequired,
+        updateGameData: PropTypes.func.isRequired,
     };
 
     var [name, setName] = useState("");
@@ -63,8 +64,10 @@ export default function NewTribeComp(props) {
                         API.addTribe(
                             season,
                             { name, color },
-                            selectedSurvivors.map((s) => s.value));
-                        clearForm();
+                            selectedSurvivors.map((s) => s.value)).then(() => {
+                                updateGameData();
+                                clearForm();
+                            });
                     }}
                 >
                     Add Tribe

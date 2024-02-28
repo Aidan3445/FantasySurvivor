@@ -41,7 +41,6 @@ function App() {
         socket?.emit("update", res);
         const g = new GameData(res);
         setGame(g);
-        console.log("Game updated", g);
     };
 
     useEffect(() => {

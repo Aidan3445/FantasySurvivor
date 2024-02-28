@@ -3,10 +3,11 @@ import PropTypes from "prop-types";
 import API from "../utils/api";
 
 export default function NewSurvivorEntry(props) {
-    var { season } = props;
+    var { season, updateGameData } = props;
 
     NewSurvivorEntry.propTypes = {
         season: PropTypes.string.isRequired,
+        updateGameData: PropTypes.func.isRequired,
     };
 
     var [name, setName] = useState("");
@@ -100,9 +101,11 @@ export default function NewSurvivorEntry(props) {
                                 photo,
                                 interview,
                             }
-                        ).then(clearForm);
-                    }}
-                >
+                        ).then(() => {
+                            updateGameData();
+                            clearForm;
+                        });
+                    }}>
                     Add Survivor
                 </button>
             )}
