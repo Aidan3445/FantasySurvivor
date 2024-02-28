@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import GameData from "../utils/gameData";
-
 import PlayerStats from "../components/PlayerStatsComp";
 import SideBets from "../components/SideBetsComp";
 import Scoreboard from "../components/ScoreboardComp";
@@ -94,7 +93,7 @@ export default function PlayerPage(props) {
     episodeEntries = episodeEntries.filter((entry) => entry);
     episodeEntries = episodeEntries.concat(
         !mediumScreen
-            ? new Array(16 - episodeEntries.length).fill({
+            ? new Array(13 - episodeEntries.length).fill({
                 data: ["", null, null, null, null],
                 color: "grey",
             })

@@ -46,7 +46,7 @@ function SideBets(props) {
       <div className="spread-down">
         <h4
           className="box tooltip marg-5 min-height"
-          data-tooltip={outcomes.firstBoot
+          data-tooltip={outcomes.firstBoot.length && outcomes.firstBoot
             .reduce((acc, curr) => acc.concat(curr.names), [])
             .join(", ")}
           style={getColor(outcomes.firstBoot, bets.firstBoot)}
@@ -55,7 +55,7 @@ function SideBets(props) {
         </h4>
         <h4
           className="box tooltip marg-5 min-height"
-          data-tooltip={outcomes.firstJurror
+          data-tooltip={outcomes.firstJurror.length && outcomes.firstJurror
             .reduce((acc, curr) => acc.concat(curr.names), [])
             .join(", ")}
           style={getColor(outcomes.firstJurror, bets.firstJurror)}
@@ -64,7 +64,7 @@ function SideBets(props) {
         </h4>
         <h4
           className="box tooltip marg-5 min-height"
-          data-tooltip={outcomes.mostAdvantages
+          data-tooltip={outcomes.mostAdvantages.length && outcomes.mostAdvantages
             .reduce((acc, curr) => acc.concat(curr.names), [])
             .join(", ")}
           style={getColor(outcomes.mostAdvantages, bets.mostAdvantages)}
@@ -73,7 +73,7 @@ function SideBets(props) {
         </h4>
         <h4
           className="box tooltip marg-5 min-height"
-          data-tooltip={outcomes.winner
+          data-tooltip={outcomes.winner.length && outcomes.winner
             .reduce((acc, curr) => acc.concat(curr.names), [])
             .join(", ")}
           style={getColor(outcomes.winner, bets.winner, outcomes.eliminated)}
@@ -94,7 +94,7 @@ function SideBets(props) {
         </h4>
         <h4
           className="box tooltip marg-5 min-height"
-          data-tooltip={outcomes.firstLoser
+          data-tooltip={outcomes.firstLoser.length && outcomes.firstLoser
             .reduce((acc, curr) => acc.concat(curr.names), [])
             .join(", ")}
           style={getColor(outcomes.firstLoser, bets.firstLoser)}
