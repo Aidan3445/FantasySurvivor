@@ -40,12 +40,9 @@ function App() {
         const res = await api.get(season).newRequest();
         socket?.emit("update", res);
         const g = new GameData(res);
+        console.log(g);
         setGame(g);
     };
-
-    useEffect(() => {
-        updateGame();
-    }, [season]);
 
     socket?.on("update", (data) => {
         setGame(new GameData(data));
@@ -75,7 +72,7 @@ function App() {
         updateGame();
 
         return () => socket.disconnect();
-    }, [socket]);
+    }, [socket, season]);
 
     const withLayout = (element) => {
         return (

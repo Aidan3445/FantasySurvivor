@@ -52,8 +52,8 @@ export default class Episode {
         episode.badAdvPlays = Episode.mapNames(json.badAdvPlays);
         episode.advsEliminated = Episode.mapNames(json.advsEliminated);
         episode.spokeEpTitle = Episode.mapNames(json.spokeEpTitle);
-        episode.tribe1sts = Episode.mapNames(json.tribe1sts);
-        episode.tribe2nds = Episode.mapNames(json.tribe2nds);
+        episode.tribe1sts = json.tribe1sts;
+        episode.tribe2nds = json.tribe2nds;
         episode.indivWins = Episode.mapNames(json.indivWins);
         episode.indivRewards = Episode.mapNames(json.indivRewards);
         episode.blindsides = Episode.mapNames(json.blindsides);
@@ -71,7 +71,7 @@ export default class Episode {
         });
         episode.notes = json.notes.map((note) => {
             return {
-                name: note?.name?.name,
+                name: note.name?.name || note.name, // needed bc json can be raw or parsed
                 notes: note.notes,
                 onModel: note.onModel
             }
@@ -145,7 +145,7 @@ export default class Episode {
     // note that tribe includes team challenges post merge whiere
     // 'name' is a survivor's name, not a tribe name
     addTribe1st(name, onModel, wasReward) {
-        this.tribe1sts.push(name);
+        this.tribe1sts.push({ name: { name: name }, onModel: onModel });
         this.addNote(
             name,
             `${name} won a challenge! ${wasReward ? "(reward)" : "(immunity)"}`,
@@ -158,10 +158,10 @@ export default class Episode {
     // note that tribe includes team challenges post merge whiere
     // 'name' is a survivor's name, not a tribe name
     addTribe2nd(name, onModel, wasReward) {
-        this.tribe2nds.push(name);
+        this.tribe2nds.push({ name: { name: name }, onModel: onModel });
         this.addNote(
             name,
-            `${name} got seccond in a challenge! ${wasReward ? "(reward)" : "(immunity)" }`,
+            `${name} got seccond in a challenge! ${wasReward ? "(reward)" : "(immunity)"}`,
             onModel
         );
         return this;
@@ -333,8 +333,8 @@ export default class Episode {
                     parsedNotes[index].notes.push(afterTag);
                 } else {
                     parsedNotes.push({
-                        name: fullNameModel.name, 
-                        notes: [afterTag], 
+                        name: fullNameModel.name,
+                        notes: [afterTag],
                         onModel: fullNameModel.onModel
                     });
                 }
@@ -345,7 +345,7 @@ export default class Episode {
                     if (index !== -1) {
                         parsedNotes[index].notes.push(note);
                     } else {
-                        parsedNotes.push({ name: name, notes: [note], onModel: onModel});
+                        parsedNotes.push({ name: name, notes: [note], onModel: onModel });
                     }
                 });
             }
@@ -424,13 +424,13 @@ export default class Episode {
         );
 
         [pointTotals, names] = this.calculatePoints(
-            this.tribe1sts,
+            this.tribe1sts.map((entry) => entry.name.name),
             points.tribe1stMultiplier,
             pointTotals,
             names
         );
         [pointTotals, names] = this.calculatePoints(
-            this.tribe2nds,
+            this.tribe2nds.map((entry) => entry.name.name),
             points.tribe2ndMultiplier,
             pointTotals,
             names
@@ -519,15 +519,17 @@ export default class Episode {
         var { name, stats } = survivor;
         var tribe = this.getTribeHelper(stats);
         return [
-            this.advsFound.filter((val) => val === name).length,
-            this.advPlaysSelf.filter((val) => val === name).length,
-            this.advPlaysOther.filter((val) => val === name).length,
-            this.badAdvPlays.filter((val) => val === name).length,
-            this.advsEliminated.filter((val) => val === name).length,
-            this.tribe1sts.filter((val) => val === tribe || val === name).length,
-            this.tribe2nds.filter((val) => val === tribe || val === name).length,
-            this.indivWins.filter((val) => val === name).length,
-            this.indivRewards.filter((val) => val === name).length,
+            this.advsFound.filter((entry) => entry === name).length,
+            this.advPlaysSelf.filter((entry) => entry === name).length,
+            this.advPlaysOther.filter((entry) => entry === name).length,
+            this.badAdvPlays.filter((entry) => entry === name).length,
+            this.advsEliminated.filter((entry) => entry === name).length,
+            this.tribe1sts.filter((entry) =>
+                entry.name.name === tribe || entry.name.name === name).length,
+            this.tribe2nds.filter((entry) =>
+                entry.name.name === tribe || entry.name.name === name).length,
+            this.indivWins.filter((entry) => entry === name).length,
+            this.indivRewards.filter((entry) => entry === name).length,
             this.spokeEpTitle.includes(name) ? "Yes" : "No",
             this.blindsides.includes(name) ? "Yes" : "No",
             this.finalThree.includes(name) ? "Yes" : "No",

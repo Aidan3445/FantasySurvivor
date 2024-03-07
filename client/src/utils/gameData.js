@@ -93,9 +93,9 @@ class GameData {
             var indivWins = episode.indivWins.filter((val) => val === name);
             stats.indivWins += indivWins.length;
             stats.wins += indivWins.length;
-
+            
             var tribeWins = episode.tribe1sts.filter(
-                (val) => val === name || val === tribe
+                (entry) => entry.name === name || entry.name === tribe
             );
             stats.tribeWins += tribeWins.length;
             stats.wins += tribeWins.length;

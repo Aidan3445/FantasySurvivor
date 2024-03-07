@@ -128,7 +128,7 @@ const depopulateEpisode = async (episode, seasonID) => {
                 } else {
                     throw new Error(`Model not found ${placement.onModel}`);
                 }
-                const s = await Model.findOne({ name: placement.name, season: seasonID });
+                const s = await Model.findOne({ name: placement.name.name, season: seasonID });
                 episodeModel[key].push({ name: s._id, onModel: placement.onModel });
             }
         } else {
