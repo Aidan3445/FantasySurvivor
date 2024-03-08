@@ -528,7 +528,6 @@ app.post("/api/player/login/rememberMe", async (req, res) => {
             res.json({ player: player, login: true });
             return;
         }
-        res.status(400).json({ error: "Login information not found." });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Server error" });
