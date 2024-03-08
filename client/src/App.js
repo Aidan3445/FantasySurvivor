@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import io from "socket.io-client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import API from "./utils/api.js";
@@ -23,8 +23,6 @@ function App() {
     const [loggedIn, setLoggedIn] = useState("");
     const [game, setGame] = useState(null);
     const [season, setSeason] = useState("");
-    const [socket, setSocket] = useState(null);
-
     const handleLogin = (playerName) => {
         setLoggedIn(playerName);
         if (!playerName) {
@@ -32,25 +30,26 @@ function App() {
         }
     };
 
+    const socket = useRef(io.connect(root));
+
+
     const api = new API();
 
     const updateGame = async () => {
         if (!season) return;
 
         const res = await api.get(season).newRequest();
-        socket?.emit("update", res);
+        socket.current.emit("update", res);
         const g = new GameData(res);
         console.log(g);
         setGame(g);
     };
 
-    socket?.on("update", (data) => {
+    socket.current.on("update", (data) => {
         setGame(new GameData(data));
     });
 
     useEffect(() => {
-        setSocket(io.connect(root));
-
         API.autoLogin()
             .then((res) => {
                 if (res?.data?.login) {
@@ -65,14 +64,18 @@ function App() {
     }, []);
 
     useEffect(() => {
-        if (!socket) {
+        if (!socket.current) {
             return;
         }
 
         updateGame();
 
-        return () => socket.disconnect();
-    }, [socket, season]);
+        return () => socket.current.disconnect();
+    }, [socket]);
+
+    useEffect(() => {
+        updateGame();
+    }, [season]);
 
     const withLayout = (element) => {
         return (
