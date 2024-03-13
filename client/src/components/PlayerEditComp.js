@@ -52,7 +52,7 @@ function PlayerEdit(props) {
     };
 
     const verifyAdmin = async () => {
-        const p = await new API().playerIsAdmin(loggedIn).newRequest();        
+        const p = await new API().playerIsAdmin(loggedIn).newRequest();
         return p.isAdmin && loggedIn === player.name
     };
 
@@ -61,7 +61,6 @@ function PlayerEdit(props) {
             className="box centered pad-5 marg-5"
             style={{
                 "--fillColor": player.color,
-                color: isLightColor(player.color) ? "black" : "white",
             }}
         >
             <div
@@ -70,7 +69,7 @@ function PlayerEdit(props) {
                     if (verifyAdmin())
                         navigate("/DataEntry");
                 }}
-                style={{ marginBottom: "15px" }}
+                style={{ marginBottom: "15px", color: isLightColor(player.color) ? "black" : "white" }}
             >
                 {player.name}
             </div>

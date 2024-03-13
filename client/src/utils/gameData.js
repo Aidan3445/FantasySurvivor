@@ -15,9 +15,13 @@ class GameData {
     // process episode data
     get episodes() {
         if (!this.processed.episodes) {
+            var nextEp = 1;
             this.data.episodes = this.data.episodes
-                .map((episode) => Episode.fromJSON(episode))
-                .filter((episode) => episode.aired >= 0 || episode.number === 1);
+                .map((episode) => {
+                    var ep = Episode.fromJSON(episode);
+                    if (ep.aired >= 0) nextEp = ep.number + 1;
+                    return ep;
+                }).slice(0, nextEp);
             this.processed.episodes = true;
         }
         return this.data.episodes;
@@ -93,7 +97,7 @@ class GameData {
             var indivWins = episode.indivWins.filter((val) => val === name);
             stats.indivWins += indivWins.length;
             stats.wins += indivWins.length;
-            
+
             var tribeWins = episode.tribe1sts.filter(
                 (entry) => entry.name === name || entry.name === tribe
             );
@@ -150,8 +154,8 @@ class GameData {
                 // add survivor first to list
                 survivorList.push(this.survivorByName(survivor?.survivor?.name));
             } else {
-                // add survivor to list until last aired episode
-                for (var j = survivor?.episode; j <= this.lastAired + 1; j++) {
+                // add survivor to list until last episode
+                for (var j = survivor?.episode; j <= this.episodes.length; j++) {
                     survivorList.push(this.survivorByName(survivor?.survivor?.name));
                 }
             }

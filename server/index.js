@@ -414,7 +414,8 @@ app.post("/api/:seasonName/player/changeSurvivor", async (req, res) => {
         // get the playerID
         const player = await Player.findOne({ name: name });
         // get the player from the season
-        let playerSeason = await queryPlayersSeason({ season: season._id, player: player._id });
+        let playerSeasonQuery = await queryPlayersSeason({ season: season._id, player: player._id })
+        let playerSeason = playerSeasonQuery[0];
 
         if (!playerSeason) {
             // return error if player not found
@@ -436,18 +437,22 @@ app.post("/api/:seasonName/player/changeSurvivor", async (req, res) => {
         }
 
         // check if this is a new change an updated change
-        const oldChange = player.survivors.findIndex((surv) => surv.episode === change.episode);
+        const oldChange = playerSeason.survivors.findIndex((surv) => surv.episode === change.episode);
+
+        const playerSeasonUpdate = await PlayersSeason.findOne({ season: season._id, player: player._id });
+
 
         if (oldChange > -1) {
             // if the change already exists, update the survivorID
-            playerSeason.survivors[oldChange].survivor = survivor._id;
+            playerSeasonUpdate.survivors[oldChange].survivor = survivor._id;
         } else {
             // if the change does not exist, add the change to the player's survivor list
-            playerSeason.survivors.push({ survivor: survivor._id, episode: change.episode });
+            playerSeasonUpdate.survivors.push({ survivor: survivor._id, episode: change.episode });
         }
 
+
         // update the player's survivor list
-        const updatedPlayer = await player.save();
+        const updatedPlayer = await playerSeasonUpdate.save();
         res.json(updatedPlayer);
     } catch (err) {
         console.error(err);

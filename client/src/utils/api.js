@@ -134,9 +134,9 @@ class API {
         }
         seasonName = encodeURIComponent(seasonName);
         return axios
-            .post(`${apiRoot}/${seasonName}/player/changesurvivor/`, {
+            .post(`${apiRoot}/${seasonName}/player/changeSurvivor/`, {
                 name,
-                update: change,
+                change,
             })
             .catch((err) => console.error(err));
     }

@@ -148,13 +148,6 @@ function SurvivorSelectContent(props) {
     ]);
 
     useEffect(() => {
-        if (
-            gameData.episodes.length == 0 ||
-            gameData.episodes[gameData.episodes.length - 1].aired != -1
-        ) {
-            setCanChange(false);
-        }
-
         if (gameData.availableSurvivors.length === 0) {
             warningText[0] = "No available survivors.";
             setWarningText(warningText);
@@ -166,15 +159,25 @@ function SurvivorSelectContent(props) {
 
     const updateSurvivor = () => {
         if (!survivor || !canChange) return;
-        API.updateSurvivorPick(player.name, survivor.value).then(() =>
-            updateGameData()
-        );
+        const change = {
+            survivor: survivor.value,
+            episode: gameData.lastAired + 2,
+        };
+
+        console.log("change", change);
+
+        API.updateSurvivorPick(
+            document.getElementById("season-select").innerText,
+            player.name,
+            change).then(() =>
+                updateGameData()
+            );
         setModalOpen(false);
     };
 
     return (
         <div className="centered">
-            <div className="survivor-header">Change Survivor</div>
+            <div className="survivor-header" style={{ color: "black" }}>Change Survivor</div>
             <br />
             {canChange ? (
                 <div className="centered">
