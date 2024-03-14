@@ -153,6 +153,13 @@ class GameData {
             } else if (this.lastAired === -1) {
                 // add survivor first to list
                 survivorList.push(this.survivorByName(survivor?.survivor?.name));
+            } else if (this.survivorByName(survivor?.survivor?.name)?.stats.eliminated) {
+                // add survivor to list until eliminated episode
+                for (var j = survivor?.episode;
+                    j <= this.survivorByName(survivor?.survivor?.name)?.stats.eliminated;
+                    j++) {
+                    survivorList.push(this.survivorByName(survivor?.survivor?.name));
+                }
             } else {
                 // add survivor to list until last episode
                 for (var j = survivor?.episode; j <= this.episodes.length; j++) {

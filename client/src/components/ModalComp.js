@@ -164,8 +164,6 @@ function SurvivorSelectContent(props) {
             episode: gameData.lastAired + 2,
         };
 
-        console.log("change", change);
-
         API.updateSurvivorPick(
             document.getElementById("season-select").innerText,
             player.name,
