@@ -16,7 +16,7 @@ export default function EpisodeSelect(props) {
     };
 
     var [selectedEpisode, selectEpisode] = useState(null);
-    var [values, setValues] = useState({Episodes: []});
+    var [values, setValues] = useState({ Episodes: [] });
 
     useEffect(() => {
         if (!gameData) return;
@@ -27,7 +27,7 @@ export default function EpisodeSelect(props) {
         );
 
         setValues(v);
-        
+
         if (selectedEpisode) {
             selectEpisode(
                 v.Episodes.find((ep) => ep.value === selectedEpisode.value)
@@ -38,16 +38,17 @@ export default function EpisodeSelect(props) {
 
     }, [gameData]);
 
-    const handleDataEntry = (data) => {
+    const handleDataEntry = async (data) => {
         if (data.newEpisode) {
-            API.addEpisode(season, data.newEpisode).then(() => updateGameData());
-        }
-        if (data.updatedEpisode) {
-            API.updateEpisode(season, data.updatedEpisode).then(() => updateGameData());
+            await API.addEpisode(season, data.newEpisode);
+        } else if (data.updatedEpisode) {
+            await API.updateEpisode(season, data.updatedEpisode);
             if (data.newTribe) {
-                API.addTribe(season, data.newTribe).then(() => updateGameData());
+                await API.addTribe(season, data.newTribe);
             }
         }
+
+        updateGameData();
     };
 
     return (

@@ -13,6 +13,7 @@ import DraftPage from "./pages/DraftPage.js";
 import LoadingPage from "./pages/LoadingPage.js";
 import Navbar from "./components/NavBarComp.js";
 import { WindowContextProvider } from "./components/WindowContext.js";
+import { fetchSeasons } from "./utils/miscUtils.js";
 
 const root =
     process.env.NODE_ENV === "production"
@@ -21,8 +22,8 @@ const root =
 
 function App() {
     const [loggedIn, setLoggedIn] = useState("");
+    const [seasons, setSeasons] = useState({});
     const [game, setGame] = useState(null);
-    const [season, setSeason] = useState("");
     const handleLogin = (playerName) => {
         setLoggedIn(playerName);
         if (!playerName) {
@@ -32,24 +33,39 @@ function App() {
 
     const socket = useRef(io.connect(root));
 
-
     const api = new API();
 
-    const updateGame = async () => {
-        if (!season) return;
-
+    const getGame = async (season) => {
         const res = await api.get(season).newRequest();
-        socket.current.emit("update", res);
         const g = new GameData(res);
         console.log(g);
         setGame(g);
+
+        return g;
     };
 
-    socket.current.on("update", (data) => {
-        setGame(new GameData(data));
-    });
+
+    const updateGame = async (passedSeason) => {
+        const season = passedSeason ||
+            document.getElementById("season-select")?.innerText ||
+            seasons.defaultSeason?.value;
+        if (!season) {
+            return;
+        }
+
+        getGame(season);
+        socket.current.emit("update", season);
+    };
 
     useEffect(() => {
+        const getSeasons = async () => {
+            const s = await fetchSeasons(setSeasons);
+            setSeasons(s);
+            getGame(s.defaultSeason?.value);
+        };
+
+        getSeasons();
+
         API.autoLogin()
             .then((res) => {
                 if (res?.data?.login) {
@@ -57,10 +73,6 @@ function App() {
                 }
             });
 
-        const api = new API();
-        api.seasons().newRequest().then((res) => {
-            setSeason(res.seasons[res.seasons.length - 1].name);
-        });
     }, []);
 
     useEffect(() => {
@@ -68,14 +80,16 @@ function App() {
             return;
         }
 
-        updateGame();
+        socket.current.on("update", (season) => {
+            if (season === document.getElementById("season-select")?.innerText) {
+                getGame(season);
+            }
+        });
+
 
         return () => socket.current.disconnect();
     }, [socket]);
 
-    useEffect(() => {
-        updateGame();
-    }, [season]);
 
     const withLayout = (element) => {
         return (
@@ -83,8 +97,9 @@ function App() {
                 <Navbar
                     loggedIn={loggedIn}
                     setLoggedIn={handleLogin}
-                    setSeason={setSeason}
-                    gameData={game} />
+                    seasons={seasons}
+                    gameData={game}
+                    getGame={getGame} />
                 {element}
             </div>
         );

@@ -1,45 +1,33 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Select from 'react-select';
 import GameData from '../utils/gameData';
 import Modal, { LoginContent } from './ModalComp.js';
-import WindowContext from './WindowContext.js';
-import { fetchSeasons } from '../utils/miscUtils.js';
 
 function Navbar(props) {
-    const { loggedIn, setLoggedIn, setSeason, gameData } = props;
+    const { loggedIn, setLoggedIn, seasons, gameData, getGame } = props;
 
     Navbar.propTypes = {
         loggedIn: PropTypes.string,
         setLoggedIn: PropTypes.func.isRequired,
-        setSeason: PropTypes.func.isRequired,
+        seasons: PropTypes.object.isRequired,
         gameData: PropTypes.instanceOf(GameData).isRequired,
+        getGame: PropTypes.func.isRequired,
     };
 
     const [isNavbarVisible, setNavbarVisible] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [scrollDistance, setScrollDistance] = useState(0);
-
     const [menuOptions, setOptions] = useState(gameData.menuValues);
-    const [seasons, setSeasons] = useState({ seasons: [], defaultSeason: '' });
 
     useEffect(() => {
         setOptions(gameData.menuValues);
     }, [gameData]);
 
     useEffect(() => {
-        if (loggedIn) {
-            setSeason(fetchSeasons(loggedIn, setSeasons).defaultSeason);
-            
-        }
-        else setSeasons({ seasons: [], defaultSeason: '' });
-    }, [loggedIn]);
-
-    const navigate = useNavigate();
-
-    useEffect(() => {
+        // enable hide on scroll
         let previousScrollPos = window.scrollY;
 
         const handleScroll = () => {
@@ -75,6 +63,8 @@ function Navbar(props) {
         };
     }, [menuOpen]);
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         setMenuOpen(false);
     }, [useLocation()]);
@@ -101,9 +91,9 @@ function Navbar(props) {
                         logInOut={logInOut}
                         isOpen={menuOpen}
                         setIsOpen={setMenuOpen}
-                        setSeason={setSeason}
                         options={menuOptions}
                         seasons={seasons}
+                        getGame={getGame}
                     />
                 </div>
             </nav>
@@ -119,19 +109,17 @@ function Navbar(props) {
 }
 
 function Menu(props) {
-    const { loggedIn, logInOut, isOpen, setIsOpen, setSeason, options, seasons } = props;
+    const { loggedIn, logInOut, isOpen, setIsOpen, options, seasons, getGame } = props;
 
     Menu.propTypes = {
         loggedIn: PropTypes.string,
         logInOut: PropTypes.func.isRequired,
         isOpen: PropTypes.bool.isRequired,
         setIsOpen: PropTypes.func.isRequired,
-        setSeason: PropTypes.func.isRequired,
         options: PropTypes.object.isRequired,
         seasons: PropTypes.object.isRequired,
+        getGame: PropTypes.func.isRequired,
     };
-
-    const { tinyScreen } = useContext(WindowContext);
 
     const [selectedSeason, setSelectedSeason] = useState({});
     const [survivorDirect, setSurvivorDirect] = useState('');
@@ -141,6 +129,14 @@ function Menu(props) {
     useEffect(() => {
         setSelectedSeason(seasons.defaultSeason);
     }, [seasons]);
+
+    useEffect(() => {
+        if (!selectedSeason?.value) {
+            return;
+        }
+        getGame(selectedSeason.value);
+    }, [selectedSeason]);
+
 
     const handleEditToggle = () => {
         setEditable(!editable);
@@ -188,7 +184,6 @@ function Menu(props) {
                         placeholder='Seasons'
                         options={seasons.seasons}
                         onChange={value => {
-                            setSeason(value.value);
                             setSelectedSeason(value);
                             goTo("/");
                         }}

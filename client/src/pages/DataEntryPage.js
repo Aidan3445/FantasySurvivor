@@ -38,7 +38,7 @@ export default function DataEntryPage(props) {
                 return;
             }
 
-            const s = await fetchSeasons(null, setSeasons);
+            const s = await fetchSeasons(setSeasons);
             setSeason(s.defaultSeason);
         }
         verifyAndSelect();
@@ -46,11 +46,16 @@ export default function DataEntryPage(props) {
 
     useEffect(() => {
         if (season.value) {
-            new API().get(season.value).newRequest().then((res) => {
-                setGameData(new GameData(res));
-            });
+            updateData();
         }
     }, [season]);
+
+    const updateData = async () => {
+        const g = await new API().get(season.value).newRequest();
+        setGameData(new GameData(g));
+
+        updateGameData(season.value);
+    }
 
     const dataTypes = [
         { value: "episode", label: "Episode" },
@@ -65,15 +70,15 @@ export default function DataEntryPage(props) {
                 return <EpisodeSelect
                     season={season.value}
                     gameData={gameData}
-                    updateGameData={updateGameData} />;
+                    updateGameData={updateData} />;
             case "survivor":
                 return <NewSurvivorEntry season={season.value} updateGameData={updateGameData} />;
             case "tribe":
-                return <TribeEntry 
-                            season={season.value} 
-                            gameData={gameData} 
-                            updateGameData={updateGameData} 
-                        />;
+                return <TribeEntry
+                    season={season.value}
+                    gameData={gameData}
+                    updateGameData={updateData}
+                />;
             default:
                 return null;
         }

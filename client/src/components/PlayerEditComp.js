@@ -23,9 +23,10 @@ function PlayerEdit(props) {
 
     var [modalOpen, setModalOpen] = useState(false);
     var [modalContent, setModalContent] = useState(<div />);
+    var [admin, setAdmin] = useState(false);
 
     useEffect(() => {
-        if (player.stats && player.stats.needsSurvivor) {
+        if (player.stats && player.stats.needsSurvivor && gameData.availableSurvivors.length > 0) {
             openModal(
                 <SurvivorSelectContent player={player} setModalOpen={setModalOpen} />
             );
@@ -51,10 +52,16 @@ function PlayerEdit(props) {
         );
     };
 
-    const verifyAdmin = async () => {
-        const p = await new API().playerIsAdmin(loggedIn).newRequest();
-        return p.isAdmin && loggedIn === player.name
-    };
+    useEffect(() => {
+        if (!loggedIn) {
+            setAdmin(false);
+            return;
+        }
+        new API().playerIsAdmin(loggedIn).newRequest().then((p) => {
+            setAdmin(p.playerIsAdmin.isAdmin && loggedIn === player.name)
+        });
+    }, [loggedIn]);
+
 
     return (
         <div
@@ -65,10 +72,6 @@ function PlayerEdit(props) {
         >
             <div
                 className="survivor-header"
-                onClick={() => {
-                    if (verifyAdmin())
-                        navigate("/DataEntry");
-                }}
                 style={{ marginBottom: "15px", color: isLightColor(player.color) ? "black" : "white" }}
             >
                 {player.name}
@@ -118,6 +121,16 @@ function PlayerEdit(props) {
                     >
                         Password
                     </button>
+                    {admin && (
+                        <button
+                            className="survivor-button width-100"
+                            onClick={() => {
+                                navigate("/DataEntry");
+                            }}
+                        >
+                            Admin
+                        </button>
+                    )}
                 </div>
             ) : (
                 !loggedIn && (

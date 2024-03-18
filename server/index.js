@@ -16,8 +16,8 @@ const io = require("socket.io")(server, {
     },
 });
 io.on("connection", (socket) => {
-    socket.on("update", (data) => {
-        socket.broadcast.emit("update", data);
+    socket.on("update", (season) => {
+        socket.broadcast.emit("update", season);
     });
 });
 
@@ -76,7 +76,7 @@ const queryEpisode = async (query) => {
                     { path: "tribe", select: "name -_id" },
                     { path: "survivors", select: "name -_id" }]
             })
-            .populate("notes.name", "name -_id")
+            .populate("notes.name", "name")
             .exec();
     } catch (err) {
         throw err;

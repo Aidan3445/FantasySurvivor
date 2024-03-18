@@ -125,7 +125,6 @@ class GameData {
                 player.name = player?.player?.name;
                 player.draft = this.getDraft(player);
                 player.survivors = this.getSurvivorList(player);
-
                 player.stats = this.playerStats(player);
                 return player;
             });
@@ -203,8 +202,8 @@ class GameData {
         var survivalPoints = 0;
         for (var i = 0; i <= this.lastAired; i++) {
             var survivor = survivors[i];
-            if (survivor?.stats.eliminated && survivor.stats.eliminated < i + 1) {
-                if (!survivor && episode && episode.aired === 1) {
+            if (!survivor || (survivor?.stats.eliminated && survivor.stats.eliminated < i + 1)) {
+                if (i === this.lastAired && !survivor?.stats.eliminated) {
                     stats.needsSurvivor = true;
                 }
                 continue;
@@ -374,10 +373,6 @@ class GameData {
                 value: survivor.name,
                 label: survivor.name,
             })),
-            /*Tribes: this.tribes.map((tribe) => ({
-                value: tribe.name,
-                label: tribe.name,
-            })),*/
             AvailableSurvivors: this.availableSurvivors,
             DraftOrder: this.players
                 .sort((p1, p2) => p1.draft.order - p2.draft.order)

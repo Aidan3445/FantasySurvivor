@@ -177,21 +177,13 @@ function removeLogin() {
     localStorage.removeItem("rememberMeToken");
 }
 
-const fetchSeasons = async (loggedIn, setSeasons) => {
-    var seasons;
-    if (loggedIn) {
-        seasons = await new API().playersSeasons(loggedIn).newRequest().then((res) => {
-            return res.playersSeasons.map((season) => {
-                return { value: season, label: season };
-            });
+const fetchSeasons = async (setSeasons) => {
+    var seasons = await new API().seasons().newRequest().then((res) => {
+        return res.seasons.map((season) => {
+            return { value: season.name, label: season.name };
         });
-    } else {
-        seasons = await new API().seasons().newRequest().then((res) => {
-            return res.seasons.map((season) => {
-                return { value: season.name, label: season.name };
-            });
-        });
-    }
+    });
+
     const defaultSeason = seasons[seasons.length - 1];
     setSeasons({ seasons, defaultSeason });
     return { seasons, defaultSeason };
