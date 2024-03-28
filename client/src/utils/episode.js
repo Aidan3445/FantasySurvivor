@@ -99,38 +99,30 @@ export default class Episode {
     // add advantage found
     addAdvFound(survivorName, advName) {
         this.advsFound.push(survivorName);
-        this.addNote(survivorName, `Found ${advName}!`, "Survivors");
         return this;
     }
 
     // add advantage played on self
     addAdvPlaySelf(survivorName, advName) {
         this.advPlaysSelf.push(survivorName);
-        this.addNote(survivorName, `Played ${advName} on themselves!`, "Survivors");
         return this;
     }
 
     // add advantage played for someone else
     addAdvPlayOther(survivorName, advName, played) {
         this.advPlaysOther.push(survivorName);
-        this.addNote(survivorName, `Played ${advName} on ${played}!`);
-        played.forEach((name) => {
-            this.addNote(name, `${survivorName} played ${advName} on them!`, "Survivors");
-        });
         return this;
     }
 
     // add advantage played incorrectly
     addBadAdvPlay(survivorName, advName) {
         this.badAdvPlays.push(survivorName);
-        this.addNote(survivorName, `Played ${advName} incorrectly!`, "Survivors");
         return this;
     }
 
     // add advantage held when eliminated
     addAdvEliminated(survivorName, advName) {
         this.advsEliminated.push(survivorName);
-        this.addNote(survivorName, `Eliminated with ${advName}!`, "Survivors");
         return this;
     }
 
@@ -372,15 +364,16 @@ export default class Episode {
     }
 
     // calculate points for one name array
-    calculatePoints(array, value, pointTotals, names, divide = false) {
+    calculatePoints(array, value, pointTotals, names) {
         array.forEach((name) => {
             if (!names.includes(name)) {
                 names.push(name);
                 pointTotals.push({ name: name, points: value });
             } else {
                 var index = names.indexOf(name);
-                pointTotals[index].points += divide ? value / array.length : value;
+                pointTotals[index].points += value;
             }
+
         });
 
         return [pointTotals, names];
@@ -458,7 +451,6 @@ export default class Episode {
             points.blindsideMultiplier,
             pointTotals,
             names,
-            true // blindside points are split between all blindsiders
         );
         [pointTotals, names] = this.calculatePoints(
             this.finalThree,
