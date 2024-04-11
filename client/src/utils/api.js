@@ -224,14 +224,15 @@ class API {
     }
 
     // add a new tribe
-    static async addTribe(seasonName, newTribe, survivors) {
+    static async addTribe(seasonName, newTribe, survivors, episodeNumber) {
+        console.log("api", newTribe, survivors, seasonName, episodeNumber);
         if (!seasonName) {
             console.error("No season tag provided");
             return;
         }
         seasonName = encodeURIComponent(seasonName);
         return axios
-            .post(`${apiRoot}/${seasonName}/tribe/new`, { newTribe, survivors })
+            .post(`${apiRoot}/${seasonName}/tribe/new`, { newTribe, survivors, episodeNumber })
             .catch((err) => console.error(err));
     }
 

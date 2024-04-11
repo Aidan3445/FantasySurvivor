@@ -78,14 +78,18 @@ function EpisodeUpdateEntryComp(props) {
         var newTribe =
             selectedEvent.value === "merged"
                 ? {
-                    tribeName: addlField1,
-                    tribeColor: newTribeColor,
+                    name: addlField1,
+                    color: newTribeColor,
                 }
                 : null;
+
+        console.log("displayEpisode", displayEpisode);
 
         dataEntry({
             updatedEpisode: displayEpisode,
             newTribe: newTribe,
+            survivors: getOptions(values, episode.number, false).tribeSwap.map((s) => s.value),
+            episodeNumber: episode.number,
         });
     };
 

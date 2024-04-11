@@ -39,12 +39,13 @@ export default function EpisodeSelect(props) {
     }, [gameData]);
 
     const handleDataEntry = async (data) => {
+        console.log("data", data);
         if (data.newEpisode) {
             await API.addEpisode(season, data.newEpisode);
         } else if (data.updatedEpisode) {
             await API.updateEpisode(season, data.updatedEpisode);
             if (data.newTribe) {
-                await API.addTribe(season, data.newTribe);
+                await API.addTribe(season, data.newTribe, data.survivors, data.episodeNumber);
             }
         }
 

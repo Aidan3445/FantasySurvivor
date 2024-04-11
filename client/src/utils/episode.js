@@ -219,7 +219,7 @@ export default class Episode {
 
     // add tribe update
     addTribeUpdate(survivorName, tribe) {
-        this.addNote(survivorName, `Moved to ${tribe}!`);
+        this.addNote(survivorName, `Moved to ${tribe}!`, "Surivors");
         var updateIndex = this.tribeUpdates.findIndex(
             (swap) => swap.tribe === tribe
         );
@@ -291,10 +291,10 @@ export default class Episode {
 
         if (event === "merged") {
             this.merged = true;
-            affected.forEach((name) => {
-                this.addTribeUpdate(name, additionalString);
-            });
-            this.addNote(additionalString, `Merged to ${additionalString}!`);
+            //affected.forEach((name) => {
+            //    this.addTribeUpdate(name, additionalString);
+            //});
+            this.addNote(additionalString, `Merged to ${additionalString}!`, "Tribes");
         }
 
         if (notes) {

@@ -64,7 +64,8 @@ export default function NewTribeComp(props) {
                         API.addTribe(
                             season,
                             { name, color },
-                            selectedSurvivors.map((s) => s.value)).then(() => {
+                            selectedSurvivors.map((s) => s.value),
+                            1).then(() => {
                                 updateGameData();
                                 clearForm();
                             });

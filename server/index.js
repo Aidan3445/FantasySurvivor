@@ -112,7 +112,7 @@ const depopulateEpisode = async (episode, seasonID) => {
                 } else if (note.onModel === "Tribes") {
                     Model = Tribe;
                 } else {
-                    throw new Error(`Model not found ${note.onModel}`);
+                    throw new Error(`Model not found ${note.onModel} for ${note.name}: ${note.notes}`);
                 }
                 const name = await Model.findOne({ name: note.name, season: seasonID });
                 episodeModel[key].push({ name: name, notes: note.notes, onModel: note.onModel });
@@ -719,7 +719,7 @@ app.get("/api/:seasonName/tribe/:name", async (req, res) => {
 app.post("/api/:seasonName/tribe/new", async (req, res) => {
     try {
         const { seasonName } = req.params;
-        const { newTribe, survivors } = req.body;
+        const { newTribe, survivors, episodeNumber } = req.body;
         // get the seasonID
         const season = await findSeason(seasonName);
 
@@ -734,11 +734,11 @@ app.post("/api/:seasonName/tribe/new", async (req, res) => {
         }
 
         // check if first episode exists
-        const firstEpisode = await queryEpisode({ season: season._id, number: 1 });
-        if (!firstEpisode) {
+        const episode = await queryEpisode({ season: season._id, number: episodeNumber });
+        if (!episode) {
             // return error if first episode not found
             res.status(400).json({
-                error: `First episode not found in season ${season.name}`
+                error: `Episode ${episodeNumber} not found in season ${season.name}`
             });
             return;
         }
@@ -747,6 +747,7 @@ app.post("/api/:seasonName/tribe/new", async (req, res) => {
         const tribe = new Tribe({ ...newTribe, season: season._id });
         // save new tribe and get the ID
         const tribeID = await tribe.save().then((tribe) => tribe._id);
+
 
         try {
             // assign survivors to the tribe on the first episode of the season
@@ -761,7 +762,7 @@ app.post("/api/:seasonName/tribe/new", async (req, res) => {
                 survivors: survivorIDs,
             };
             const ep = await Episode.findOneAndUpdate(
-                { season: season._id, number: 1 },
+                { season: season._id, number: episodeNumber },
                 { $push: { tribeUpdates: tribeUpdate } },
                 { new: true }
             );
