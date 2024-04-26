@@ -22,25 +22,6 @@ My goal was to create a web application that would automate and enhance the Fant
 
 Explore my live site: https://fantasy-survivor.onrender.com/
 
-To run this project locally, follow these steps:
-
-1. Clone the repository: `git clone https://github.com/Aidan3445/FantasySurvivor.git`.
-2. Navigate to the project folder: `cd [project_folder]`.
-3. Install dependencies for the frontend and backend: `npm install` (repeat this step in both the `client` and `server` folders).
-4. Set up a MongoDB database and configure the connection in the server's `.env` file.
-6. Configure environment variables for the frontend (in the `client` folder) and backend (in the `server` folder).
-7. Start the development servers for the frontend and backend: `npm start`.
-
-## Contributing
-
-If you'd like to contribute to this project, feel free to fork the repository and submit pull requests. 
-Any help with improving the application's features, code quality, or documentation is greatly appreciated.
-
-## Acknowledgments
-
-I want to thank my friends for their enthusiastic participation in the Fantasy Survivor League, which inspired me to embark on this development journey. 
-Also, a special thanks to the Survivor fan community for creating valuable resources that made this project possible.
-
 ---
 
 Enjoy playing Fantasy Survivor, Outpick, Outcheer, Outwatch!
