@@ -4,12 +4,13 @@ import tinyColor from "tinycolor2";
 import { isLightColor } from "../utils/miscUtils";
 
 function Scoreboard(props) {
-    var { headers, entries, handleSelect, offset } = props;
+    var { headers, entries, handleSelect, offset, noCount } = props;
     Scoreboard.propTypes = {
         headers: PropTypes.array.isRequired,
         entries: PropTypes.array.isRequired,
         handleSelect: PropTypes.func,
         offset: PropTypes.number,
+        noCount: PropTypes.bool
     };
 
     offset = offset || 0;
@@ -65,9 +66,9 @@ function Scoreboard(props) {
                             onClick={() => handleClick(entry.data[0])}
                             key={index}
                         >
-                            <td key={index} style={getStyle(entry, 1)}>
+                            {!noCount && <td key={index} style={getStyle(entry, 1)}>
                                 {offset + index + 1}
-                            </td>
+                            </td>}
                             {entry.data.map((cell, index) => (
                                 <td key={index} style={getStyle(entry, index)}>
                                     {Number.isNaN(cell) ? null : cell}

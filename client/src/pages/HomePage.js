@@ -52,10 +52,15 @@ export default function HomePage(props) {
     var sliceAt = Math.ceil(survivorEntries.length / 2);
 
     var playerEntries = players.map((player) => {
+        const survivor = player.survivors[player.survivors.length - 1];
         return {
             data: [
                 player.name,
-                player.survivors[player.survivors.length - 1]?.name || "None",
+                survivor
+                    ? survivor.name + (survivor.stats.eliminated
+                        ? " (Out)"
+                        : "")
+                    : "None",
                 player.stats.points,
             ],
             color: player.color,
@@ -68,7 +73,7 @@ export default function HomePage(props) {
             ...episode.eliminated.map((elimination) => {
                 var s = survivors.find((survivor) => survivor.name === elimination);
                 return {
-                    data: [elimination],
+                    data: [episode.number, elimination],
                     color: s ? s.color : "white",
                 };
             }),
@@ -139,7 +144,7 @@ export default function HomePage(props) {
             {eliminationEntries.length > 0 && (
                 <div className="box pad-5 marg-5">
                     <div className="survivor-header">Eliminations</div>
-                    <Scoreboard headers={eliminationHeaders} entries={eliminationEntries} />
+                    <Scoreboard headers={eliminationHeaders} entries={eliminationEntries} noCount />
                 </div>
             )}
         </div>
