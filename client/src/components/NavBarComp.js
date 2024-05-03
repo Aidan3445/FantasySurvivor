@@ -156,7 +156,7 @@ function Menu(props) {
     };
 
     return (
-        <div className={`menu ${isOpen ? 'open' : ''}`}>
+        <div className={`menu  ${isOpen ? 'open' : ''}`}>
             <div className='icon' onClick={toggleMenu}>
                 <div className='bar'></div>
                 <div className='bar'></div>
