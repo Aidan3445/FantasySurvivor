@@ -36,10 +36,10 @@ function DraftEntries(props) {
         }
 
         switch (pick.value) {
-            case winner?.value: 
+            case winner?.value:
                 setWinner(null);
                 break;
-            case firstBoot?.value: 
+            case firstBoot?.value:
                 setFirstBoot(null);
                 break;
             case firstJurror?.value:
@@ -48,7 +48,7 @@ function DraftEntries(props) {
             case mostIndivImm?.value:
                 setMostIndivImm(null);
                 break;
-            case mostAdvs?.value: 
+            case mostAdvs?.value:
                 setMostAdvs(null);
                 break;
             default:
